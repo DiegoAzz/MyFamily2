@@ -1,14 +1,24 @@
-[gd_scene load_steps=14 format=3]
+[gd_scene load_steps=22 format=3]
 
 [ext_resource type="Texture2D" uid="uid://b2bojyrft5s5x" path="res://sprites/Tiles/Grass_Middle.png" id="1_grass"]
-[ext_resource type="Texture2D" uid="uid://cbetajo4iig5s" path="res://sprites/Outdoor decoration/House_1_Wood_Base_Blue.png" id="2_house"]
-[ext_resource type="Texture2D" uid="uid://bymo3wc7ubr5k" path="res://sprites/Outdoor decoration/Oak_Tree.png" id="3_tree"]
-[ext_resource type="Texture2D" uid="uid://b6qv8dlfqxard" path="res://sprites/Outdoor decoration/Oak_Tree_Small.png" id="4_tree_small"]
-[ext_resource type="Texture2D" uid="uid://bnemuapied7go" path="res://sprites/Outdoor decoration/Chest.png" id="5_chest"]
-[ext_resource type="Texture2D" uid="uid://c3bd1ww57ide" path="res://sprites/Animals/Cow/Cow.png" id="6_cow"]
-[ext_resource type="Texture2D" uid="uid://das668vmbyxei" path="res://sprites/Animals/Chicken/Chicken.png" id="7_chicken"]
-[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="8_player"]
-[ext_resource type="PackedScene" path="res://scenes/slime.tscn" id="9_slime"]
+[ext_resource type="Texture2D" uid="uid://vj4s64dyexou" path="res://sprites/Tiles/Water_Middle.png" id="2_water"]
+[ext_resource type="Texture2D" uid="uid://4cu5s813gxfb" path="res://sprites/Tiles/Path_Middle.png" id="3_path"]
+[ext_resource type="Texture2D" uid="uid://bemf2a0rne2o4" path="res://sprites/Outdoor decoration/Bridge_Wood.png" id="4_bridge"]
+[ext_resource type="Texture2D" uid="uid://ceef8xvvavm8i" path="res://sprites/Tiles/FarmLand_Tile.png" id="5_farmland"]
+[ext_resource type="Texture2D" uid="uid://cbetajo4iig5s" path="res://sprites/Outdoor decoration/House_1_Wood_Base_Blue.png" id="6_house"]
+[ext_resource type="Texture2D" uid="uid://bymo3wc7ubr5k" path="res://sprites/Outdoor decoration/Oak_Tree.png" id="7_tree"]
+[ext_resource type="Texture2D" uid="uid://b6qv8dlfqxard" path="res://sprites/Outdoor decoration/Oak_Tree_Small.png" id="8_tree_small"]
+[ext_resource type="Texture2D" uid="uid://bnemuapied7go" path="res://sprites/Outdoor decoration/Chest.png" id="9_chest"]
+[ext_resource type="Texture2D" uid="uid://c25q3p0mloxyb" path="res://sprites/Outdoor decoration/Fences.png" id="10_fences"]
+[ext_resource type="Texture2D" uid="uid://crt6dlyion14" path="res://sprites/Outdoor decoration/Outdoor_Decor_Free.png" id="11_decor"]
+[ext_resource type="Texture2D" uid="uid://c3bd1ww57ide" path="res://sprites/Animals/Cow/Cow.png" id="12_cow"]
+[ext_resource type="Texture2D" uid="uid://0kg4r32lv3nm" path="res://sprites/Animals/Pig/Pig.png" id="13_pig"]
+[ext_resource type="Texture2D" uid="uid://canmx65f44cji" path="res://sprites/Animals/Sheep/Sheep.png" id="14_sheep"]
+[ext_resource type="Texture2D" uid="uid://das668vmbyxei" path="res://sprites/Animals/Chicken/Chicken.png" id="15_chicken"]
+[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="16_player"]
+[ext_resource type="PackedScene" path="res://scenes/slime.tscn" id="17_slime"]
+[ext_resource type="PackedScene" path="res://scenes/skeleton.tscn" id="18_skeleton"]
+[ext_resource type="PackedScene" path="res://scenes/touch_controls.tscn" id="19_touch"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_house"]
 size = Vector2(76, 40)
@@ -19,16 +29,87 @@ radius = 8.0
 [sub_resource type="CircleShape2D" id="CircleShape2D_tree_small"]
 radius = 6.0
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_chest"]
-size = Vector2(12, 10)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fence_h"]
+size = Vector2(64, 10)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fence_v"]
+size = Vector2(10, 64)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_water_wall"]
+size = Vector2(100, 260)
 
 [node name="World" type="Node2D"]
 
-[node name="GrassBackground" type="Sprite2D" parent="."]
+[node name="TerrainLayers" type="Node2D" parent="."]
+
+[node name="GrassBackground" type="Sprite2D" parent="TerrainLayers"]
 texture_repeat = 2
 texture = ExtResource("1_grass")
 region_enabled = true
-region_rect = Rect2(-1000, -1000, 2000, 2000)
+region_rect = Rect2(-1500, -1000, 3000, 2000)
+
+[node name="RiverWater" type="Sprite2D" parent="TerrainLayers"]
+texture_repeat = 2
+position = Vector2(240, 0)
+texture = ExtResource("2_water")
+region_enabled = true
+region_rect = Rect2(0, -600, 100, 1200)
+
+[node name="PathHouseToCross" type="Sprite2D" parent="TerrainLayers"]
+texture_repeat = 2
+position = Vector2(0, -10)
+texture = ExtResource("3_path")
+region_enabled = true
+region_rect = Rect2(0, 0, 16, 80)
+
+[node name="PathToFarm" type="Sprite2D" parent="TerrainLayers"]
+texture_repeat = 2
+position = Vector2(-70, 20)
+texture = ExtResource("3_path")
+region_enabled = true
+region_rect = Rect2(0, 0, 120, 16)
+
+[node name="PathToRiver" type="Sprite2D" parent="TerrainLayers"]
+texture_repeat = 2
+position = Vector2(100, 20)
+texture = ExtResource("3_path")
+region_enabled = true
+region_rect = Rect2(0, 0, 180, 16)
+
+[node name="Farmland" type="Sprite2D" parent="TerrainLayers"]
+position = Vector2(-155, 0)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("5_farmland")
+
+[node name="Bridge" type="Sprite2D" parent="TerrainLayers"]
+position = Vector2(240, 20)
+texture = ExtResource("4_bridge")
+
+[node name="WaterBarriers" type="Node2D" parent="TerrainLayers"]
+
+[node name="RiverTopWall" type="StaticBody2D" parent="TerrainLayers/WaterBarriers"]
+position = Vector2(240, -150)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TerrainLayers/WaterBarriers/RiverTopWall"]
+shape = SubResource("RectangleShape2D_water_wall")
+
+[node name="RiverBottomWall" type="StaticBody2D" parent="TerrainLayers/WaterBarriers"]
+position = Vector2(240, 180)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TerrainLayers/WaterBarriers/RiverBottomWall"]
+shape = SubResource("RectangleShape2D_water_wall")
+
+[node name="BridgeRailTop" type="StaticBody2D" parent="TerrainLayers/WaterBarriers"]
+position = Vector2(240, 5)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TerrainLayers/WaterBarriers/BridgeRailTop"]
+shape = SubResource("RectangleShape2D_fence_h")
+
+[node name="BridgeRailBottom" type="StaticBody2D" parent="TerrainLayers/WaterBarriers"]
+position = Vector2(240, 36)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TerrainLayers/WaterBarriers/BridgeRailBottom"]
+shape = SubResource("RectangleShape2D_fence_h")
 
 [node name="Entities" type="Node2D" parent="."]
 y_sort_enabled = true
@@ -37,76 +118,200 @@ y_sort_enabled = true
 position = Vector2(0, -90)
 
 [node name="Sprite2D" type="Sprite2D" parent="Entities/House"]
-texture = ExtResource("2_house")
+texture = ExtResource("6_house")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/House"]
 position = Vector2(0, 22)
 shape = SubResource("RectangleShape2D_house")
 
+[node name="Mailbox" type="Sprite2D" parent="Entities"]
+position = Vector2(-18, -45)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(0, 32, 16, 16)
+
+[node name="Lantern" type="Sprite2D" parent="Entities"]
+position = Vector2(22, -45)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(16, 32, 16, 16)
+
+[node name="Chest" type="StaticBody2D" parent="Entities"]
+position = Vector2(48, -50)
+
+[node name="Sprite2D" type="Sprite2D" parent="Entities/Chest"]
+texture = ExtResource("9_chest")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/Chest"]
+position = Vector2(0, 2)
+shape = SubResource("CircleShape2D_tree_small")
+
+[node name="FlowersRed1" type="Sprite2D" parent="Entities"]
+position = Vector2(-35, -35)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(0, 0, 16, 16)
+
+[node name="FlowersYellow1" type="Sprite2D" parent="Entities"]
+position = Vector2(36, -30)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(16, 0, 16, 16)
+
+[node name="FlowersBlue1" type="Sprite2D" parent="Entities"]
+position = Vector2(25, 45)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(32, 0, 16, 16)
+
+[node name="Mushroom1" type="Sprite2D" parent="Entities"]
+position = Vector2(-50, -70)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(48, 16, 16, 16)
+
+[node name="WoodLog" type="Sprite2D" parent="Entities"]
+position = Vector2(-45, -55)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(48, 64, 32, 16)
+
+[node name="TreeStump" type="Sprite2D" parent="Entities"]
+position = Vector2(65, -35)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(16, 64, 16, 16)
+
 [node name="Tree1" type="StaticBody2D" parent="Entities"]
-position = Vector2(-120, -50)
+position = Vector2(-90, -80)
 
 [node name="Sprite2D" type="Sprite2D" parent="Entities/Tree1"]
-texture = ExtResource("3_tree")
+texture = ExtResource("7_tree")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/Tree1"]
 position = Vector2(0, 26)
 shape = SubResource("CircleShape2D_tree")
 
 [node name="Tree2" type="StaticBody2D" parent="Entities"]
-position = Vector2(120, -40)
+position = Vector2(90, -80)
 
 [node name="Sprite2D" type="Sprite2D" parent="Entities/Tree2"]
-texture = ExtResource("3_tree")
+texture = ExtResource("7_tree")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/Tree2"]
 position = Vector2(0, 26)
 shape = SubResource("CircleShape2D_tree")
 
 [node name="Tree3" type="StaticBody2D" parent="Entities"]
-position = Vector2(-90, 80)
+position = Vector2(130, -30)
 
 [node name="Sprite2D" type="Sprite2D" parent="Entities/Tree3"]
-texture = ExtResource("4_tree_small")
+texture = ExtResource("8_tree_small")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/Tree3"]
 position = Vector2(0, 12)
 shape = SubResource("CircleShape2D_tree_small")
 
 [node name="Tree4" type="StaticBody2D" parent="Entities"]
-position = Vector2(130, 70)
+position = Vector2(140, 70)
 
 [node name="Sprite2D" type="Sprite2D" parent="Entities/Tree4"]
-texture = ExtResource("4_tree_small")
+texture = ExtResource("7_tree")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/Tree4"]
+position = Vector2(0, 26)
+shape = SubResource("CircleShape2D_tree")
+
+[node name="Tree5" type="StaticBody2D" parent="Entities"]
+position = Vector2(330, -50)
+
+[node name="Sprite2D" type="Sprite2D" parent="Entities/Tree5"]
+texture = ExtResource("7_tree")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/Tree5"]
+position = Vector2(0, 26)
+shape = SubResource("CircleShape2D_tree")
+
+[node name="Tree6" type="StaticBody2D" parent="Entities"]
+position = Vector2(340, 60)
+
+[node name="Sprite2D" type="Sprite2D" parent="Entities/Tree6"]
+texture = ExtResource("8_tree_small")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/Tree6"]
 position = Vector2(0, 12)
 shape = SubResource("CircleShape2D_tree_small")
 
-[node name="Chest" type="StaticBody2D" parent="Entities"]
-position = Vector2(48, -50)
+[node name="Corral" type="Node2D" parent="Entities"]
+position = Vector2(-155, 5)
 
-[node name="Sprite2D" type="Sprite2D" parent="Entities/Chest"]
-texture = ExtResource("5_chest")
+[node name="FenceTop" type="StaticBody2D" parent="Entities/Corral"]
+position = Vector2(0, -45)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/Chest"]
-position = Vector2(0, 2)
-shape = SubResource("RectangleShape2D_chest")
+[node name="Sprite2D" type="Sprite2D" parent="Entities/Corral/FenceTop"]
+texture = ExtResource("10_fences")
+region_enabled = true
+region_rect = Rect2(0, 0, 64, 16)
 
-[node name="Cow" type="Sprite2D" parent="Entities"]
-position = Vector2(-60, 35)
-texture = ExtResource("6_cow")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/Corral/FenceTop"]
+shape = SubResource("RectangleShape2D_fence_h")
+
+[node name="FenceBottom" type="StaticBody2D" parent="Entities/Corral"]
+position = Vector2(0, 45)
+
+[node name="Sprite2D" type="Sprite2D" parent="Entities/Corral/FenceBottom"]
+texture = ExtResource("10_fences")
+region_enabled = true
+region_rect = Rect2(0, 0, 64, 16)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/Corral/FenceBottom"]
+shape = SubResource("RectangleShape2D_fence_h")
+
+[node name="FenceLeft" type="StaticBody2D" parent="Entities/Corral"]
+position = Vector2(-32, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="Entities/Corral/FenceLeft"]
+texture = ExtResource("10_fences")
+region_enabled = true
+region_rect = Rect2(0, 0, 16, 64)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/Corral/FenceLeft"]
+shape = SubResource("RectangleShape2D_fence_v")
+
+[node name="Cow" type="Sprite2D" parent="Entities/Corral"]
+position = Vector2(-12, -15)
+texture = ExtResource("12_cow")
 hframes = 2
 vframes = 2
 
-[node name="Chicken" type="Sprite2D" parent="Entities"]
-position = Vector2(60, 40)
-texture = ExtResource("7_chicken")
+[node name="Pig" type="Sprite2D" parent="Entities/Corral"]
+position = Vector2(12, -15)
+texture = ExtResource("13_pig")
 hframes = 2
 vframes = 2
 
-[node name="Slime" parent="Entities" instance=ExtResource("9_slime")]
-position = Vector2(80, -10)
+[node name="Sheep" type="Sprite2D" parent="Entities/Corral"]
+position = Vector2(-10, 15)
+texture = ExtResource("14_sheep")
+hframes = 2
+vframes = 2
 
-[node name="Player" parent="Entities" instance=ExtResource("8_player")]
+[node name="Chicken" type="Sprite2D" parent="Entities/Corral"]
+position = Vector2(15, 15)
+texture = ExtResource("15_chicken")
+hframes = 2
+vframes = 2
+
+[node name="Slime1" parent="Entities" instance=ExtResource("17_slime")]
+position = Vector2(60, 65)
+
+[node name="Slime2" parent="Entities" instance=ExtResource("17_slime")]
+position = Vector2(-30, 90)
+
+[node name="SkeletonBoss" parent="Entities" instance=ExtResource("18_skeleton")]
+position = Vector2(320, 20)
+
+[node name="Player" parent="Entities" instance=ExtResource("16_player")]
 position = Vector2(0, 15)
+
+[node name="TouchControls" parent="." instance=ExtResource("19_touch")]

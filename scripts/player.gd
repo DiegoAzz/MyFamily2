@@ -38,6 +38,15 @@ func get_input_vector() -> Vector2:
 		if Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN):
 			dir.y += 1.0
 		dir = dir.normalized()
+
+	# Integración con el joystick táctil en pantalla para móviles:
+	if dir == Vector2.ZERO:
+		var touch_ctrls = get_tree().get_first_node_in_group("touch_controls")
+		if touch_ctrls and touch_ctrls.has_node("HUD/VirtualJoystick"):
+			var joy = touch_ctrls.get_node("HUD/VirtualJoystick")
+			if joy and "output" in joy and joy.output != Vector2.ZERO:
+				dir = joy.output
+
 	return dir
 
 func handle_movement(delta: float) -> void:
