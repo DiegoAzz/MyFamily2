@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyFamily RPG - Web Server</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #181425;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+        .card {
+            background: #262b44;
+            border: 2px solid #5a6988;
+            border-radius: 12px;
+            padding: 2.5rem 3rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            max-width: 500px;
+        }
+        h1 {
+            color: #ffcc00;
+            margin-bottom: 0.5rem;
+            font-size: 2rem;
+        }
+        p {
+            color: #c0cbdc;
+            line-height: 1.6;
+        }
+        .badge {
+            display: inline-block;
+            background: #3b5dc9;
+            color: #fff;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-top: 1rem;
+            font-weight: bold;
+        }
+        .status-ok {
+            color: #63c74d;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🎮 MyFamily RPG</h1>
+        <p class="status-ok">✔ Servidor Web Coolify activo y listo</p>
+        <p>Las cabeceras de seguridad <code>SharedArrayBuffer</code> (COOP / COEP) están configuradas correctamente para Godot 4.</p>
+        <p>Al exportar el juego desde Godot a la carpeta <code>build/web/</code> y hacer <code>git push</code>, el juego se ejecutará aquí automáticamente.</p>
+        <span class="badge">Godot 4.7 & Nginx & Coolify</span>
+    </div>
+</body>
+</html>
