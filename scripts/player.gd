@@ -11,10 +11,11 @@ class_name Player
 enum State { IDLE, WALK, ATTACK }
 var current_state: State = State.IDLE
 
-var facing_direction: Vector2 = Vector2.DOWN
+enum Direction { DOWN, UP, LEFT, RIGHT }
+var current_dir: Direction = Direction.DOWN
 
 func _ready() -> void:
-	play_animation("idle_down")
+	update_animation(false)
 
 func _physics_process(delta: float) -> void:
 	match current_state:
@@ -54,15 +55,42 @@ func handle_movement(delta: float) -> void:
 
 	if input_vector != Vector2.ZERO:
 		current_state = State.WALK
-		facing_direction = input_vector
+		update_direction(input_vector)
 		velocity = velocity.move_toward(input_vector * max_speed, acceleration * delta)
-		update_walk_animation(input_vector)
+		update_animation(true)
 	else:
 		current_state = State.IDLE
 		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
-		update_idle_animation()
+		update_animation(false)
 
 	move_and_slide()
+
+func update_direction(dir: Vector2) -> void:
+	if abs(dir.x) > abs(dir.y):
+		if dir.x > 0:
+			current_dir = Direction.RIGHT
+		else:
+			current_dir = Direction.LEFT
+	else:
+		if dir.y > 0:
+			current_dir = Direction.DOWN
+		else:
+			current_dir = Direction.UP
+
+func update_animation(is_moving: bool) -> void:
+	match current_dir:
+		Direction.DOWN:
+			sprite.flip_h = false
+			play_animation("walk_down" if is_moving else "idle_down")
+		Direction.UP:
+			sprite.flip_h = false
+			play_animation("walk_up" if is_moving else "idle_up")
+		Direction.RIGHT:
+			sprite.flip_h = false
+			play_animation("walk_side" if is_moving else "idle_side")
+		Direction.LEFT:
+			sprite.flip_h = true
+			play_animation("walk_side" if is_moving else "idle_side")
 
 func check_attack_input() -> void:
 	if Input.is_action_just_pressed("ui_accept") or Input.is_key_pressed(KEY_SPACE) or Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
@@ -72,40 +100,24 @@ func start_attack() -> void:
 	current_state = State.ATTACK
 	velocity = Vector2.ZERO
 	
-	if abs(facing_direction.x) > abs(facing_direction.y):
-		sprite.flip_h = (facing_direction.x < 0)
-		play_animation("attack_side")
-	elif facing_direction.y < 0:
-		play_animation("attack_up")
-	else:
-		play_animation("attack_down")
+	match current_dir:
+		Direction.DOWN:
+			sprite.flip_h = false
+			play_animation("attack_down")
+		Direction.UP:
+			sprite.flip_h = false
+			play_animation("attack_up")
+		Direction.RIGHT:
+			sprite.flip_h = false
+			play_animation("attack_side")
+		Direction.LEFT:
+			sprite.flip_h = true
+			play_animation("attack_side")
 
 func _on_animation_finished(anim_name: StringName) -> void:
 	if "attack" in anim_name:
 		current_state = State.IDLE
-		update_idle_animation()
-
-func update_walk_animation(dir: Vector2) -> void:
-	if abs(dir.x) > abs(dir.y):
-		sprite.flip_h = (dir.x < 0)
-		play_animation("walk_side")
-	elif dir.y < 0:
-		sprite.flip_h = false
-		play_animation("walk_up")
-	else:
-		sprite.flip_h = false
-		play_animation("walk_down")
-
-func update_idle_animation() -> void:
-	if abs(facing_direction.x) > abs(facing_direction.y):
-		sprite.flip_h = (facing_direction.x < 0)
-		play_animation("idle_side")
-	elif facing_direction.y < 0:
-		sprite.flip_h = false
-		play_animation("idle_up")
-	else:
-		sprite.flip_h = false
-		play_animation("idle_down")
+		update_animation(false)
 
 func play_animation(anim_name: String) -> void:
 	if anim_player.has_animation(anim_name) and anim_player.current_animation != anim_name:
