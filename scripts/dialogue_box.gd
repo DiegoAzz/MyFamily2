@@ -8,6 +8,7 @@ signal dialogue_finished
 @onready var dialogue_text_label: RichTextLabel = $PanelContainer/MarginContainer/HBoxContainer/TextContainer/DialogueText
 @onready var portrait_rect: TextureRect = $PanelContainer/MarginContainer/HBoxContainer/PortraitContainer/Portrait
 @onready var indicator: Label = $PanelContainer/MarginContainer/HBoxContainer/TextContainer/Indicator
+@onready var close_btn: Button = $CloseBtn
 
 var current_dialogue_lines: Array = []
 var current_line_index: int = 0
@@ -15,10 +16,16 @@ var is_active: bool = false
 var text_typing_speed: float = 0.02
 var is_typing: bool = false
 var full_current_text: String = ""
+var active_tween: Tween = null
 
 func _ready() -> void:
 	visible = false
 	panel.custom_minimum_size = Vector2(500, 110)
+	if close_btn:
+		close_btn.pressed.connect(_on_close_pressed)
+
+func _on_close_pressed() -> void:
+	close_dialogue()
 
 func start_dialogue(speaker: String, lines: Array, portrait: Texture2D = null) -> void:
 	current_dialogue_lines = lines
@@ -51,11 +58,14 @@ func show_current_line() -> void:
 	is_typing = true
 	indicator.visible = false
 	
+	if active_tween and active_tween.is_valid():
+		active_tween.kill()
+		
 	# Efecto máquina de escribir
-	var tween = create_tween()
+	active_tween = create_tween()
 	var duration = full_current_text.length() * text_typing_speed
-	tween.tween_method(_type_text, 0, full_current_text.length(), duration)
-	tween.finished.connect(func():
+	active_tween.tween_method(_type_text, 0, full_current_text.length(), duration)
+	active_tween.finished.connect(func():
 		is_typing = false
 		indicator.visible = true
 	)
@@ -69,6 +79,8 @@ func advance_dialogue() -> void:
 		
 	if is_typing:
 		# Si está escribiendo, autocompletar la línea de inmediato
+		if active_tween and active_tween.is_valid():
+			active_tween.kill()
 		is_typing = false
 		dialogue_text_label.text = full_current_text
 		indicator.visible = true
@@ -78,6 +90,9 @@ func advance_dialogue() -> void:
 		show_current_line()
 
 func close_dialogue() -> void:
+	if active_tween and active_tween.is_valid():
+		active_tween.kill()
+	is_typing = false
 	is_active = false
 	visible = false
 	dialogue_finished.emit()
@@ -86,6 +101,6 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not is_active:
 		return
 		
-	if event.is_action_pressed("interact") or event.is_action_pressed("attack") or event.is_action_pressed("ui_accept") or (event is InputEventMouseButton and event.pressed) or (event is InputEventScreenTouch and event.pressed):
+	if event.is_action_pressed("interact") or event.is_action_pressed("attack") or event.is_action_pressed("ui_accept"):
 		advance_dialogue()
 		get_viewport().set_input_as_handled()

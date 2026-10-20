@@ -22,8 +22,7 @@
 [ext_resource type="PackedScene" path="res://scenes/npc.tscn" id="20_npc"]
 [ext_resource type="PackedScene" path="res://scenes/dialogue_box.tscn" id="21_dialogue"]
 [ext_resource type="PackedScene" path="res://scenes/hud_stardew.tscn" id="22_hud"]
-[ext_resource type="PackedScene" path="res://scenes/multiplayer_menu.tscn" id="23_mp_menu"]
-[ext_resource type="Script" path="res://scripts/network_manager.gd" id="24_net_mgr"]
+[ext_resource type="PackedScene" path="res://scenes/room_info_hud.tscn" id="23_room_hud"]
 [ext_resource type="Script" path="res://scripts/interactable.gd" id="25_interact"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_interact_small"]
@@ -353,13 +352,10 @@ position = Vector2(320, 20)
 [node name="Player" parent="Entities" instance=ExtResource("16_player")]
 position = Vector2(0, 15)
 
-[node name="NetworkManager" type="Node" parent="." groups=["network_manager"]]
-script = ExtResource("24_net_mgr")
+[node name="RoomInfoHUD" parent="." instance=ExtResource("23_room_hud")]
 
 [node name="StardewHUD" parent="." instance=ExtResource("22_hud")]
 
 [node name="DialogueBox" parent="." instance=ExtResource("21_dialogue")]
-
-[node name="MultiplayerMenu" parent="." instance=ExtResource("23_mp_menu")]
 
 [node name="TouchControls" parent="." instance=ExtResource("19_touch")]

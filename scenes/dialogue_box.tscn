@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/dialogue_box.gd" id="1_script"]
 
@@ -28,6 +28,50 @@ corner_radius_top_left = 4
 corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_close_normal"]
+bg_color = Color(0.92, 0.22, 0.22, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.5, 0.1, 0.1, 1)
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+corner_radius_bottom_right = 22
+corner_radius_bottom_left = 22
+shadow_color = Color(0, 0, 0, 0.45)
+shadow_size = 4
+shadow_offset = Vector2(0, 2)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_close_hover"]
+bg_color = Color(1, 0.35, 0.35, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.6, 0.15, 0.15, 1)
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+corner_radius_bottom_right = 22
+corner_radius_bottom_left = 22
+shadow_color = Color(0, 0, 0, 0.5)
+shadow_size = 5
+shadow_offset = Vector2(0, 2)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_close_pressed"]
+bg_color = Color(0.72, 0.12, 0.12, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.35, 0.05, 0.05, 1)
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+corner_radius_bottom_right = 22
+corner_radius_bottom_left = 22
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_none"]
 
 [node name="DialogueBox" type="CanvasLayer" groups=["dialogue_box"]]
 layer = 10
@@ -94,3 +138,26 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_portrait_frame")
 layout_mode = 2
 expand_mode = 1
 stretch_mode = 5
+
+[node name="CloseBtn" type="Button" parent="."]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 226.0
+offset_top = -140.0
+offset_right = 274.0
+offset_bottom = -92.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.9, 0.9, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxFlat_close_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_close_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_close_pressed")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_none")
+text = "✕"

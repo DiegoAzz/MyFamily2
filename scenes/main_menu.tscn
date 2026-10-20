@@ -1,0 +1,372 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://scripts/main_menu.gd" id="1_menu_script"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
+bg_color = Color(0.24, 0.44, 0.22, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
+bg_color = Color(0.96, 0.92, 0.82, 0.98)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.45, 0.25, 0.12, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.45)
+shadow_size = 6
+shadow_offset = Vector2(0, 4)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_code_box"]
+bg_color = Color(0.9, 0.84, 0.72, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.55, 0.35, 0.18, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_green_btn"]
+bg_color = Color(0.25, 0.62, 0.28, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.12, 0.38, 0.15, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_amber_btn"]
+bg_color = Color(0.85, 0.52, 0.15, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.5, 0.28, 0.08, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_blue_btn"]
+bg_color = Color(0.2, 0.52, 0.82, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.1, 0.3, 0.52, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gray_btn"]
+bg_color = Color(0.55, 0.52, 0.48, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.35, 0.32, 0.28, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_input"]
+bg_color = Color(1, 0.98, 0.92, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.45, 0.25, 0.12, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_menu_script")
+
+[node name="Background" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_bg")
+
+[node name="Card" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -220.0
+offset_top = -155.0
+offset_right = 220.0
+offset_bottom = 155.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="Margin" type="MarginContainer" parent="Card"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 12
+
+[node name="ContentVBox" type="VBoxContainer" parent="Card/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="HeaderBox" type="VBoxContainer" parent="Card/Margin/ContentVBox"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="TitleLabel" type="Label" parent="Card/Margin/ContentVBox/HeaderBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.35, 0.18, 0.08, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.25)
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 22
+text = "🏡 MyFamily"
+horizontal_alignment = 1
+
+[node name="SubtitleLabel" type="Label" parent="Card/Margin/ContentVBox/HeaderBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.32, 0.18, 1)
+theme_override_font_sizes/font_size = 11
+text = "Aventura en el Valle Esperanza"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="Card/Margin/ContentVBox"]
+layout_mode = 2
+
+[node name="MainPanel" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -190.0
+offset_top = -75.0
+offset_right = 190.0
+offset_bottom = 140.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MainPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="SoloBtn" type="Button" parent="MainPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_green_btn")
+text = "🌱  Jugar en Solitario"
+
+[node name="HostBtn" type="Button" parent="MainPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_amber_btn")
+text = "👑  Crear Sala (Invitar a un Amigo)"
+
+[node name="JoinMenuBtn" type="Button" parent="MainPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_blue_btn")
+text = "🤝  Unirse con Código de Amigo"
+
+[node name="FooterLabel" type="Label" parent="MainPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.48, 0.32, 0.2, 1)
+theme_override_font_sizes/font_size = 10
+text = "✨ ¡Juega solo o comparte un código para explorar juntos!"
+horizontal_alignment = 1
+
+[node name="CreatePanel" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -190.0
+offset_top = -80.0
+offset_right = 190.0
+offset_bottom = 145.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CreatePanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
+
+[node name="HeaderLabel" type="Label" parent="CreatePanel/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.35, 0.18, 0.08, 1)
+theme_override_font_sizes/font_size = 12
+text = "👑 Sala Creada - Envía este código a tu amigo:"
+horizontal_alignment = 1
+
+[node name="CodeContainer" type="HBoxContainer" parent="CreatePanel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Panel" type="PanelContainer" parent="CreatePanel/VBoxContainer/CodeContainer"]
+custom_minimum_size = Vector2(160, 44)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_code_box")
+
+[node name="RoomCodeLabel" type="Label" parent="CreatePanel/VBoxContainer/CodeContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.3, 0.05, 1)
+theme_override_font_sizes/font_size = 26
+text = "VALE"
+horizontal_alignment = 1
+
+[node name="CopyCodeBtn" type="Button" parent="CreatePanel/VBoxContainer/CodeContainer"]
+custom_minimum_size = Vector2(140, 40)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBoxFlat_amber_btn")
+text = "📋 Copiar Código"
+
+[node name="StatusLabel" type="Label" parent="CreatePanel/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.25, 0.12, 1)
+theme_override_font_sizes/font_size = 10
+text = "¡Sala lista para jugar!"
+horizontal_alignment = 1
+
+[node name="PlayersLabel" type="Label" parent="CreatePanel/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.45, 0.2, 1)
+theme_override_font_sizes/font_size = 10
+text = "👥 Esperando a tu amigo..."
+horizontal_alignment = 1
+
+[node name="StartGameBtn" type="Button" parent="CreatePanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_green_btn")
+text = "🚀 ¡Entrar a la Granja!"
+
+[node name="BackBtn" type="Button" parent="CreatePanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 11
+theme_override_styles/normal = SubResource("StyleBoxFlat_gray_btn")
+text = "⬅️ Volver"
+
+[node name="JoinPanel" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -190.0
+offset_top = -80.0
+offset_right = 190.0
+offset_bottom = 145.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="JoinPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="HeaderLabel" type="Label" parent="JoinPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.35, 0.18, 0.08, 1)
+theme_override_font_sizes/font_size = 13
+text = "🤝 Unirse a la Granja de un Amigo"
+horizontal_alignment = 1
+
+[node name="InstructionLabel" type="Label" parent="JoinPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.45, 0.28, 0.15, 1)
+theme_override_font_sizes/font_size = 11
+text = "Escribe el código de sala (Ej: VALE o CASA):"
+horizontal_alignment = 1
+
+[node name="CodeInput" type="LineEdit" parent="JoinPanel/VBoxContainer"]
+custom_minimum_size = Vector2(220, 42)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0.3, 0.15, 0.05, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_input")
+placeholder_text = "CÓDIGO"
+alignment = 1
+max_length = 6
+
+[node name="ConfirmJoinBtn" type="Button" parent="JoinPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_blue_btn")
+text = "🚀 ¡Entrar a la Sala!"
+
+[node name="StatusLabel" type="Label" parent="JoinPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.2, 0.15, 1)
+theme_override_font_sizes/font_size = 10
+text = "Introduce el código que te dio tu amigo"
+horizontal_alignment = 1
+
+[node name="BackBtn" type="Button" parent="JoinPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 11
+theme_override_styles/normal = SubResource("StyleBoxFlat_gray_btn")
+text = "⬅️ Volver"

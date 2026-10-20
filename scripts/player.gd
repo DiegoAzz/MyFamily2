@@ -52,11 +52,21 @@ func _physics_process(delta: float) -> void:
 	network_sync_timer += delta
 	if network_sync_timer >= 0.05:
 		network_sync_timer = 0.0
-		var net_mgr = get_tree().get_first_node_in_group("network_manager")
-		if net_mgr and "is_connected_to_server" in net_mgr and net_mgr.is_connected_to_server:
+		var net_mgr = null
+		if Engine.has_singleton("NetworkManager") or has_node("/root/NetworkManager"):
+			net_mgr = get_node_or_null("/root/NetworkManager")
+		if not net_mgr:
+			net_mgr = get_tree().get_first_node_in_group("network_manager")
+			
+		if net_mgr and "is_multiplayer_active" in net_mgr and net_mgr.is_multiplayer_active:
 			net_mgr.broadcast_my_state(global_position, anim_player.current_animation, sprite.flip_h)
 
 func get_input_vector() -> Vector2:
+	# Si hay un diálogo abierto, congelar movimiento para que los niños puedan leer o cerrar
+	var dialogue_box = get_tree().get_first_node_in_group("dialogue_box")
+	if dialogue_box and "is_active" in dialogue_box and dialogue_box.is_active:
+		return Vector2.ZERO
+
 	var dir = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
 	if dir == Vector2.ZERO:
 		if Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT):
@@ -122,6 +132,11 @@ func update_animation(is_moving: bool) -> void:
 			play_animation("walk_side" if is_moving else "idle_side")
 
 func check_attack_input() -> void:
+	# Si hay un diálogo abierto, no atacar
+	var dialogue_box = get_tree().get_first_node_in_group("dialogue_box")
+	if dialogue_box and "is_active" in dialogue_box and dialogue_box.is_active:
+		return
+
 	# Atacar SOLAMENTE cuando se pulsa la tecla Espacio, J, o el botón dedicado ATK
 	# NUNCA atacar por tocar cualquier parte de la pantalla o el joystick
 	if Input.is_action_just_pressed("attack"):
