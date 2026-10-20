@@ -14,15 +14,15 @@ var time_speed: float = 2.0 # Cada 2 segundos avanza 10 minutos de juego
 var gold_amount: int = 500
 var active_slot_index: int = 0
 
-# Herramientas del hotbar
+# Herramientas del hotbar (etiquetas claras y legibles sin caracteres rotos)
 var tools: Array = [
-	{"name": "Espada de la Familia", "icon": "⚔️"},
-	{"name": "Regadera de Cobre", "icon": "💧"},
-	{"name": "Azadón de Granja", "icon": "⛏️"},
-	{"name": "Hacha de Leñador", "icon": "🪓"},
-	{"name": "Semillas de Trigo", "icon": "🌱"},
-	{"name": "Manzana Silvestre", "icon": "🍎"},
-	{"name": "Poción de Vida", "icon": "🧪"}
+	{"name": "Espada de la Familia", "icon": "ESP", "color": Color(0.95, 0.4, 0.4)},
+	{"name": "Regadera de Cobre", "icon": "REG", "color": Color(0.4, 0.7, 0.95)},
+	{"name": "Azadón de Granja", "icon": "AZA", "color": Color(0.85, 0.65, 0.35)},
+	{"name": "Hacha de Leñador", "icon": "HAC", "color": Color(0.75, 0.5, 0.3)},
+	{"name": "Semillas de Trigo", "icon": "SEM", "color": Color(0.45, 0.85, 0.4)},
+	{"name": "Manzana Silvestre", "icon": "MAN", "color": Color(0.95, 0.3, 0.3)},
+	{"name": "Poción de Vida", "icon": "POC", "color": Color(0.85, 0.4, 0.85)}
 ]
 
 func _ready() -> void:
@@ -95,7 +95,8 @@ func _apply_slot_style(slot: Button, is_selected: bool) -> void:
 	slot.add_theme_stylebox_override("normal", style)
 	slot.add_theme_stylebox_override("hover", style)
 	slot.add_theme_stylebox_override("pressed", style)
-	slot.add_theme_font_size_override("font_size", 16)
+	slot.add_theme_font_size_override("font_size", 10)
+	slot.add_theme_color_override("font_color", Color(0.3, 0.15, 0.05))
 
 func _unhandled_input(event: InputEvent) -> void:
 	# Permitir seleccionar slots con los números del 1 al 7

@@ -37,10 +37,22 @@ motion_mode = 1
 script = ExtResource("1_npc_script")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-modulate = Color(1.1, 0.9, 1.15, 1)
+modulate = Color(1.3, 0.75, 1.15, 1)
 texture = ExtResource("2_texture")
 hframes = 6
 vframes = 10
+
+[node name="NameTag" type="Label" parent="."]
+offset_left = -35.0
+offset_top = -24.0
+offset_right = 35.0
+offset_bottom = -10.0
+theme_override_colors/font_color = Color(1.0, 0.9, 0.35, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 9
+text = "[ NPC ] Clara"
+horizontal_alignment = 1
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, 6)

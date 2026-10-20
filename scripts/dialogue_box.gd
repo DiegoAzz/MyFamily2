@@ -86,6 +86,6 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not is_active:
 		return
 		
-	if event.is_action_pressed("ui_accept") or event.is_action_pressed("ui_select") or (event is InputEventMouseButton and event.pressed):
+	if event.is_action_pressed("interact") or event.is_action_pressed("attack") or event.is_action_pressed("ui_accept") or (event is InputEventMouseButton and event.pressed) or (event is InputEventScreenTouch and event.pressed):
 		advance_dialogue()
 		get_viewport().set_input_as_handled()

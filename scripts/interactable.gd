@@ -40,8 +40,8 @@ func _process(_delta: float) -> void:
 	if not is_player_in_range:
 		return
 		
-	# Chequear input de interacción (Espacio, Enter, o botón táctil ACT)
-	if Input.is_action_just_pressed("ui_select") or Input.is_key_pressed(KEY_E):
+	# Chequear input de interacción (tecla E, Enter o botón táctil ACT)
+	if Input.is_action_just_pressed("interact") or Input.is_key_pressed(KEY_E) or Input.is_action_just_pressed("ui_select"):
 		trigger_interaction()
 
 func _on_body_entered(body: Node2D) -> void:

@@ -17,6 +17,25 @@ var current_dir: Direction = Direction.DOWN
 var network_sync_timer: float = 0.0
 
 func _ready() -> void:
+	# Configurar acciones de ataque e interacción sin interferir con toques en pantalla
+	if not InputMap.has_action("attack"):
+		InputMap.add_action("attack")
+		var ev_space = InputEventKey.new()
+		ev_space.physical_keycode = KEY_SPACE
+		InputMap.action_add_event("attack", ev_space)
+		var ev_j = InputEventKey.new()
+		ev_j.physical_keycode = KEY_J
+		InputMap.action_add_event("attack", ev_j)
+		
+	if not InputMap.has_action("interact"):
+		InputMap.add_action("interact")
+		var ev_e = InputEventKey.new()
+		ev_e.physical_keycode = KEY_E
+		InputMap.action_add_event("interact", ev_e)
+		var ev_enter = InputEventKey.new()
+		ev_enter.physical_keycode = KEY_ENTER
+		InputMap.action_add_event("interact", ev_enter)
+
 	update_animation(false)
 
 func _physics_process(delta: float) -> void:
@@ -103,7 +122,9 @@ func update_animation(is_moving: bool) -> void:
 			play_animation("walk_side" if is_moving else "idle_side")
 
 func check_attack_input() -> void:
-	if Input.is_action_just_pressed("ui_accept") or Input.is_key_pressed(KEY_SPACE) or Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+	# Atacar SOLAMENTE cuando se pulsa la tecla Espacio, J, o el botón dedicado ATK
+	# NUNCA atacar por tocar cualquier parte de la pantalla o el joystick
+	if Input.is_action_just_pressed("attack"):
 		start_attack()
 
 func start_attack() -> void:

@@ -40,7 +40,7 @@ offset_bottom = -25.0
 grow_horizontal = 0
 grow_vertical = 0
 script = ExtResource("2_button")
-action_name = "ui_accept"
+action_name = "attack"
 label_text = "ATK"
 radius = 30.0
 
@@ -58,7 +58,7 @@ offset_bottom = -10.0
 grow_horizontal = 0
 grow_vertical = 0
 script = ExtResource("2_button")
-action_name = "ui_select"
+action_name = "interact"
 label_text = "ACT"
 base_color = Color(0.2, 0.65, 0.9, 0.65)
 pressed_color = Color(0.35, 0.8, 1.0, 0.9)
