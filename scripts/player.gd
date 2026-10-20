@@ -14,6 +14,8 @@ var current_state: State = State.IDLE
 enum Direction { DOWN, UP, LEFT, RIGHT }
 var current_dir: Direction = Direction.DOWN
 
+var network_sync_timer: float = 0.0
+
 func _ready() -> void:
 	update_animation(false)
 
@@ -26,6 +28,14 @@ func _physics_process(delta: float) -> void:
 			# Durante el ataque desaceleramos suavemente
 			velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
 			move_and_slide()
+			
+	# Sincronización multijugador en red (20 Hz)
+	network_sync_timer += delta
+	if network_sync_timer >= 0.05:
+		network_sync_timer = 0.0
+		var net_mgr = get_tree().get_first_node_in_group("network_manager")
+		if net_mgr and "is_connected_to_server" in net_mgr and net_mgr.is_connected_to_server:
+			net_mgr.broadcast_my_state(global_position, anim_player.current_animation, sprite.flip_h)
 
 func get_input_vector() -> Vector2:
 	var dir = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")

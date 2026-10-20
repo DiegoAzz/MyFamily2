@@ -19,6 +19,15 @@
 [ext_resource type="PackedScene" path="res://scenes/slime.tscn" id="17_slime"]
 [ext_resource type="PackedScene" path="res://scenes/skeleton.tscn" id="18_skeleton"]
 [ext_resource type="PackedScene" path="res://scenes/touch_controls.tscn" id="19_touch"]
+[ext_resource type="PackedScene" path="res://scenes/npc.tscn" id="20_npc"]
+[ext_resource type="PackedScene" path="res://scenes/dialogue_box.tscn" id="21_dialogue"]
+[ext_resource type="PackedScene" path="res://scenes/hud_stardew.tscn" id="22_hud"]
+[ext_resource type="PackedScene" path="res://scenes/multiplayer_menu.tscn" id="23_mp_menu"]
+[ext_resource type="Script" path="res://scripts/network_manager.gd" id="24_net_mgr"]
+[ext_resource type="Script" path="res://scripts/interactable.gd" id="25_interact"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_interact_small"]
+radius = 20.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_house"]
 size = Vector2(76, 40)
@@ -111,7 +120,7 @@ position = Vector2(240, 36)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="TerrainLayers/WaterBarriers/BridgeRailBottom"]
 shape = SubResource("RectangleShape2D_fence_h")
 
-[node name="Entities" type="Node2D" parent="."]
+[node name="Entities" type="Node2D" parent="." groups=["world_entities"]]
 y_sort_enabled = true
 
 [node name="House" type="StaticBody2D" parent="Entities"]
@@ -130,6 +139,15 @@ texture = ExtResource("11_decor")
 region_enabled = true
 region_rect = Rect2(0, 32, 16, 16)
 
+[node name="Interactable" type="Area2D" parent="Entities/Mailbox"]
+script = ExtResource("25_interact")
+prompt_message = "[ACT] Leer carta del Abuelo"
+speaker_name = "Carta del Abuelo Mateo"
+dialogue_lines = ["Querida familia, si están leyendo esto, el Valle Esperanza vuelve a tener un futuro.", "Cuiden con amor a Bessie y a los animalitos de la granja, y mantengan la espada familiar afilada.", "Hay secretos y peligros cruzando el río... ¡pero juntos, como familia, nada podrá detenerlos!", "Con amor eterno, el Abuelo Mateo."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/Mailbox/Interactable"]
+shape = SubResource("CircleShape2D_interact_small")
+
 [node name="Lantern" type="Sprite2D" parent="Entities"]
 position = Vector2(22, -45)
 texture = ExtResource("11_decor")
@@ -145,6 +163,15 @@ texture = ExtResource("9_chest")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/Chest"]
 position = Vector2(0, 2)
 shape = SubResource("CircleShape2D_tree_small")
+
+[node name="Interactable" type="Area2D" parent="Entities/Chest"]
+script = ExtResource("25_interact")
+prompt_message = "[ACT] Abrir Cofre"
+speaker_name = "Cofre del Fundador"
+dialogue_lines = ["¡Has abierto el Cofre del Fundador!", "Encontraste la antigua Espada de Acero de la Familia y 500 Monedas de Oro (G).", "¡Equípate y prepárate para proteger el valle!"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/Chest/Interactable"]
+shape = SubResource("CircleShape2D_interact_small")
 
 [node name="FlowersRed1" type="Sprite2D" parent="Entities"]
 position = Vector2(-35, -35)
@@ -284,6 +311,15 @@ texture = ExtResource("12_cow")
 hframes = 2
 vframes = 2
 
+[node name="Interactable" type="Area2D" parent="Entities/Corral/Cow"]
+script = ExtResource("25_interact")
+prompt_message = "[ACT] Acariciar"
+speaker_name = "Bessie la Vaca"
+dialogue_lines = ["¡Bessie muge alegremente y te da un cálido empujoncito! ❤️", "Produce leche fresca y deliciosa para toda la familia."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/Corral/Cow/Interactable"]
+shape = SubResource("CircleShape2D_interact_small")
+
 [node name="Pig" type="Sprite2D" parent="Entities/Corral"]
 position = Vector2(12, -15)
 texture = ExtResource("13_pig")
@@ -302,6 +338,9 @@ texture = ExtResource("15_chicken")
 hframes = 2
 vframes = 2
 
+[node name="NPC_Clara" parent="Entities" instance=ExtResource("20_npc")]
+position = Vector2(-35, 10)
+
 [node name="Slime1" parent="Entities" instance=ExtResource("17_slime")]
 position = Vector2(60, 65)
 
@@ -313,5 +352,14 @@ position = Vector2(320, 20)
 
 [node name="Player" parent="Entities" instance=ExtResource("16_player")]
 position = Vector2(0, 15)
+
+[node name="NetworkManager" type="Node" parent="." groups=["network_manager"]]
+script = ExtResource("24_net_mgr")
+
+[node name="StardewHUD" parent="." instance=ExtResource("22_hud")]
+
+[node name="DialogueBox" parent="." instance=ExtResource("21_dialogue")]
+
+[node name="MultiplayerMenu" parent="." instance=ExtResource("23_mp_menu")]
 
 [node name="TouchControls" parent="." instance=ExtResource("19_touch")]

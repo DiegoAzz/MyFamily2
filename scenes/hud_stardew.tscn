@@ -1,0 +1,138 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/hud_stardew.gd" id="1_script"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_plaque"]
+bg_color = Color(0.94, 0.88, 0.72, 0.95)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.48, 0.28, 0.12, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+shadow_color = Color(0, 0, 0, 0.35)
+shadow_size = 3
+shadow_offset = Vector2(0, 2)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hotbar_frame"]
+bg_color = Color(0.9, 0.82, 0.65, 0.92)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.48, 0.28, 0.12, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+shadow_color = Color(0, 0, 0, 0.3)
+shadow_size = 4
+shadow_offset = Vector2(0, 2)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_energy_fill"]
+bg_color = Color(0.3, 0.85, 0.25, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.1, 0.45, 0.1, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[node name="StardewHUD" type="CanvasLayer" groups=["stardew_hud"]]
+layer = 5
+script = ExtResource("1_script")
+
+[node name="TopRightPlaque" type="PanelContainer" parent="."]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -145.0
+offset_top = 12.0
+offset_right = -15.0
+offset_bottom = 85.0
+grow_horizontal = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_plaque")
+
+[node name="MarginContainer" type="MarginContainer" parent="TopRightPlaque"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TopRightPlaque/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="DateLabel" type="Label" parent="TopRightPlaque/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.35, 0.18, 0.08, 1)
+theme_override_font_sizes/font_size = 11
+text = "Vie. 19"
+horizontal_alignment = 1
+
+[node name="TimeLabel" type="Label" parent="TopRightPlaque/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.1, 0.05, 1)
+theme_override_font_sizes/font_size = 14
+text = "6:10 am"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="TopRightPlaque/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="GoldLabel" type="Label" parent="TopRightPlaque/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.45, 0.05, 1)
+theme_override_font_sizes/font_size = 12
+text = "🪙 500 G"
+horizontal_alignment = 1
+
+[node name="BottomHotbar" type="PanelContainer" parent="."]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -160.0
+offset_top = -52.0
+offset_right = 160.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_hotbar_frame")
+
+[node name="MarginContainer" type="MarginContainer" parent="BottomHotbar"]
+layout_mode = 2
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 4
+
+[node name="HotbarSlots" type="HBoxContainer" parent="BottomHotbar/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="EnergyBar" type="ProgressBar" parent="."]
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -22.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = 120.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_styles/fill = SubResource("StyleBoxFlat_energy_fill")
+value = 100.0
+fill_mode = 3
+show_percentage = false
