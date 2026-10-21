@@ -3,6 +3,8 @@ class_name ChoppableTree
 
 @export var tree_id: String = ""
 @export var is_small: bool = false
+@export var is_clue_tree: bool = false
+@export var clue_quest_id: String = ""
 @export var max_hits: int = 3
 @export var wood_yield: int = 3
 @export var score_yield: int = 60
@@ -123,17 +125,21 @@ func chop_down(from_pos: Vector2 = Vector2.ZERO) -> void:
 				if p.has_method("_update_hud"):
 					p._update_hud()
 					
-	# Avanzar progreso de la misión de madera
-	var q_mgr = get_tree().get_first_node_in_group("quest_manager")
-	if q_mgr and q_mgr.has_method("add_progress"):
-		q_mgr.add_progress("wood", 1)
-					
-	# 25% de probabilidad de soltar un diamante mágico del follaje
-	if randf() < 0.25:
+	# Recompensas de Diamante
+	if is_clue_tree:
 		var d = diamond_scene.instantiate()
-		d.global_position = global_position + Vector2(randf_range(-12, 12), randf_range(10, 22))
+		d.global_position = global_position + Vector2(randf_range(-8, 8), randf_range(10, 20))
 		get_parent().add_child(d)
-		_spawn_floating_text("+3 Madera! +Gema 💎", Color(0.3, 0.9, 1.0))
+		_spawn_floating_text("+Madera! +¡DIAMANTE DE PISTA!", Color(0.2, 0.95, 1.0))
+		if not clue_quest_id.is_empty():
+			var q_mgr = get_tree().get_first_node_in_group("quest_manager")
+			if q_mgr and q_mgr.has_method("add_progress"):
+				q_mgr.add_progress(clue_quest_id, 1)
+	elif randf() < 0.35:
+		var d = diamond_scene.instantiate()
+		d.global_position = global_position + Vector2(randf_range(-12, 12), randf_range(10, 20))
+		get_parent().add_child(d)
+		_spawn_floating_text("+Madera! +¡DIAMANTE!", Color(0.3, 0.9, 1.0))
 	else:
 		_spawn_floating_text("+3 Madera! +" + str(score_yield) + " Pts", Color(0.85, 0.65, 0.3))
 		

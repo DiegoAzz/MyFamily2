@@ -81,3 +81,10 @@ func play_door() -> void:
 
 func play_harvest() -> void:
 	play_sfx(sfx_harvest, -3.0, randf_range(0.96, 1.05))
+
+func play_victory() -> void:
+	# Fanfarria triunfal de notas mágicas
+	for i in range(5):
+		var t = get_tree().create_timer(i * 0.16)
+		var p_scale = 0.9 + (i * 0.22)
+		t.timeout.connect(func(): play_sfx(sfx_diamond, -1.0, p_scale))

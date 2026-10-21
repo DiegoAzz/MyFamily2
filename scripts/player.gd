@@ -21,6 +21,8 @@ var max_health: int = 3
 var current_health: int = 3
 var diamonds: int = 0
 var score: int = 0
+var has_won_game: bool = false
+const DIAMONDS_TO_WIN: int = 5
 var is_invulnerable: bool = false
 var is_dead: bool = false
 var respawn_point: Vector2 = Vector2(0, 15)
@@ -80,6 +82,14 @@ func _ready() -> void:
 
 	update_animation(false)
 	_update_hud()
+	
+	# Banner de bienvenida al nivel 1
+	var t = get_tree().create_timer(0.7)
+	t.timeout.connect(func():
+		var banner = get_tree().get_first_node_in_group("level_banner")
+		if banner and banner.has_method("show_banner"):
+			banner.show_banner("NIVEL 1: VALLE ESPERANZA", "Granja Familiar y Arboledas de Diamantes", Color(0.4, 0.9, 0.4))
+	)
 
 func _physics_process(delta: float) -> void:
 	match current_state:
@@ -299,6 +309,12 @@ func start_attack() -> void:
 			var trunk_pos = tree.global_position + Vector2(0, 4 if ("is_small" in tree and tree.is_small) else 18)
 			if trunk_pos.distance_to(attack_pos) <= 32.0 or trunk_pos.distance_to(global_position) <= 26.0:
 				tree.take_hit(1, global_position)
+				
+	# 4. Picar minerales y cristales frente al jugador
+	for ore in get_tree().get_nodes_in_group("mineable"):
+		if is_instance_valid(ore) and ore.has_method("take_hit") and not ore.is_broken:
+			if ore.global_position.distance_to(attack_pos) <= 30.0 or ore.global_position.distance_to(global_position) <= 24.0:
+				ore.take_hit(1, global_position)
 
 func take_damage(amount: int, from_pos: Vector2) -> void:
 	if is_invulnerable or current_health <= 0:
@@ -371,6 +387,18 @@ func die_and_respawn() -> void:
 func add_diamond(count: int, points: int) -> void:
 	diamonds += count
 	score += points
+	_update_hud()
+	
+	if diamonds >= DIAMONDS_TO_WIN and not has_won_game:
+		has_won_game = true
+		var net_mgr = get_node_or_null("/root/NetworkManager")
+		var p_name = net_mgr.player_name if (net_mgr and "player_name" in net_mgr) else "Cazatesoros"
+		if net_mgr and net_mgr.has_method("broadcast_game_won"):
+			net_mgr.broadcast_game_won(p_name, diamonds)
+
+func reset_diamond_hunt() -> void:
+	diamonds = 0
+	has_won_game = false
 	_update_hud()
 
 func _update_hud() -> void:

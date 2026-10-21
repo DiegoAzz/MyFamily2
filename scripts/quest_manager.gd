@@ -6,40 +6,49 @@ signal quest_completed(quest_id: String, title: String)
 signal all_quests_completed
 
 var quests: Dictionary = {
-	"crops": {
-		"title": "El Huerto Familiar",
-		"desc": "Siembra y cosecha 4 cultivos en la tierra arada",
+	"clue_river": {
+		"title": "Pista 1: El Roble del Rio",
+		"desc": "Junto al rio y el muelle al sur, un viejo roble esconde un diamante brillante.",
 		"current": 0,
-		"target": 4,
+		"target": 1,
 		"reward_gold": 150,
 		"reward_score": 100,
 		"completed": false
 	},
-	"wood": {
-		"title": "Madera para las Cabanas",
-		"desc": "Tala 3 arboles para reparar las cabanas del valle",
+	"clue_cabin": {
+		"title": "Pista 2: La Cabana del Bosque",
+		"desc": "En el bosque profundo al este, junto a la cabana de madera solitaria.",
 		"current": 0,
-		"target": 3,
+		"target": 1,
 		"reward_gold": 200,
 		"reward_score": 150,
 		"completed": false
 	},
-	"diamonds": {
-		"title": "Los Tesoros del Valle",
-		"desc": "Encuentra y recoge 4 diamantes magicos",
+	"clue_corral": {
+		"title": "Pista 3: La Cerca del Corral",
+		"desc": "Al oeste, detras de las ovejas y cerdos, entre los arboles altos del fondo.",
 		"current": 0,
-		"target": 4,
-		"reward_gold": 300,
-		"reward_score": 200,
+		"target": 1,
+		"reward_gold": 200,
+		"reward_score": 150,
 		"completed": false
 	},
-	"monsters": {
-		"title": "Guardianes del Bosque",
-		"desc": "Derrota 2 monstruos (Slimes o Esqueletos)",
+	"clue_north": {
+		"title": "Pista 4: El Monte Norteno",
+		"desc": "En la colina norte tras la casa familiar, un arbol frondoso guarda su secreto.",
 		"current": 0,
-		"target": 2,
+		"target": 1,
 		"reward_gold": 250,
 		"reward_score": 150,
+		"completed": false
+	},
+	"clue_crossroad": {
+		"title": "Pista 5: El Cruce del Valle",
+		"desc": "Cerca del letrero central de caminos, donde se cruzan las veredas.",
+		"current": 0,
+		"target": 1,
+		"reward_gold": 300,
+		"reward_score": 200,
 		"completed": false
 	}
 }
@@ -111,4 +120,10 @@ func _complete_quest(quest_id: String) -> void:
 		all_quests_completed.emit()
 		for p in players:
 			if is_instance_valid(p) and p.has_method("spawn_floating_text"):
-				p.spawn_floating_text("¡VALLE RESTAURADO! ¡El Legado del Abuelo triunfo!", Color(1.0, 0.95, 0.3))
+				p.spawn_floating_text("¡TODAS LAS PISTAS DESCUBIERTAS! ¡EL TESORO DEL VALLE ES TUYO!", Color(1.0, 0.95, 0.3))
+
+func reset_quests() -> void:
+	for k in quests.keys():
+		quests[k]["current"] = 0
+		quests[k]["completed"] = false
+		quest_updated.emit(k, 0, quests[k]["target"])

@@ -41,6 +41,14 @@
 [ext_resource type="PackedScene" path="res://scenes/quest_ui.tscn" id="40_quest_ui"]
 [ext_resource type="Script" path="res://scripts/quest_manager.gd" id="41_quest_mgr"]
 [ext_resource type="Texture2D" path="res://sprites/Crops/quest_board.png" id="42_quest_board_tex"]
+[ext_resource type="PackedScene" path="res://scenes/victory_popup.tscn" id="43_victory_popup"]
+[ext_resource type="PackedScene" path="res://scenes/level_banner.tscn" id="44_level_banner"]
+[ext_resource type="Script" path="res://scripts/level_portal.gd" id="45_level_portal"]
+[ext_resource type="PackedScene" path="res://scenes/crystal_ore.tscn" id="46_crystal_ore"]
+[ext_resource type="Texture2D" path="res://sprites/DungeonCave/cave_tiles.png" id="47_cave_tiles"]
+[ext_resource type="Texture2D" path="res://sprites/DungeonCave/dungeon_tiles.png" id="48_dungeon_tiles"]
+[ext_resource type="Texture2D" path="res://sprites/NinjaAdventure/Tilesets/tileset_floor.png" id="49_ninja_floor"]
+[ext_resource type="Texture2D" path="res://sprites/SproutLands/Objects/Basic Plants.png" id="50_sprout_plants"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_interact_small"]
 radius = 20.0
@@ -86,6 +94,18 @@ size = Vector2(10, 64)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_water_wall"]
 size = Vector2(100, 260)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_portal_box"]
+size = Vector2(24, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_zone_wall_h"]
+size = Vector2(340, 24)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_zone_wall_v"]
+size = Vector2(24, 260)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_altar_shape"]
+size = Vector2(28, 20)
 
 [node name="World" type="Node2D"]
 
@@ -397,9 +417,68 @@ region_rect = Rect2(48, 32, 16, 16)
 script = ExtResource("25_interact")
 prompt_message = "[ACT] Leer Cartel"
 speaker_name = "Cartel de Caminos"
-dialogue_lines = ["<- Corral de Animales", "v Huerto Familiar y Cosechas", "-> Puente hacia el Bosque", "^ Casa de la Familia"]
+dialogue_lines = ["<- Corral y Minas de Cristal al Norte", "v Huerto y Granja Familiar", "-> Puente hacia el Bosque y Santuario", "^ Casa de la Familia"]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/SignpostRoad/Interactable"]
+shape = SubResource("CircleShape2D_interact_small")
+
+[node name="OverworldMineEntrance" type="Node2D" parent="Entities"]
+position = Vector2(-140, -115)
+
+[node name="MineSign" type="Sprite2D" parent="Entities/OverworldMineEntrance"]
+position = Vector2(0, 10)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(0, 0, 16, 16)
+
+[node name="MinePortal" type="Area2D" parent="Entities/OverworldMineEntrance"]
+script = ExtResource("45_level_portal")
+target_position = Vector2(0, 740)
+level_name = "NIVEL 2: LAS MINAS DE CRISTAL"
+level_subtitle = "Cavernas Subterraneas y Vetas de Gemas"
+portal_color = Color(0.3, 0.95, 1)
+sound_type = "door"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/OverworldMineEntrance/MinePortal"]
+shape = SubResource("RectangleShape2D_portal_box")
+
+[node name="Interactable" type="Area2D" parent="Entities/OverworldMineEntrance"]
+script = ExtResource("25_interact")
+prompt_message = "[ACT] Ver Entrada a las Minas"
+speaker_name = "Entrada a las Minas de Cristal"
+dialogue_lines = ["Un oscuro tunel desciende hacia las profundidades de la montana.", "Se escuchan crujidos de esqueletos y el resplandor de minerales magicos.", "Pasa sobre la entrada para descender a las minas."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/OverworldMineEntrance/Interactable"]
+shape = SubResource("CircleShape2D_interact_small")
+
+[node name="OverworldMysticArch" type="Node2D" parent="Entities"]
+position = Vector2(480, -30)
+
+[node name="ArchSign" type="Sprite2D" parent="Entities/OverworldMysticArch"]
+position = Vector2(0, 8)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(32, 0, 16, 16)
+modulate = Color(1.2, 0.9, 1.4, 1)
+
+[node name="MysticPortal" type="Area2D" parent="Entities/OverworldMysticArch"]
+script = ExtResource("45_level_portal")
+target_position = Vector2(1200, 740)
+level_name = "NIVEL 3: EL SANTUARIO MISTICO"
+level_subtitle = "Templo Sagrado de las Gemas Antiguas"
+portal_color = Color(0.95, 0.8, 0.3, 1)
+sound_type = "diamond"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/OverworldMysticArch/MysticPortal"]
+shape = SubResource("RectangleShape2D_portal_box")
+
+[node name="Interactable" type="Area2D" parent="Entities/OverworldMysticArch"]
+script = ExtResource("25_interact")
+prompt_message = "[ACT] Ver Portal Sagrado"
+speaker_name = "Portal del Santuario"
+dialogue_lines = ["Un antiguo portal de piedra brilla con runas magicas del bosque sagrado.", "Guarda el gran tesoro del abuelo protegido por guardianes ancestrales.", "Cruza el portal para entrar al Santuario Mistico."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/OverworldMysticArch/Interactable"]
 shape = SubResource("CircleShape2D_interact_small")
 
 [node name="CropPlot1" parent="Entities" instance=ExtResource("39_crop_plot")]
@@ -577,6 +656,251 @@ is_small = true
 position = Vector2(420, 110)
 tree_id = "tree_f8"
 
+[node name="Tree_Clue_River" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(175, 60)
+tree_id = "tree_clue_river"
+is_clue_tree = true
+clue_quest_id = "clue_river"
+
+[node name="Tree_Clue_Cabin" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(450, 65)
+tree_id = "tree_clue_cabin"
+is_clue_tree = true
+clue_quest_id = "clue_cabin"
+
+[node name="Tree_Clue_Corral" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(-220, -50)
+tree_id = "tree_clue_corral"
+is_clue_tree = true
+clue_quest_id = "clue_corral"
+
+[node name="Tree_Clue_North" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(0, -145)
+tree_id = "tree_clue_north"
+is_clue_tree = true
+clue_quest_id = "clue_north"
+
+[node name="Tree_Clue_Crossroad" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(65, -15)
+tree_id = "tree_clue_crossroad"
+is_clue_tree = true
+clue_quest_id = "clue_crossroad"
+
+[node name="Tree_E1" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(310, -120)
+tree_id = "tree_e1"
+
+[node name="Tree_E2" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(350, -135)
+tree_id = "tree_e2"
+is_small = true
+
+[node name="Tree_E3" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(400, -115)
+tree_id = "tree_e3"
+
+[node name="Tree_E4" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(450, -130)
+tree_id = "tree_e4"
+is_small = true
+
+[node name="Tree_E5" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(480, -90)
+tree_id = "tree_e5"
+
+[node name="Tree_E6" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(490, -40)
+tree_id = "tree_e6"
+is_small = true
+
+[node name="Tree_E7" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(470, 0)
+tree_id = "tree_e7"
+
+[node name="Tree_E8" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(510, 25)
+tree_id = "tree_e8"
+is_small = true
+
+[node name="Tree_E9" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(480, 80)
+tree_id = "tree_e9"
+
+[node name="Tree_E10" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(510, 110)
+tree_id = "tree_e10"
+is_small = true
+
+[node name="Tree_E11" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(460, 135)
+tree_id = "tree_e11"
+
+[node name="Tree_E12" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(410, 150)
+tree_id = "tree_e12"
+is_small = true
+
+[node name="Tree_E13" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(350, 155)
+tree_id = "tree_e13"
+
+[node name="Tree_E14" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(310, 130)
+tree_id = "tree_e14"
+is_small = true
+
+[node name="Tree_E15" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(370, 10)
+tree_id = "tree_e15"
+
+[node name="Tree_N1" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(-220, -135)
+tree_id = "tree_n1"
+
+[node name="Tree_N2" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(-180, -145)
+tree_id = "tree_n2"
+is_small = true
+
+[node name="Tree_N3" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(-130, -140)
+tree_id = "tree_n3"
+
+[node name="Tree_N4" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(-80, -150)
+tree_id = "tree_n4"
+is_small = true
+
+[node name="Tree_N5" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(-40, -165)
+tree_id = "tree_n5"
+
+[node name="Tree_N6" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(50, -160)
+tree_id = "tree_n6"
+is_small = true
+
+[node name="Tree_N7" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(90, -145)
+tree_id = "tree_n7"
+
+[node name="Tree_N8" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(130, -155)
+tree_id = "tree_n8"
+is_small = true
+
+[node name="Tree_N9" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(170, -135)
+tree_id = "tree_n9"
+
+[node name="Tree_N10" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(210, -145)
+tree_id = "tree_n10"
+is_small = true
+
+[node name="Tree_W1" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(-250, -95)
+tree_id = "tree_w1"
+
+[node name="Tree_W2" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(-260, -10)
+tree_id = "tree_w2"
+is_small = true
+
+[node name="Tree_W3" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(-250, 45)
+tree_id = "tree_w3"
+
+[node name="Tree_W4" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(-260, 95)
+tree_id = "tree_w4"
+is_small = true
+
+[node name="Tree_W5" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(-220, 115)
+tree_id = "tree_w5"
+
+[node name="Tree_W6" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(-190, 140)
+tree_id = "tree_w6"
+is_small = true
+
+[node name="Tree_W7" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(-235, -130)
+tree_id = "tree_w7"
+
+[node name="Tree_W8" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(-205, -95)
+tree_id = "tree_w8"
+is_small = true
+
+[node name="Tree_R1" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(180, -110)
+tree_id = "tree_r1"
+
+[node name="Tree_R2" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(170, -45)
+tree_id = "tree_r2"
+is_small = true
+
+[node name="Tree_R3" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(180, 100)
+tree_id = "tree_r3"
+
+[node name="Tree_R4" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(175, 145)
+tree_id = "tree_r4"
+is_small = true
+
+[node name="Tree_R5" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(305, -110)
+tree_id = "tree_r5"
+
+[node name="Tree_R6" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(305, -40)
+tree_id = "tree_r6"
+is_small = true
+
+[node name="Tree_R7" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(300, 45)
+tree_id = "tree_r7"
+
+[node name="Tree_R8" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(305, 105)
+tree_id = "tree_r8"
+is_small = true
+
+[node name="Tree_S1" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(-150, 155)
+tree_id = "tree_s1"
+
+[node name="Tree_S2" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(-110, 160)
+tree_id = "tree_s2"
+is_small = true
+
+[node name="Tree_S3" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(-70, 165)
+tree_id = "tree_s3"
+
+[node name="Tree_S4" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(-15, 160)
+tree_id = "tree_s4"
+is_small = true
+
+[node name="Tree_S5" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(50, 150)
+tree_id = "tree_s5"
+
+[node name="Tree_S6" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(90, 155)
+tree_id = "tree_s6"
+is_small = true
+
+[node name="Tree_S7" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(125, 140)
+tree_id = "tree_s7"
+
 [node name="Corral" type="Node2D" parent="Entities"]
 position = Vector2(-155, -45)
 
@@ -648,6 +972,8 @@ vframes = 2
 
 [node name="NPC_Clara" parent="Entities" instance=ExtResource("20_npc")]
 position = Vector2(-35, 10)
+npc_name = "Clara"
+dialogue_lines = ["¡Bienvenido a la Gran Carrera de Diamantes del Valle!", "El abuelo Mateo escondio diamantes brillantes por los arboles de toda la region.", "¡El primer jugador que encuentre 5 diamantes ganara la partida para todos!", "Consulta el boton de Pistas o el Tablon para encontrar los arboles especiales.", "¡Afila tu hacha o espada y que comience la busqueda!"]
 
 [node name="Slime1" parent="Entities" instance=ExtResource("17_slime")]
 position = Vector2(60, 65)
@@ -697,9 +1023,9 @@ texture = ExtResource("42_quest_board_tex")
 
 [node name="Interactable" type="Area2D" parent="Entities/QuestBoard"]
 script = ExtResource("25_interact")
-prompt_message = "[ACT] Ver Misiones del Abuelo"
-speaker_name = "Tablon de Misiones"
-dialogue_lines = ["¡Bienvenido al Tablon de Misiones de Valle Esperanza!", "El Abuelo Mateo dejo 4 grandes metas para devolverle la vida al valle:", "1. Cosechar cultivos en el huerto.", "2. Talar madera para reparar las cabanas.", "3. Encontrar los diamantes magicos.", "4. Derrotar a las criaturas del bosque.", "Toca el boton [Misiones] en la parte superior para ver tu progreso en cualquier momento."]
+prompt_message = "[ACT] Leer Pistas del Tesoro"
+speaker_name = "Tablon de Pistas"
+dialogue_lines = ["¡Gran Carrera de Diamantes del Valle!", "El Abuelo Mateo escondio fabulosos diamantes en los arboles de toda la region.", "¡El primer participante en reunir 5 diamantes sera el ganador absoluto!", "Toca el boton [Pistas Diamantes] en la esquina superior para consultar las 5 ubicaciones secretas.", "¡Comienza a talar arboles y busca el resplandor azul!"]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/QuestBoard/Interactable"]
 shape = SubResource("CircleShape2D_interact_small")
@@ -744,6 +1070,225 @@ position = Vector2(370, 85)
 npc_name = "Elena"
 dialogue_lines = ["¡Cuidado al cruzar las profundidades del bosque!", "Los slimes verdes y esqueletos custodian los diamantes antiguos del valle.", "¡Usa tu espada con el boton [ATK] o la tecla Espacio para defenderte!"]
 
+[node name="Level2_CrystalMines" type="Node2D" parent="Entities"]
+position = Vector2(0, 800)
+
+[node name="FloorShadow" type="Sprite2D" parent="Entities/Level2_CrystalMines"]
+z_index = -3
+scale = Vector2(360, 260)
+texture = ExtResource("31_shadow_bg")
+
+[node name="FloorCavern" type="Sprite2D" parent="Entities/Level2_CrystalMines"]
+z_index = -1
+texture_repeat = 2
+texture = ExtResource("48_dungeon_tiles")
+region_enabled = true
+region_rect = Rect2(0, 0, 320, 220)
+modulate = Color(0.35, 0.42, 0.6, 1)
+
+[node name="CavernWalls" type="StaticBody2D" parent="Entities/Level2_CrystalMines"]
+
+[node name="WallTop" type="CollisionShape2D" parent="Entities/Level2_CrystalMines/CavernWalls"]
+position = Vector2(0, -118)
+shape = SubResource("RectangleShape2D_zone_wall_h")
+
+[node name="WallBottom" type="CollisionShape2D" parent="Entities/Level2_CrystalMines/CavernWalls"]
+position = Vector2(0, 118)
+shape = SubResource("RectangleShape2D_zone_wall_h")
+
+[node name="WallLeft" type="CollisionShape2D" parent="Entities/Level2_CrystalMines/CavernWalls"]
+position = Vector2(-168, 0)
+shape = SubResource("RectangleShape2D_zone_wall_v")
+
+[node name="WallRight" type="CollisionShape2D" parent="Entities/Level2_CrystalMines/CavernWalls"]
+position = Vector2(168, 0)
+shape = SubResource("RectangleShape2D_zone_wall_v")
+
+[node name="LadderExit" type="Sprite2D" parent="Entities/Level2_CrystalMines"]
+position = Vector2(0, -90)
+texture = ExtResource("47_cave_tiles")
+region_enabled = true
+region_rect = Rect2(17, 34, 16, 16)
+
+[node name="ExitPortal" type="Area2D" parent="Entities/Level2_CrystalMines/LadderExit"]
+script = ExtResource("45_level_portal")
+target_position = Vector2(-140, -90)
+level_name = "NIVEL 1: VALLE ESPERANZA"
+level_subtitle = "Superficie y Granja Familiar"
+portal_color = Color(0.4, 0.9, 0.4, 1)
+sound_type = "door"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/Level2_CrystalMines/LadderExit/ExitPortal"]
+shape = SubResource("RectangleShape2D_portal_box")
+
+[node name="Crystal1" parent="Entities/Level2_CrystalMines" instance=ExtResource("46_crystal_ore")]
+position = Vector2(-110, -50)
+ore_id = "ore_mine_1"
+crystal_color = Color(0.2, 0.95, 1, 1)
+
+[node name="Crystal2" parent="Entities/Level2_CrystalMines" instance=ExtResource("46_crystal_ore")]
+position = Vector2(110, -50)
+ore_id = "ore_mine_2"
+crystal_color = Color(0.85, 0.35, 1, 1)
+
+[node name="Crystal3" parent="Entities/Level2_CrystalMines" instance=ExtResource("46_crystal_ore")]
+position = Vector2(-120, 50)
+ore_id = "ore_mine_3"
+crystal_color = Color(1, 0.85, 0.2, 1)
+
+[node name="Crystal4" parent="Entities/Level2_CrystalMines" instance=ExtResource("46_crystal_ore")]
+position = Vector2(120, 50)
+ore_id = "ore_mine_4"
+crystal_color = Color(0.3, 1, 0.55, 1)
+
+[node name="Crystal5" parent="Entities/Level2_CrystalMines" instance=ExtResource("46_crystal_ore")]
+position = Vector2(-40, 80)
+ore_id = "ore_mine_5"
+crystal_color = Color(0.25, 0.9, 1, 1)
+
+[node name="Crystal6" parent="Entities/Level2_CrystalMines" instance=ExtResource("46_crystal_ore")]
+position = Vector2(50, 80)
+ore_id = "ore_mine_6"
+crystal_color = Color(1, 0.35, 0.55, 1)
+
+[node name="SkeletonMine1" parent="Entities/Level2_CrystalMines" instance=ExtResource("18_skeleton")]
+position = Vector2(-60, 0)
+
+[node name="SkeletonMine2" parent="Entities/Level2_CrystalMines" instance=ExtResource("18_skeleton")]
+position = Vector2(70, 20)
+
+[node name="DiamondMine1" parent="Entities/Level2_CrystalMines" instance=ExtResource("27_diamond")]
+position = Vector2(-130, 0)
+diamond_id = "diam_mine_g1"
+point_value = 150
+
+[node name="DiamondMine2" parent="Entities/Level2_CrystalMines" instance=ExtResource("27_diamond")]
+position = Vector2(135, 0)
+diamond_id = "diam_mine_g2"
+point_value = 150
+
+[node name="Level3_MysticSanctuary" type="Node2D" parent="Entities"]
+position = Vector2(1200, 800)
+
+[node name="SanctuaryShadow" type="Sprite2D" parent="Entities/Level3_MysticSanctuary"]
+z_index = -3
+scale = Vector2(360, 260)
+texture = ExtResource("31_shadow_bg")
+
+[node name="FloorTemple" type="Sprite2D" parent="Entities/Level3_MysticSanctuary"]
+z_index = -1
+texture_repeat = 2
+texture = ExtResource("49_ninja_floor")
+region_enabled = true
+region_rect = Rect2(0, 0, 320, 220)
+modulate = Color(1.08, 0.98, 0.85, 1)
+
+[node name="TempleWalls" type="StaticBody2D" parent="Entities/Level3_MysticSanctuary"]
+
+[node name="WallTop" type="CollisionShape2D" parent="Entities/Level3_MysticSanctuary/TempleWalls"]
+position = Vector2(0, -118)
+shape = SubResource("RectangleShape2D_zone_wall_h")
+
+[node name="WallBottom" type="CollisionShape2D" parent="Entities/Level3_MysticSanctuary/TempleWalls"]
+position = Vector2(0, 118)
+shape = SubResource("RectangleShape2D_zone_wall_h")
+
+[node name="WallLeft" type="CollisionShape2D" parent="Entities/Level3_MysticSanctuary/TempleWalls"]
+position = Vector2(-168, 0)
+shape = SubResource("RectangleShape2D_zone_wall_v")
+
+[node name="WallRight" type="CollisionShape2D" parent="Entities/Level3_MysticSanctuary/TempleWalls"]
+position = Vector2(168, 0)
+shape = SubResource("RectangleShape2D_zone_wall_v")
+
+[node name="PortalExit" type="Sprite2D" parent="Entities/Level3_MysticSanctuary"]
+position = Vector2(0, -90)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(32, 0, 16, 16)
+modulate = Color(1.3, 0.85, 1.4, 1)
+
+[node name="ExitPortal" type="Area2D" parent="Entities/Level3_MysticSanctuary/PortalExit"]
+script = ExtResource("45_level_portal")
+target_position = Vector2(480, 0)
+level_name = "NIVEL 1: VALLE ESPERANZA"
+level_subtitle = "Bosque del Este y Granja"
+portal_color = Color(0.4, 0.9, 0.4, 1)
+sound_type = "diamond"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/Level3_MysticSanctuary/PortalExit/ExitPortal"]
+shape = SubResource("RectangleShape2D_portal_box")
+
+[node name="Flowers1" type="Sprite2D" parent="Entities/Level3_MysticSanctuary"]
+position = Vector2(-95, -60)
+texture = ExtResource("50_sprout_plants")
+region_enabled = true
+region_rect = Rect2(0, 0, 32, 32)
+
+[node name="Flowers2" type="Sprite2D" parent="Entities/Level3_MysticSanctuary"]
+position = Vector2(95, -60)
+texture = ExtResource("50_sprout_plants")
+region_enabled = true
+region_rect = Rect2(32, 0, 32, 32)
+
+[node name="Flowers3" type="Sprite2D" parent="Entities/Level3_MysticSanctuary"]
+position = Vector2(-95, 60)
+texture = ExtResource("50_sprout_plants")
+region_enabled = true
+region_rect = Rect2(64, 0, 32, 32)
+
+[node name="Flowers4" type="Sprite2D" parent="Entities/Level3_MysticSanctuary"]
+position = Vector2(95, 60)
+texture = ExtResource("50_sprout_plants")
+region_enabled = true
+region_rect = Rect2(0, 0, 32, 32)
+
+[node name="SacredAltar" type="StaticBody2D" parent="Entities/Level3_MysticSanctuary"]
+position = Vector2(0, 0)
+
+[node name="AltarSprite" type="Sprite2D" parent="Entities/Level3_MysticSanctuary/SacredAltar"]
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(0, 32, 16, 16)
+scale = Vector2(1.5, 1.5)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/Level3_MysticSanctuary/SacredAltar"]
+shape = SubResource("RectangleShape2D_altar_shape")
+
+[node name="GrandDiamond" parent="Entities/Level3_MysticSanctuary" instance=ExtResource("27_diamond")]
+position = Vector2(0, -18)
+diamond_id = "diam_grand_sanctuary"
+point_value = 300
+
+[node name="CrystalS1" parent="Entities/Level3_MysticSanctuary" instance=ExtResource("46_crystal_ore")]
+position = Vector2(-55, -25)
+ore_id = "ore_sanc_1"
+crystal_color = Color(1, 0.85, 0.2, 1)
+
+[node name="CrystalS2" parent="Entities/Level3_MysticSanctuary" instance=ExtResource("46_crystal_ore")]
+position = Vector2(55, -25)
+ore_id = "ore_sanc_2"
+crystal_color = Color(0.9, 0.35, 1, 1)
+
+[node name="CrystalS3" parent="Entities/Level3_MysticSanctuary" instance=ExtResource("46_crystal_ore")]
+position = Vector2(-55, 30)
+ore_id = "ore_sanc_3"
+crystal_color = Color(0.2, 0.95, 1, 1)
+
+[node name="CrystalS4" parent="Entities/Level3_MysticSanctuary" instance=ExtResource("46_crystal_ore")]
+position = Vector2(55, 30)
+ore_id = "ore_sanc_4"
+crystal_color = Color(1, 0.4, 0.4, 1)
+
+[node name="SlimeSanctuary1" parent="Entities/Level3_MysticSanctuary" instance=ExtResource("17_slime")]
+position = Vector2(-65, 0)
+
+[node name="SlimeSanctuary2" parent="Entities/Level3_MysticSanctuary" instance=ExtResource("17_slime")]
+position = Vector2(65, 0)
+
+[node name="GuardianSkeleton" parent="Entities/Level3_MysticSanctuary" instance=ExtResource("18_skeleton")]
+position = Vector2(0, 65)
+
 [node name="QuestManager" type="Node" parent="." groups=["quest_manager"]]
 script = ExtResource("41_quest_mgr")
 
@@ -758,3 +1303,7 @@ script = ExtResource("41_quest_mgr")
 [node name="DialogueBox" parent="." instance=ExtResource("21_dialogue")]
 
 [node name="TouchControls" parent="." instance=ExtResource("19_touch")]
+
+[node name="VictoryPopup" parent="." instance=ExtResource("43_victory_popup")]
+
+[node name="LevelBanner" parent="." instance=ExtResource("44_level_banner")]

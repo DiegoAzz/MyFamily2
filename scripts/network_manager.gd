@@ -8,6 +8,8 @@ signal player_joined_room(client_id: String)
 signal player_left_room(client_id: String)
 signal chat_message_received(sender: String, text: String)
 signal diamond_collected_network(diamond_id: String)
+signal game_won_event(winner_name: String, is_local_winner: bool, diamonds: int)
+signal restart_game_event()
 
 var socket: WebSocketPeer = WebSocketPeer.new()
 var is_connected_to_server: bool = false
@@ -289,6 +291,36 @@ func _handle_message(data: Dictionary) -> void:
 			var q_mgr = get_tree().get_first_node_in_group("quest_manager")
 			if q_mgr and q_mgr.has_method("set_progress_from_net"):
 				q_mgr.set_progress_from_net(qid, cur)
+				
+		"game_won":
+			var winner_name = str(data.get("winner_name", "Un Jugador"))
+			var winner_id = str(data.get("winner_id", ""))
+			var diamonds_count = int(data.get("diamonds", 5))
+			var is_me = (winner_id == my_client_id)
+			game_won_event.emit(winner_name, is_me, diamonds_count)
+			
+		"restart_game":
+			restart_game_event.emit()
+
+func broadcast_game_won(winner_name: String, diamonds_count: int = 5) -> void:
+	if is_connected_to_server and socket.get_ready_state() == WebSocketPeer.STATE_OPEN and is_multiplayer_active:
+		var packet = {
+			"type": "game_won",
+			"winner_name": winner_name,
+			"winner_id": my_client_id,
+			"diamonds": diamonds_count
+		}
+		socket.send_text(JSON.stringify(packet))
+	# Emitir también localmente
+	game_won_event.emit(winner_name, true, diamonds_count)
+
+func broadcast_restart_game() -> void:
+	if is_connected_to_server and socket.get_ready_state() == WebSocketPeer.STATE_OPEN and is_multiplayer_active:
+		var packet = {
+			"type": "restart_game"
+		}
+		socket.send_text(JSON.stringify(packet))
+	restart_game_event.emit()
 
 func send_player_hit(target_id: String, damage: int, from_pos: Vector2) -> void:
 	if not is_multiplayer_active or target_id.is_empty():

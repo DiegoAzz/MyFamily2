@@ -121,7 +121,7 @@ func show_main_panel() -> void:
 	
 	# Verificar si hay una partida persistente o activa para mostrar el botón de Continuar
 	if net_mgr and not net_mgr.current_room_code.is_empty():
-		resume_btn.text = "▶ Continuar Granja (Sala: " + net_mgr.current_room_code + ")"
+		resume_btn.text = "> Continuar Granja (Sala: " + net_mgr.current_room_code + ")"
 		resume_btn.visible = true
 	else:
 		resume_btn.visible = false

@@ -91,7 +91,7 @@ func _render_quests() -> void:
 		top_hbox.add_child(title_lbl)
 		
 		var status_lbl = Label.new()
-		status_lbl.text = "✓ ¡Completada!" if q["completed"] else ("%d / %d" % [q["current"], q["target"]])
+		status_lbl.text = "[OK] ¡ENCONTRADO!" if q["completed"] else ("%d / %d" % [q["current"], q["target"]])
 		status_lbl.add_theme_font_size_override("font_size", 8)
 		status_lbl.add_theme_color_override("font_color", Color(0.7, 1.0, 0.7) if q["completed"] else Color(1.0, 0.8, 0.3))
 		top_hbox.add_child(status_lbl)
@@ -106,8 +106,8 @@ func _render_quests() -> void:
 		quest_list_vbox.add_child(card)
 		
 	if all_done:
-		toggle_btn.text = "🏆 ¡Misiones (4/4)!"
+		toggle_btn.text = "* ¡5/5 ENCONTRADOS! *"
 		toggle_btn.modulate = Color(1.3, 1.2, 0.4)
 	else:
-		toggle_btn.text = "📜 Misiones"
+		toggle_btn.text = "* Pistas Diamantes *"
 		toggle_btn.modulate = Color(1.0, 1.0, 1.0)
