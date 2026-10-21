@@ -1,12 +1,11 @@
 extends CanvasLayer
 class_name StardewHUD
 
-@onready var date_label: Label = $TopRightPlaque/MarginContainer/VBoxContainer/DateLabel
-@onready var time_label: Label = $TopRightPlaque/MarginContainer/VBoxContainer/TimeLabel
+@onready var time_label: Label = $TopRightPlaque/MarginContainer/VBoxContainer/TopRowHBox/TimeLabel
+@onready var hearts_container: HBoxContainer = $TopRightPlaque/MarginContainer/VBoxContainer/TopRowHBox/HeartsContainer
 @onready var gold_label: Label = $TopRightPlaque/MarginContainer/VBoxContainer/StatsHBox/GoldLabel
 @onready var diamond_label: Label = $TopRightPlaque/MarginContainer/VBoxContainer/StatsHBox/DiamondLabel
-@onready var score_label: Label = $TopRightPlaque/MarginContainer/VBoxContainer/ScoreLabel
-@onready var hearts_container: HBoxContainer = $TopRightPlaque/MarginContainer/VBoxContainer/HeartsContainer
+@onready var score_label: Label = $TopRightPlaque/MarginContainer/VBoxContainer/StatsHBox/ScoreLabel
 @onready var hotbar_slots: HBoxContainer = $BottomHotbar/MarginContainer/HotbarSlots
 
 var heart_full_texture: Texture2D = preload("res://sprites/Items/heart_full.png")
@@ -27,8 +26,6 @@ var tools: Array = [
 	{"name": "Regadera de Cobre", "icon": "REG", "color": Color(0.4, 0.7, 0.95)},
 	{"name": "Azadón de Granja", "icon": "AZA", "color": Color(0.85, 0.65, 0.35)},
 	{"name": "Hacha de Leñador", "icon": "HAC", "color": Color(0.75, 0.5, 0.3)},
-	{"name": "Semillas de Trigo", "icon": "SEM", "color": Color(0.45, 0.85, 0.4)},
-	{"name": "Manzana Silvestre", "icon": "MAN", "color": Color(0.95, 0.3, 0.3)},
 	{"name": "Poción de Vida", "icon": "POC", "color": Color(0.85, 0.4, 0.85)}
 ]
 
@@ -56,11 +53,12 @@ func _process(delta: float) -> void:
 func _update_clock_display() -> void:
 	var period = "pm" if is_pm else "am"
 	var min_str = "%02d" % minute
-	time_label.text = "%d:%s %s" % [hour, min_str, period]
-	date_label.text = "Vie. 19"
+	if time_label:
+		time_label.text = "Vie. 19 | %d:%s %s" % [hour, min_str, period]
 
 func _update_gold_display() -> void:
-	gold_label.text = "%d G" % gold_amount
+	if gold_label:
+		gold_label.text = "%d G" % gold_amount
 
 func update_diamonds(count: int, score: int) -> void:
 	diamond_amount = count
@@ -68,7 +66,7 @@ func update_diamonds(count: int, score: int) -> void:
 	if diamond_label:
 		diamond_label.text = str(diamond_amount)
 	if score_label:
-		score_label.text = "Puntos: %d" % score_amount
+		score_label.text = "Pts: %d" % score_amount
 
 func update_health(current: int, maximum: int = 3) -> void:
 	if not hearts_container:
@@ -88,7 +86,7 @@ func _setup_hotbar() -> void:
 		
 	for i in range(tools.size()):
 		var slot = Button.new()
-		slot.custom_minimum_size = Vector2(36, 36)
+		slot.custom_minimum_size = Vector2(26, 26)
 		slot.text = tools[i]["icon"]
 		slot.tooltip_text = tools[i]["name"]
 		slot.focus_mode = Control.FOCUS_NONE
@@ -109,10 +107,10 @@ func _select_slot(index: int) -> void:
 func _apply_slot_style(slot: Button, is_selected: bool) -> void:
 	var style = StyleBoxFlat.new()
 	style.bg_color = Color(0.92, 0.85, 0.68) if not is_selected else Color(1.0, 0.95, 0.8)
-	style.border_width_left = 3 if is_selected else 2
-	style.border_width_top = 3 if is_selected else 2
-	style.border_width_right = 3 if is_selected else 2
-	style.border_width_bottom = 3 if is_selected else 2
+	style.border_width_left = 2 if is_selected else 1
+	style.border_width_top = 2 if is_selected else 1
+	style.border_width_right = 2 if is_selected else 1
+	style.border_width_bottom = 2 if is_selected else 1
 	style.border_color = Color(0.85, 0.2, 0.2) if is_selected else Color(0.48, 0.28, 0.15)
 	style.corner_radius_top_left = 3
 	style.corner_radius_top_right = 3
@@ -121,12 +119,12 @@ func _apply_slot_style(slot: Button, is_selected: bool) -> void:
 	slot.add_theme_stylebox_override("normal", style)
 	slot.add_theme_stylebox_override("hover", style)
 	slot.add_theme_stylebox_override("pressed", style)
-	slot.add_theme_font_size_override("font_size", 10)
+	slot.add_theme_font_size_override("font_size", 8)
 	slot.add_theme_color_override("font_color", Color(0.3, 0.15, 0.05))
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
-		if event.keycode >= KEY_1 and event.keycode <= KEY_7:
+		if event.keycode >= KEY_1 and event.keycode <= KEY_5:
 			var idx = event.keycode - KEY_1
 			if idx < tools.size():
 				_select_slot(idx)

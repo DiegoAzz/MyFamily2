@@ -3,6 +3,7 @@ class_name InGameChat
 
 @onready var toggle_btn: Button = $ChatContainer/ToggleBtn
 @onready var chat_panel: PanelContainer = $ChatContainer/ChatPanel
+@onready var close_btn: Button = $ChatContainer/ChatPanel/Margin/VBox/HeaderHBox/CloseBtn
 @onready var messages_box: VBoxContainer = $ChatContainer/ChatPanel/Margin/VBox/MessagesScroll/MessagesVBox
 @onready var message_input: LineEdit = $ChatContainer/ChatPanel/Margin/VBox/InputHBox/MessageInput
 @onready var send_btn: Button = $ChatContainer/ChatPanel/Margin/VBox/InputHBox/SendBtn
@@ -13,6 +14,13 @@ var is_chat_open: bool = false
 const MAX_MESSAGES: int = 25
 
 func _ready() -> void:
+	# Desactivar foco de teclado en botones para que la barra espaciadora NUNCA active el chat
+	toggle_btn.focus_mode = Control.FOCUS_NONE
+	send_btn.focus_mode = Control.FOCUS_NONE
+	if close_btn:
+		close_btn.focus_mode = Control.FOCUS_NONE
+	message_input.focus_mode = Control.FOCUS_CLICK
+	
 	net_mgr = get_node_or_null("/root/NetworkManager")
 	if not net_mgr:
 		net_mgr = get_tree().get_first_node_in_group("network_manager")
@@ -21,26 +29,16 @@ func _ready() -> void:
 		net_mgr.chat_message_received.connect(_on_chat_message_received)
 		
 	toggle_btn.pressed.connect(toggle_chat)
+	if close_btn:
+		close_btn.pressed.connect(close_chat)
 	send_btn.pressed.connect(_on_send_pressed)
 	message_input.text_submitted.connect(func(_t): _on_send_pressed())
 	
-	# Inicialmente el chat está cerrado para no estorbar
+	# Inicialmente cerrado
 	chat_panel.visible = false
 	_update_toggle_btn()
 	
-	# Mensaje de bienvenida familiar
-	add_chat_entry("Sistema", "¡Bienvenidos a la Granja Familiar! Usa este chat para hablar.", Color(0.9, 0.8, 0.4))
-
-func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventKey and event.is_pressed() and not event.is_echo():
-		if event.physical_keycode == KEY_T or event.physical_keycode == KEY_ENTER:
-			if not is_chat_open:
-				open_chat()
-				message_input.grab_focus()
-				get_viewport().set_input_as_handled()
-			elif event.physical_keycode == KEY_ESCAPE:
-				close_chat()
-				get_viewport().set_input_as_handled()
+	add_chat_entry("Sistema", "¡Bienvenidos a la Granja! Toca 'Chat' para hablar.", Color(0.9, 0.8, 0.4))
 
 func toggle_chat() -> void:
 	if is_chat_open:
@@ -53,7 +51,6 @@ func open_chat() -> void:
 	chat_panel.visible = true
 	unread_count = 0
 	_update_toggle_btn()
-	message_input.grab_focus()
 
 func close_chat() -> void:
 	is_chat_open = false
@@ -63,10 +60,10 @@ func close_chat() -> void:
 
 func _update_toggle_btn() -> void:
 	if unread_count > 0 and not is_chat_open:
-		toggle_btn.text = "💬 Chat (%d)" % unread_count
-		toggle_btn.modulate = Color(1.2, 1.1, 0.5)
+		toggle_btn.text = "Chat (%d)" % unread_count
+		toggle_btn.modulate = Color(1.3, 1.2, 0.5)
 	else:
-		toggle_btn.text = "💬 Chat"
+		toggle_btn.text = "Chat"
 		toggle_btn.modulate = Color(1.0, 1.0, 1.0)
 
 func _on_send_pressed() -> void:
@@ -75,10 +72,11 @@ func _on_send_pressed() -> void:
 		return
 		
 	message_input.text = ""
+	message_input.release_focus()
+	
 	if net_mgr and net_mgr.has_method("send_chat_message"):
 		net_mgr.send_chat_message(text)
 	else:
-		# Modo local / solitario
 		var my_name = "Tú"
 		if net_mgr and "player_name" in net_mgr and not net_mgr.player_name.is_empty():
 			my_name = net_mgr.player_name
@@ -105,7 +103,7 @@ func add_chat_entry(sender: String, message: String, color: Color) -> void:
 	lbl.bbcode_enabled = true
 	lbl.scroll_active = false
 	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	lbl.add_theme_font_size_override("normal_font_size", 9)
+	lbl.add_theme_font_size_override("normal_font_size", 8)
 	
 	var col_hex = color.to_html(false)
 	lbl.text = "[color=#%s][b]%s:[/b][/color] %s" % [col_hex, sender, message]
@@ -117,7 +115,6 @@ func add_chat_entry(sender: String, message: String, color: Color) -> void:
 		messages_box.remove_child(first)
 		first.queue_free()
 		
-	# Auto-scroll al final
 	await get_tree().process_frame
 	var scroll = $ChatContainer/ChatPanel/Margin/VBox/MessagesScroll
 	if scroll:

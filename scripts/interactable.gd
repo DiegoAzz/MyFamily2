@@ -25,13 +25,14 @@ func _create_prompt_label() -> void:
 	prompt_label.text = prompt_message
 	prompt_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	prompt_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	prompt_label.position = Vector2(-50, -28)
-	prompt_label.size = Vector2(100, 20)
+	prompt_label.position = Vector2(-25, -20)
+	prompt_label.size = Vector2(100, 16)
+	prompt_label.scale = Vector2(0.5, 0.5)
+	prompt_label.pivot_offset = Vector2(50, 8)
 	
-	# Estilo sutil de bocadillo
-	prompt_label.add_theme_font_size_override("font_size", 10)
+	prompt_label.add_theme_font_size_override("font_size", 8)
 	prompt_label.add_theme_color_override("font_color", Color(1.0, 0.95, 0.8))
-	prompt_label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.8))
+	prompt_label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.85))
 	prompt_label.add_theme_constant_override("shadow_offset_y", 1)
 	prompt_label.visible = false
 	add_child(prompt_label)

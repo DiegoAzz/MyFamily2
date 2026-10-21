@@ -226,6 +226,34 @@ func _handle_message(data: Dictionary) -> void:
 				for d in get_tree().get_nodes_in_group("diamonds"):
 					if "diamond_id" in d and d.diamond_id == did and not d.is_collected:
 						d.collect(null)
+						
+		"player_hit":
+			var target_id = str(data.get("target_id", ""))
+			var from_x = float(data.get("from_x", 0))
+			var from_y = float(data.get("from_y", 0))
+			var dmg = int(data.get("damage", 1))
+			var from_pos = Vector2(from_x, from_y)
+			
+			if target_id == my_client_id:
+				for p in get_tree().get_nodes_in_group("player"):
+					if is_instance_valid(p) and p.has_method("take_damage"):
+						p.take_damage(dmg, from_pos)
+			elif target_id in remote_players and is_instance_valid(remote_players[target_id]):
+				remote_players[target_id].take_hit(dmg, from_pos)
+
+func send_player_hit(target_id: String, damage: int, from_pos: Vector2) -> void:
+	if not is_multiplayer_active or target_id.is_empty():
+		return
+	if is_connected_to_server and socket.get_ready_state() == WebSocketPeer.STATE_OPEN:
+		var packet = {
+			"type": "player_hit",
+			"target_id": target_id,
+			"from_id": my_client_id,
+			"from_x": round(from_pos.x),
+			"from_y": round(from_pos.y),
+			"damage": damage
+		}
+		socket.send_text(JSON.stringify(packet))
 
 func send_chat_message(text: String) -> void:
 	var clean_text = text.strip_edges()
@@ -278,6 +306,7 @@ func _handle_player_state(data: Dictionary) -> void:
 		remote.name = "Remote_" + sender_id
 		world_entities.add_child(remote)
 		remote.global_position = Vector2(data.get("x", 0), data.get("y", 0))
+		remote.client_id = sender_id
 		if remote.has_method("update_name_and_skin"):
 			remote.update_name_and_skin(sender_name, sender_skin)
 		remote_players[sender_id] = remote

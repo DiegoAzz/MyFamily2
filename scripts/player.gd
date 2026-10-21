@@ -208,10 +208,23 @@ func start_attack() -> void:
 		Direction.LEFT: hit_offset = Vector2(-16, 0)
 	var attack_pos = global_position + hit_offset
 	
+	# 1. Detectar monstruos frente al jugador y aplicar daño
 	for enemy in get_tree().get_nodes_in_group("enemies"):
 		if is_instance_valid(enemy) and enemy.has_method("take_hit"):
 			if enemy.global_position.distance_to(attack_pos) <= 26.0 or enemy.global_position.distance_to(global_position) <= 20.0:
 				enemy.take_hit(1, global_position)
+
+	# 2. PvP: Detectar a otros jugadores conectados (RemotePlayer) y aplicar daño
+	var net_mgr = get_node_or_null("/root/NetworkManager")
+	for remote_p in get_tree().get_nodes_in_group("remote_players"):
+		if is_instance_valid(remote_p):
+			var dist = remote_p.global_position.distance_to(attack_pos)
+			if dist <= 28.0 or remote_p.global_position.distance_to(global_position) <= 22.0:
+				if remote_p.has_method("take_hit"):
+					remote_p.take_hit(1, global_position)
+				if net_mgr and "is_multiplayer_active" in net_mgr and net_mgr.is_multiplayer_active:
+					if "client_id" in remote_p and not remote_p.client_id.is_empty():
+						net_mgr.send_player_hit(remote_p.client_id, 1, global_position)
 
 func take_damage(amount: int, from_pos: Vector2) -> void:
 	if is_invulnerable or current_health <= 0:
