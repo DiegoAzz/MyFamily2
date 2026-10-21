@@ -13,6 +13,7 @@ var my_client_id: String = ""
 var current_room_code: String = ""
 var is_multiplayer_active: bool = false
 var is_host: bool = false
+var last_joined_code: String = ""
 
 enum PendingAction { NONE, CREATE, JOIN }
 var pending_action: PendingAction = PendingAction.NONE
@@ -31,6 +32,7 @@ const FRIENDLY_CODES = [
 
 func _ready() -> void:
 	my_client_id = str(randi() % 90000 + 10000)
+	load_game_state()
 
 func generate_code() -> String:
 	return FRIENDLY_CODES[randi() % FRIENDLY_CODES.size()]
@@ -57,13 +59,15 @@ func connect_to_relay() -> void:
 		connection_status_changed.emit("Error al iniciar conexión: %s" % error_string(err))
 		room_error.emit("No se pudo iniciar la conexión: " + error_string(err))
 
-func create_room() -> void:
-	# Generar el código inmediatamente para que el jugador NUNCA vea la pantalla vacía
-	if current_room_code.is_empty():
+func create_room(force_new: bool = false) -> void:
+	# Si ya tenemos un código persistente y no estamos forzando uno nuevo, conservarlo
+	if force_new or current_room_code.is_empty():
 		current_room_code = generate_code()
+		
 	is_multiplayer_active = true
 	is_host = true
 	pending_action = PendingAction.CREATE
+	save_game_state()
 	
 	if socket.get_ready_state() == WebSocketPeer.STATE_OPEN:
 		_send_create_room()
@@ -74,6 +78,9 @@ func join_room(code: String) -> void:
 	pending_action = PendingAction.JOIN
 	pending_join_code = code.to_upper().strip_edges()
 	current_room_code = pending_join_code
+	last_joined_code = pending_join_code
+	is_host = false
+	save_game_state()
 	
 	if socket.get_ready_state() == WebSocketPeer.STATE_OPEN:
 		_send_join_room()
@@ -91,10 +98,16 @@ func retry_connection() -> void:
 
 func start_solo_mode() -> void:
 	is_multiplayer_active = false
-	current_room_code = ""
 	is_host = false
 	pending_action = PendingAction.NONE
-	disconnect_network()
+	save_game_state()
+	# En solitario desconectamos red
+	socket.close()
+	is_connected_to_server = false
+	for id in remote_players.keys():
+		if is_instance_valid(remote_players[id]):
+			remote_players[id].queue_free()
+	remote_players.clear()
 
 func _send_create_room() -> void:
 	pending_action = PendingAction.NONE
@@ -163,6 +176,7 @@ func _handle_message(data: Dictionary) -> void:
 			current_room_code = str(data.get("code", current_room_code))
 			is_multiplayer_active = true
 			is_host = true
+			save_game_state()
 			room_created.emit(current_room_code)
 			connection_status_changed.emit("¡Sala lista en línea! Código: " + current_room_code)
 			
@@ -170,6 +184,7 @@ func _handle_message(data: Dictionary) -> void:
 			current_room_code = str(data.get("code", current_room_code))
 			is_multiplayer_active = true
 			is_host = false
+			save_game_state()
 			room_joined.emit(current_room_code)
 			connection_status_changed.emit("¡Te has unido a la sala: " + current_room_code + "!")
 			
@@ -241,11 +256,46 @@ func _remove_remote_player(client_id: String) -> void:
 			remote_players[client_id].queue_free()
 		remote_players.erase(client_id)
 
-func disconnect_network() -> void:
+func leave_room_and_reset() -> void:
 	socket.close()
 	is_connected_to_server = false
 	current_room_code = ""
+	is_multiplayer_active = false
+	is_host = false
+	pending_action = PendingAction.NONE
+	save_game_state()
 	for id in remote_players.keys():
 		if is_instance_valid(remote_players[id]):
 			remote_players[id].queue_free()
 	remote_players.clear()
+
+# ================= PERSISTENCIA LOCAL (user://savegame.json) =================
+func save_game_state(pos: Vector2 = Vector2.ZERO) -> void:
+	var save_dict = {
+		"room_code": current_room_code,
+		"is_host": is_host,
+		"is_multiplayer": is_multiplayer_active,
+		"last_joined_code": last_joined_code,
+		"pos_x": pos.x if pos != Vector2.ZERO else 0.0,
+		"pos_y": pos.y if pos != Vector2.ZERO else 15.0
+	}
+	var file = FileAccess.open("user://savegame.json", FileAccess.WRITE)
+	if file:
+		file.store_string(JSON.stringify(save_dict))
+		file.close()
+
+func load_game_state() -> Dictionary:
+	if not FileAccess.file_exists("user://savegame.json"):
+		return {}
+	var file = FileAccess.open("user://savegame.json", FileAccess.READ)
+	if file:
+		var content = file.get_as_text()
+		file.close()
+		var data = JSON.parse_string(content)
+		if data and typeof(data) == TYPE_DICTIONARY:
+			current_room_code = str(data.get("room_code", ""))
+			is_host = bool(data.get("is_host", false))
+			is_multiplayer_active = bool(data.get("is_multiplayer", false))
+			last_joined_code = str(data.get("last_joined_code", ""))
+			return data
+	return {}

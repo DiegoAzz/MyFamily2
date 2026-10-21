@@ -180,29 +180,38 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 8
 
-[node name="SoloBtn" type="Button" parent="MainPanel/VBoxContainer"]
-custom_minimum_size = Vector2(0, 42)
+[node name="ResumeBtn" type="Button" parent="MainPanel/VBoxContainer"]
+visible = false
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 14
 theme_override_styles/normal = SubResource("StyleBoxFlat_green_btn")
+text = "Continuar en la Granja"
+
+[node name="SoloBtn" type="Button" parent="MainPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 38)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_styles/normal = SubResource("StyleBoxFlat_green_btn")
 text = "Jugar en Solitario"
 
 [node name="HostBtn" type="Button" parent="MainPanel/VBoxContainer"]
-custom_minimum_size = Vector2(0, 42)
+custom_minimum_size = Vector2(0, 38)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 13
 theme_override_styles/normal = SubResource("StyleBoxFlat_amber_btn")
 text = "Crear Sala Online"
 
 [node name="JoinMenuBtn" type="Button" parent="MainPanel/VBoxContainer"]
-custom_minimum_size = Vector2(0, 42)
+custom_minimum_size = Vector2(0, 38)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 13
 theme_override_styles/normal = SubResource("StyleBoxFlat_blue_btn")
 text = "Unirse con Código"
 
@@ -294,6 +303,14 @@ theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 14
 theme_override_styles/normal = SubResource("StyleBoxFlat_green_btn")
 text = "¡Entrar a la Granja!"
+
+[node name="NewCodeBtn" type="Button" parent="CreatePanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.25, 0.1, 1)
+theme_override_font_sizes/font_size = 10
+theme_override_styles/normal = SubResource("StyleBoxFlat_code_box")
+text = "Generar un Código Diferente"
 
 [node name="RetryBtn" type="Button" parent="CreatePanel/VBoxContainer"]
 visible = false

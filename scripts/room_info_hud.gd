@@ -19,8 +19,8 @@ func update_hud() -> void:
 
 func _on_menu_pressed() -> void:
 	var net_mgr = get_node_or_null("/root/NetworkManager")
-	if not net_mgr:
-		net_mgr = get_tree().get_first_node_in_group("network_manager")
-	if net_mgr and net_mgr.has_method("disconnect_network"):
-		net_mgr.disconnect_network()
+	var player = get_tree().get_first_node_in_group("player")
+	if net_mgr and player:
+		net_mgr.save_game_state(player.global_position)
+	# No destruimos la sala ni la conexión: se mantiene activa para que al pulsar 'Continuar' no se pierda nada
 	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")

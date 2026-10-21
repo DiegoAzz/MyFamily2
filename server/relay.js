@@ -1,19 +1,33 @@
+const http = require('http');
 const { WebSocketServer } = require('ws');
 
-// El servidor interno WebSocket relay SIEMPRE escucha en 127.0.0.1:8080.
-// NOTA IMPORTANTE: Coolify define la variable de entorno PORT=3000 para Nginx.
-// Por lo tanto, NUNCA debemos usar process.env.PORT aquí, sino fijar el puerto 8080
-// para que Nginx pueda hacer proxy_pass http://127.0.0.1:8080 sin conflictos.
 const RELAY_PORT = 8080;
-const wss = new WebSocketServer({ host: '127.0.0.1', port: RELAY_PORT });
 
-console.log(`[MyFamily Relay] WebSocket Server running on 127.0.0.1:${RELAY_PORT}`);
+// Servidor HTTP base para responder a comprobaciones y alojar WebSockets
+const server = http.createServer((req, res) => {
+    res.writeHead(200, { 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+    });
+    res.end(JSON.stringify({ 
+        status: 'ok', 
+        service: 'MyFamily Relay Server',
+        activeRooms: rooms.size,
+        totalClients: wss.clients.size 
+    }));
+});
+
+const wss = new WebSocketServer({ server });
+
+server.listen(RELAY_PORT, '0.0.0.0', () => {
+    console.log(`[MyFamily Relay] Servidor HTTP y WebSocket activo en 0.0.0.0:${RELAY_PORT}`);
+});
 
 process.on('uncaughtException', (err) => {
-    console.error('[MyFamily Relay] Uncaught Exception:', err);
+    console.error('[MyFamily Relay] Error no capturado:', err.message);
 });
 process.on('unhandledRejection', (reason) => {
-    console.error('[MyFamily Relay] Unhandled Rejection:', reason);
+    console.error('[MyFamily Relay] Rechazo no manejado:', reason);
 });
 
 // Mapa de salas activas: roomCode -> Set<ws>
@@ -49,7 +63,7 @@ wss.on('connection', (ws, req) => {
     });
 
     const ip = req.socket.remoteAddress;
-    console.log(`[MyFamily Relay] Client connected from ${ip}. Total connections: ${wss.clients.size}`);
+    console.log(`[MyFamily Relay] Cliente conectado desde ${ip}. Conexiones totales: ${wss.clients.size}`);
 
     ws.on('message', (rawMessage) => {
         let msg;
@@ -77,7 +91,7 @@ wss.on('connection', (ws, req) => {
             }
             roomSet.add(ws);
 
-            console.log(`[MyFamily Relay] Room active: [${code}] by client ${ws.clientId}. Total in room: ${roomSet.size}`);
+            console.log(`[MyFamily Relay] Sala activa: [${code}] (Host: ${ws.clientId}). Jugadores en sala: ${roomSet.size}`);
 
             ws.send(JSON.stringify({
                 type: 'room_created',
@@ -94,7 +108,7 @@ wss.on('connection', (ws, req) => {
             if (!code || !rooms.has(code)) {
                 ws.send(JSON.stringify({
                     type: 'error',
-                    message: `La sala "${code}" no existe. Pídele el código a tu amigo.`
+                    message: `La sala "${code}" no existe. Pídele el código a tu amigo o crea una.`
                 }));
                 return;
             }
@@ -105,7 +119,7 @@ wss.on('connection', (ws, req) => {
             ws.isHost = false;
             roomSet.add(ws);
 
-            console.log(`[MyFamily Relay] Client ${ws.clientId} joined room [${code}]. Total in room: ${roomSet.size}`);
+            console.log(`[MyFamily Relay] Cliente ${ws.clientId} se unió a sala [${code}]. Total en sala: ${roomSet.size}`);
 
             // Responder al cliente que se unió
             ws.send(JSON.stringify({
@@ -141,7 +155,7 @@ wss.on('connection', (ws, req) => {
             return;
         }
 
-        // 4. OTROS EVENTOS
+        // 4. OTROS MENSAJES
         if (ws.roomCode && rooms.has(ws.roomCode)) {
             const roomSet = rooms.get(ws.roomCode);
             roomSet.forEach((client) => {
@@ -156,7 +170,7 @@ wss.on('connection', (ws, req) => {
         if (ws.roomCode && rooms.has(ws.roomCode)) {
             const roomSet = rooms.get(ws.roomCode);
             roomSet.delete(ws);
-            console.log(`[MyFamily Relay] Client ${ws.clientId} left room [${ws.roomCode}]. Remaining: ${roomSet.size}`);
+            console.log(`[MyFamily Relay] Cliente ${ws.clientId} salió de sala [${ws.roomCode}]. Quedan: ${roomSet.size}`);
 
             roomSet.forEach((client) => {
                 if (client.readyState === 1) {
@@ -170,13 +184,13 @@ wss.on('connection', (ws, req) => {
 
             if (roomSet.size === 0) {
                 rooms.delete(ws.roomCode);
-                console.log(`[MyFamily Relay] Room [${ws.roomCode}] deleted (empty).`);
+                console.log(`[MyFamily Relay] Sala [${ws.roomCode}] eliminada por estar vacía.`);
             }
         }
     });
 
     ws.on('error', (err) => {
-        console.error(`[MyFamily Relay] Client error:`, err.message);
+        console.error(`[MyFamily Relay] Error en socket:`, err.message);
     });
 });
 
@@ -189,7 +203,7 @@ const interval = setInterval(() => {
             ws.ping();
         });
     } catch (e) {
-        console.error('[MyFamily Relay] Heartbeat error:', e.message);
+        console.error('[MyFamily Relay] Error en heartbeat:', e.message);
     }
 }, 25000);
 

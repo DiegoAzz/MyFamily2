@@ -36,6 +36,15 @@ func _ready() -> void:
 		ev_enter.physical_keycode = KEY_ENTER
 		InputMap.action_add_event("interact", ev_enter)
 
+	# Restaurar posición persistente si existe
+	var net_mgr = get_node_or_null("/root/NetworkManager")
+	if net_mgr and net_mgr.has_method("load_game_state"):
+		var data = net_mgr.load_game_state()
+		if data.has("pos_x") and data.has("pos_y"):
+			var saved_p = Vector2(data["pos_x"], data["pos_y"])
+			if saved_p != Vector2.ZERO:
+				global_position = saved_p
+
 	update_animation(false)
 
 func _physics_process(delta: float) -> void:

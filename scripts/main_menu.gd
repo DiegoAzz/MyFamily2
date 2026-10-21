@@ -5,6 +5,7 @@ extends Control
 @onready var join_panel: Control = $JoinPanel
 
 # Botones del menú principal
+@onready var resume_btn: Button = $MainPanel/VBoxContainer/ResumeBtn
 @onready var solo_btn: Button = $MainPanel/VBoxContainer/SoloBtn
 @onready var host_btn: Button = $MainPanel/VBoxContainer/HostBtn
 @onready var join_menu_btn: Button = $MainPanel/VBoxContainer/JoinMenuBtn
@@ -15,6 +16,7 @@ extends Control
 @onready var copy_code_btn: Button = $CreatePanel/VBoxContainer/CodeContainer/CopyCodeBtn
 @onready var players_label: Label = $CreatePanel/VBoxContainer/PlayersLabel
 @onready var start_game_btn: Button = $CreatePanel/VBoxContainer/StartGameBtn
+@onready var new_code_btn: Button = $CreatePanel/VBoxContainer/NewCodeBtn
 @onready var retry_create_btn: Button = $CreatePanel/VBoxContainer/RetryBtn
 @onready var back_from_create_btn: Button = $CreatePanel/VBoxContainer/BackBtn
 
@@ -28,8 +30,6 @@ extends Control
 var net_mgr: Node = null
 
 func _ready() -> void:
-	show_main_panel()
-	
 	net_mgr = get_node_or_null("/root/NetworkManager")
 	if not net_mgr:
 		net_mgr = get_tree().get_first_node_in_group("network_manager")
@@ -41,12 +41,14 @@ func _ready() -> void:
 		net_mgr.player_joined_room.connect(_on_player_joined_room)
 		net_mgr.connection_status_changed.connect(_on_net_status_changed)
 		
+	resume_btn.pressed.connect(_on_enter_world)
 	solo_btn.pressed.connect(_on_solo_pressed)
 	host_btn.pressed.connect(_on_host_pressed)
 	join_menu_btn.pressed.connect(_on_join_menu_pressed)
 	
 	copy_code_btn.pressed.connect(_on_copy_code_pressed)
 	start_game_btn.pressed.connect(_on_enter_world)
+	new_code_btn.pressed.connect(_on_new_code_pressed)
 	retry_create_btn.pressed.connect(_on_retry_create_pressed)
 	back_from_create_btn.pressed.connect(_on_back_pressed)
 	
@@ -56,10 +58,19 @@ func _ready() -> void:
 	code_input.text_submitted.connect(func(_t): _on_confirm_join_pressed())
 	code_input.text_changed.connect(_on_code_input_changed)
 
+	show_main_panel()
+
 func show_main_panel() -> void:
 	main_panel.visible = true
 	create_panel.visible = false
 	join_panel.visible = false
+	
+	# Verificar si hay una partida persistente o activa para mostrar el botón de Continuar
+	if net_mgr and not net_mgr.current_room_code.is_empty():
+		resume_btn.text = "▶ Continuar Granja (Sala: " + net_mgr.current_room_code + ")"
+		resume_btn.visible = true
+	else:
+		resume_btn.visible = false
 
 func show_create_panel() -> void:
 	main_panel.visible = false
@@ -70,17 +81,28 @@ func show_create_panel() -> void:
 	
 	if net_mgr and not net_mgr.current_room_code.is_empty():
 		room_code_label.text = net_mgr.current_room_code
+		create_status_label.text = "Sala activa y persistente."
 	else:
-		room_code_label.text = "VALE"
+		if net_mgr:
+			net_mgr.create_room()
+		room_code_label.text = net_mgr.current_room_code if net_mgr else "VALE"
+		create_status_label.text = "Conectando al servidor en línea..."
 		
-	create_status_label.text = "Conectando al servidor en línea..."
-	players_label.text = "Jugadores en sala: Tú (Host)\nEsperando a tu amigo... (o pulsa abajo para entrar)"
+	players_label.text = "Jugadores en sala: Tú (Host)\nEsperando a tu amigo... (o entra ya a la granja)"
 
 func show_join_panel() -> void:
 	main_panel.visible = false
 	create_panel.visible = false
 	join_panel.visible = true
-	code_input.text = ""
+	
+	# Persistencia: Pre-rellenar con el último código usado si existe
+	if net_mgr and not net_mgr.last_joined_code.is_empty():
+		code_input.text = net_mgr.last_joined_code
+	elif net_mgr and not net_mgr.current_room_code.is_empty():
+		code_input.text = net_mgr.current_room_code
+	else:
+		code_input.text = ""
+		
 	join_status_label.text = "Introduce el código de 4 letras que te dio tu amigo"
 	confirm_join_btn.disabled = false
 	retry_join_btn.visible = false
@@ -92,15 +114,20 @@ func _on_solo_pressed() -> void:
 
 func _on_host_pressed() -> void:
 	if net_mgr:
-		net_mgr.create_room()
+		net_mgr.create_room(false)
 	show_create_panel()
+
+func _on_new_code_pressed() -> void:
+	if net_mgr:
+		net_mgr.create_room(true)
+		room_code_label.text = net_mgr.current_room_code
+		create_status_label.text = "Nuevo código generado. Conectando..."
 
 func _on_join_menu_pressed() -> void:
 	show_join_panel()
 
 func _on_back_pressed() -> void:
-	if net_mgr:
-		net_mgr.disconnect_network()
+	# Al volver al menú no destruimos la sala para permitir que persista
 	show_main_panel()
 
 func _on_retry_create_pressed() -> void:
@@ -144,7 +171,7 @@ func _on_code_input_changed(new_text: String) -> void:
 func _on_confirm_join_pressed() -> void:
 	var code = code_input.text.to_upper().strip_edges()
 	if code.length() < 3:
-		join_status_label.text = "El código debe tener al menos 3 o 4 letras (Ej: VALE)"
+		join_status_label.text = "El código debe tener al menos 3 o 4 letras (Ej: VALE o PATO)"
 		return
 	join_status_label.text = "Conectando y buscando la sala " + code + "..."
 	confirm_join_btn.disabled = true
