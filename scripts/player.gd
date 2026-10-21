@@ -103,10 +103,20 @@ func _physics_process(delta: float) -> void:
 		if net_mgr and "is_multiplayer_active" in net_mgr and net_mgr.is_multiplayer_active:
 			net_mgr.broadcast_my_state(global_position, anim_player.current_animation, sprite.flip_h)
 
+func is_chat_active() -> bool:
+	var chat = get_tree().get_first_node_in_group("chat_box")
+	if chat and "is_chat_open" in chat and chat.is_chat_open:
+		return true
+	return false
+
 func get_input_vector() -> Vector2:
-	# Si hay un diálogo abierto, congelar movimiento para que los niños puedan leer o cerrar
+	if is_dead:
+		return Vector2.ZERO
+	# Si hay un diálogo abierto o el chat está activo, congelar movimiento
 	var dialogue_box = get_tree().get_first_node_in_group("dialogue_box")
 	if dialogue_box and "is_active" in dialogue_box and dialogue_box.is_active:
+		return Vector2.ZERO
+	if is_chat_active():
 		return Vector2.ZERO
 
 	# 1. Teclado prioritario
@@ -175,9 +185,9 @@ func update_animation(is_moving: bool) -> void:
 			play_animation("walk_side" if is_moving else "idle_side")
 
 func check_attack_input() -> void:
-	# Si hay un diálogo abierto, no atacar
-	var dialogue_box = get_tree().get_first_node_in_group("dialogue_box")
 	if dialogue_box and "is_active" in dialogue_box and dialogue_box.is_active:
+		return
+	if is_chat_active():
 		return
 
 	# Atacar SOLAMENTE cuando se pulsa la tecla Espacio, J, o el botón dedicado ATK
@@ -186,6 +196,10 @@ func check_attack_input() -> void:
 		start_attack()
 
 func start_attack() -> void:
+	if is_dead or current_state == State.ATTACK:
+		return
+	if is_chat_active():
+		return
 	current_state = State.ATTACK
 	velocity = Vector2.ZERO
 	

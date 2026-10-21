@@ -4,6 +4,7 @@
 [ext_resource type="Script" path="res://scripts/touch_button.gd" id="2_button"]
 
 [node name="TouchControls" type="CanvasLayer" groups=["touch_controls"]]
+layer = 10
 
 [node name="HUD" type="Control" parent="."]
 layout_mode = 3

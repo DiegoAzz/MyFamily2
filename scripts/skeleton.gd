@@ -89,6 +89,11 @@ func die() -> void:
 		diam.global_position = global_position + Vector2(randf_range(-10, 10), randf_range(-10, 10))
 		get_parent().add_child(diam)
 		
+	# Avanzar misión de monstruos
+	var q_mgr = get_tree().get_first_node_in_group("quest_manager")
+	if q_mgr and q_mgr.has_method("add_progress"):
+		q_mgr.add_progress("monsters", 1)
+		
 	# Desvanecer
 	var tween = create_tween().set_parallel(true)
 	tween.tween_property(sprite, "scale", Vector2.ZERO, 0.3)

@@ -55,6 +55,11 @@ func collect(collector: Node2D = null) -> void:
 	# Mostrar número flotante
 	_spawn_floating_text("+1 Diamante!")
 	
+	# Avanzar misión de diamantes
+	var q_mgr = get_tree().get_first_node_in_group("quest_manager")
+	if q_mgr and q_mgr.has_method("add_progress"):
+		q_mgr.add_progress("diamonds", 1)
+	
 	# Sincronizar en red si multijugador está activo
 	var net_mgr = get_node_or_null("/root/NetworkManager")
 	if net_mgr and "is_multiplayer_active" in net_mgr and net_mgr.is_multiplayer_active:

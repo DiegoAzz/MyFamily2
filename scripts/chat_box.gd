@@ -14,6 +14,7 @@ var is_chat_open: bool = false
 const MAX_MESSAGES: int = 25
 
 func _ready() -> void:
+	add_to_group("chat_box")
 	# Desactivar foco de teclado en botones para que la barra espaciadora NUNCA active el chat
 	toggle_btn.focus_mode = Control.FOCUS_NONE
 	send_btn.focus_mode = Control.FOCUS_NONE
@@ -52,12 +53,25 @@ func open_chat() -> void:
 	chat_panel.visible = true
 	unread_count = 0
 	_update_toggle_btn()
+	message_input.grab_focus()
+	_set_gameplay_controls_active(false)
 
 func close_chat() -> void:
 	is_chat_open = false
 	chat_panel.visible = false
 	message_input.release_focus()
 	_update_toggle_btn()
+	_set_gameplay_controls_active(true)
+
+func _set_gameplay_controls_active(active: bool) -> void:
+	# Deshabilitar/ocultar todos los controles táctiles de combate y movimiento
+	var touch_ctrls = get_tree().get_first_node_in_group("touch_controls")
+	if touch_ctrls:
+		touch_ctrls.visible = active
+		if not active and touch_ctrls.has_node("HUD/VirtualJoystick"):
+			var joy = touch_ctrls.get_node("HUD/VirtualJoystick")
+			if joy and joy.has_method("_reset_stick"):
+				joy._reset_stick()
 
 func _update_toggle_btn() -> void:
 	if unread_count > 0 and not is_chat_open:

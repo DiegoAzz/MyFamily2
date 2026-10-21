@@ -68,7 +68,7 @@ corner_radius_bottom_left = 3
 [sub_resource type="Theme" id="Theme_chat"]
 
 [node name="ChatBox" type="CanvasLayer"]
-layer = 6
+layer = 25
 script = ExtResource("1_script")
 
 [node name="ChatContainer" type="Control" parent="."]

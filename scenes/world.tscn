@@ -29,6 +29,18 @@
 [ext_resource type="PackedScene" path="res://scenes/tree_choppable.tscn" id="28_choppable_tree"]
 [ext_resource type="Script" path="res://scripts/house_door.gd" id="29_house_door"]
 [ext_resource type="Script" path="res://scripts/house_bed.gd" id="30_house_bed"]
+[ext_resource type="Texture2D" path="res://sprites/Interior/room_shadow_bg.png" id="31_shadow_bg"]
+[ext_resource type="Texture2D" path="res://sprites/Interior/floor_wood.png" id="32_floor_wood"]
+[ext_resource type="Texture2D" path="res://sprites/Interior/wall_cozy.png" id="33_wall_cozy"]
+[ext_resource type="Texture2D" path="res://sprites/Interior/furniture_bed.png" id="34_bed"]
+[ext_resource type="Texture2D" path="res://sprites/Interior/furniture_table.png" id="35_table"]
+[ext_resource type="Texture2D" path="res://sprites/Interior/furniture_fireplace.png" id="36_fireplace"]
+[ext_resource type="Texture2D" path="res://sprites/Interior/furniture_bookshelf.png" id="37_bookshelf"]
+[ext_resource type="Texture2D" path="res://sprites/Interior/furniture_rug.png" id="38_rug"]
+[ext_resource type="PackedScene" path="res://scenes/crop_plot.tscn" id="39_crop_plot"]
+[ext_resource type="PackedScene" path="res://scenes/quest_ui.tscn" id="40_quest_ui"]
+[ext_resource type="Script" path="res://scripts/quest_manager.gd" id="41_quest_mgr"]
+[ext_resource type="Texture2D" path="res://sprites/Crops/quest_board.png" id="42_quest_board_tex"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_interact_small"]
 radius = 20.0
@@ -182,12 +194,26 @@ shape = SubResource("RectangleShape2D_door_trigger")
 [node name="HouseInterior" type="Node2D" parent="Entities"]
 position = Vector2(0, -600)
 
+[node name="ShadowBackdrop" type="Sprite2D" parent="Entities/HouseInterior"]
+texture_repeat = 2
+position = Vector2(0, -10)
+texture = ExtResource("31_shadow_bg")
+region_enabled = true
+region_rect = Rect2(-300, -250, 600, 500)
+
 [node name="Floor" type="Sprite2D" parent="Entities/HouseInterior"]
 texture_repeat = 2
-position = Vector2(0, -5)
-texture = ExtResource("4_bridge")
+position = Vector2(0, -6)
+texture = ExtResource("32_floor_wood")
 region_enabled = true
-region_rect = Rect2(0, 0, 144, 100)
+region_rect = Rect2(0, 0, 160, 96)
+
+[node name="NorthWall" type="Sprite2D" parent="Entities/HouseInterior"]
+texture_repeat = 2
+position = Vector2(0, -58)
+texture = ExtResource("33_wall_cozy")
+region_enabled = true
+region_rect = Rect2(0, 0, 160, 48)
 
 [node name="InteriorWalls" type="StaticBody2D" parent="Entities/HouseInterior"]
 
@@ -204,58 +230,50 @@ position = Vector2(75, -5)
 shape = SubResource("RectangleShape2D_interior_wall_v")
 
 [node name="WallBottomLeft" type="CollisionShape2D" parent="Entities/HouseInterior/InteriorWalls"]
-position = Vector2(-44, 50)
+position = Vector2(-44, 45)
 shape = SubResource("RectangleShape2D_interior_wall_bottom")
 
 [node name="WallBottomRight" type="CollisionShape2D" parent="Entities/HouseInterior/InteriorWalls"]
-position = Vector2(44, 50)
+position = Vector2(44, 45)
 shape = SubResource("RectangleShape2D_interior_wall_bottom")
 
-[node name="WallBorderVisual" type="Line2D" parent="Entities/HouseInterior"]
-points = PackedVector2Array(-72, 45, -72, -55, 72, -55, 72, 45)
+[node name="WallFrameVisual" type="Line2D" parent="Entities/HouseInterior"]
+points = PackedVector2Array(-80, 40, -80, -82, 80, -82, 80, 40)
 width = 4.0
-default_color = Color(0.25, 0.18, 0.12, 1)
+default_color = Color(0.18, 0.1, 0.04, 1)
 
 [node name="Bed" type="Area2D" parent="Entities/HouseInterior"]
-position = Vector2(-48, -32)
+position = Vector2(-54, -28)
 script = ExtResource("30_house_bed")
 
 [node name="BedSprite" type="Sprite2D" parent="Entities/HouseInterior/Bed"]
-texture = ExtResource("11_decor")
-region_enabled = true
-region_rect = Rect2(48, 48, 16, 16)
-scale = Vector2(1.5, 1.8)
+texture = ExtResource("34_bed")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/HouseInterior/Bed"]
 shape = SubResource("RectangleShape2D_bed_shape")
 
-[node name="Table" type="Sprite2D" parent="Entities/HouseInterior"]
-position = Vector2(0, -32)
-texture = ExtResource("11_decor")
-region_enabled = true
-region_rect = Rect2(48, 64, 16, 16)
-scale = Vector2(1.2, 1.2)
+[node name="Bookshelf" type="Sprite2D" parent="Entities/HouseInterior"]
+position = Vector2(-22, -44)
+texture = ExtResource("37_bookshelf")
 
-[node name="Lamp" type="Sprite2D" parent="Entities/HouseInterior"]
-position = Vector2(0, -42)
-texture = ExtResource("11_decor")
-region_enabled = true
-region_rect = Rect2(16, 32, 16, 16)
+[node name="Fireplace" type="Sprite2D" parent="Entities/HouseInterior"]
+position = Vector2(16, -44)
+texture = ExtResource("36_fireplace")
 
 [node name="Chest" type="Sprite2D" parent="Entities/HouseInterior"]
-position = Vector2(48, -35)
+position = Vector2(56, -46)
 texture = ExtResource("9_chest")
 
+[node name="Table" type="Sprite2D" parent="Entities/HouseInterior"]
+position = Vector2(-16, 6)
+texture = ExtResource("35_table")
+
 [node name="Rug" type="Sprite2D" parent="Entities/HouseInterior"]
-position = Vector2(0, 30)
-texture = ExtResource("11_decor")
-region_enabled = true
-region_rect = Rect2(0, 48, 16, 16)
-scale = Vector2(1.8, 1.2)
-modulate = Color(1.2, 0.8, 0.7, 1)
+position = Vector2(26, 8)
+texture = ExtResource("38_rug")
 
 [node name="HouseDoorExit" type="Area2D" parent="Entities/HouseInterior"]
-position = Vector2(0, 48)
+position = Vector2(0, 44)
 script = ExtResource("29_house_door")
 target_position = Vector2(0, -42)
 transition_message = "🌾 Saliendo a la Granja"
@@ -391,59 +409,35 @@ texture = ExtResource("11_decor")
 region_enabled = true
 region_rect = Rect2(48, 48, 16, 16)
 
-[node name="Pumpkin1" type="Sprite2D" parent="Entities"]
-position = Vector2(-170, -15)
-texture = ExtResource("11_decor")
-region_enabled = true
-region_rect = Rect2(0, 80, 16, 16)
+[node name="CropPlot1" parent="Entities" instance=ExtResource("39_crop_plot")]
+position = Vector2(-170, -10)
+plot_id = "plot_carrot_1"
+crop_type = 0
 
-[node name="Pumpkin2" type="Sprite2D" parent="Entities"]
-position = Vector2(-155, -15)
-texture = ExtResource("11_decor")
-region_enabled = true
-region_rect = Rect2(16, 80, 16, 16)
+[node name="CropPlot2" parent="Entities" instance=ExtResource("39_crop_plot")]
+position = Vector2(-150, -10)
+plot_id = "plot_carrot_2"
+crop_type = 0
 
-[node name="Pumpkin3" type="Sprite2D" parent="Entities"]
-position = Vector2(-140, -15)
-texture = ExtResource("11_decor")
-region_enabled = true
-region_rect = Rect2(0, 80, 16, 16)
+[node name="CropPlot3" parent="Entities" instance=ExtResource("39_crop_plot")]
+position = Vector2(-130, -10)
+plot_id = "plot_pump_1"
+crop_type = 1
 
-[node name="Carrot1" type="Sprite2D" parent="Entities"]
-position = Vector2(-170, 0)
-texture = ExtResource("11_decor")
-region_enabled = true
-region_rect = Rect2(32, 80, 16, 16)
-
-[node name="Carrot2" type="Sprite2D" parent="Entities"]
-position = Vector2(-155, 0)
-texture = ExtResource("11_decor")
-region_enabled = true
-region_rect = Rect2(32, 80, 16, 16)
-
-[node name="Carrot3" type="Sprite2D" parent="Entities"]
-position = Vector2(-140, 0)
-texture = ExtResource("11_decor")
-region_enabled = true
-region_rect = Rect2(32, 80, 16, 16)
-
-[node name="Wheat1" type="Sprite2D" parent="Entities"]
+[node name="CropPlot4" parent="Entities" instance=ExtResource("39_crop_plot")]
 position = Vector2(-170, 15)
-texture = ExtResource("11_decor")
-region_enabled = true
-region_rect = Rect2(48, 80, 16, 16)
+plot_id = "plot_pump_2"
+crop_type = 1
 
-[node name="Wheat2" type="Sprite2D" parent="Entities"]
-position = Vector2(-155, 15)
-texture = ExtResource("11_decor")
-region_enabled = true
-region_rect = Rect2(48, 80, 16, 16)
+[node name="CropPlot5" parent="Entities" instance=ExtResource("39_crop_plot")]
+position = Vector2(-150, 15)
+plot_id = "plot_straw_1"
+crop_type = 2
 
-[node name="Wheat3" type="Sprite2D" parent="Entities"]
-position = Vector2(-140, 15)
-texture = ExtResource("11_decor")
-region_enabled = true
-region_rect = Rect2(48, 80, 16, 16)
+[node name="CropPlot6" parent="Entities" instance=ExtResource("39_crop_plot")]
+position = Vector2(-130, 15)
+plot_id = "plot_straw_2"
+crop_type = 2
 
 [node name="RiverRock1" type="Sprite2D" parent="Entities"]
 position = Vector2(220, -50)
@@ -704,9 +698,67 @@ diamond_id = "diam_corral_1"
 [node name="Player" parent="Entities" instance=ExtResource("16_player")]
 position = Vector2(0, 15)
 
+[node name="QuestBoard" type="Sprite2D" parent="Entities"]
+position = Vector2(25, -48)
+texture = ExtResource("42_quest_board_tex")
+
+[node name="Interactable" type="Area2D" parent="Entities/QuestBoard"]
+script = ExtResource("25_interact")
+prompt_message = "[ACT] Ver Misiones del Abuelo"
+speaker_name = "Tablón de Misiones del Valle"
+dialogue_lines = ["¡Bienvenido al Tablón de Misiones de Valle Esperanza!", "El Abuelo Mateo dejó 4 grandes metas para devolverle la vida al valle:", "1. Cosechar cultivos en el huerto.", "2. Talar madera para reparar las cabañas.", "3. Encontrar los diamantes mágicos.", "4. Derrotar a las criaturas del bosque.", "Toca el botón [📜 Misiones] en la parte superior para ver tu progreso en cualquier momento."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/QuestBoard/Interactable"]
+shape = SubResource("CircleShape2D_interact_small")
+
+[node name="FishermanCabin" type="StaticBody2D" parent="Entities"]
+position = Vector2(290, -45)
+scale = Vector2(0.8, 0.8)
+
+[node name="Sprite2D" type="Sprite2D" parent="Entities/FishermanCabin"]
+texture = ExtResource("6_house")
+modulate = Color(0.85, 0.9, 1.1, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/FishermanCabin"]
+position = Vector2(0, 20)
+shape = SubResource("RectangleShape2D_house_roof")
+
+[node name="FishermanDock" type="Sprite2D" parent="Entities"]
+position = Vector2(256, -30)
+texture = ExtResource("4_bridge")
+region_enabled = true
+region_rect = Rect2(0, 0, 48, 24)
+
+[node name="FishermanNPC" parent="Entities" instance=ExtResource("20_npc")]
+position = Vector2(256, -30)
+npc_name = "Tío Bruno (Pescador)"
+dialogue_lines = ["¡Ah, sobrinos! Qué alegría verlos de vuelta en el valle.", "El río está lleno de peces brillantes y los campos vuelven a florecer.", "Si necesitan descansar o recuperar fuerzas, ¡recuerden dormir en la cama de la cabaña!"]
+
+[node name="ForestCabin" type="StaticBody2D" parent="Entities"]
+position = Vector2(400, 70)
+scale = Vector2(0.85, 0.85)
+
+[node name="Sprite2D" type="Sprite2D" parent="Entities/ForestCabin"]
+texture = ExtResource("6_house")
+modulate = Color(1.1, 0.95, 0.8, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/ForestCabin"]
+position = Vector2(0, 20)
+shape = SubResource("RectangleShape2D_house_roof")
+
+[node name="RangerNPC" parent="Entities" instance=ExtResource("20_npc")]
+position = Vector2(370, 85)
+npc_name = "Elena (Guardabosques)"
+dialogue_lines = ["¡Cuidado al cruzar las profundidades del bosque!", "Los slimes verdes y esqueletos custodian los diamantes antiguos del valle.", "¡Usa tu espada con el botón [ATK] o la tecla Espacio para despejar los caminos!"]
+
+[node name="QuestManager" type="Node" parent="." groups=["quest_manager"]]
+script = ExtResource("41_quest_mgr")
+
 [node name="RoomInfoHUD" parent="." instance=ExtResource("23_room_hud")]
 
 [node name="ChatBox" parent="." instance=ExtResource("26_chat")]
+
+[node name="QuestUI" parent="." instance=ExtResource("40_quest_ui")]
 
 [node name="StardewHUD" parent="." instance=ExtResource("22_hud")]
 

@@ -123,6 +123,11 @@ func chop_down(from_pos: Vector2 = Vector2.ZERO) -> void:
 				if p.has_method("_update_hud"):
 					p._update_hud()
 					
+	# Avanzar progreso de la misión de madera
+	var q_mgr = get_tree().get_first_node_in_group("quest_manager")
+	if q_mgr and q_mgr.has_method("add_progress"):
+		q_mgr.add_progress("wood", 1)
+					
 	# 25% de probabilidad de soltar un diamante mágico del follaje
 	if randf() < 0.25:
 		var d = diamond_scene.instantiate()

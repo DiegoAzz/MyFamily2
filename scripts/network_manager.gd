@@ -268,6 +268,27 @@ func _handle_message(data: Dictionary) -> void:
 				for tree in get_tree().get_nodes_in_group("trees"):
 					if "tree_id" in tree and tree.tree_id == tid and not tree.is_chopped:
 						tree.chop_down()
+						
+		"crop_planted":
+			var pid = str(data.get("plot_id", ""))
+			var ctype = int(data.get("crop_type", 0))
+			for plot in get_tree().get_nodes_in_group("crop_plots"):
+				if "plot_id" in plot and plot.plot_id == pid:
+					plot.crop_type = ctype
+					plot.plant_crop(false)
+					
+		"crop_harvested":
+			var pid = str(data.get("plot_id", ""))
+			for plot in get_tree().get_nodes_in_group("crop_plots"):
+				if "plot_id" in plot and plot.plot_id == pid:
+					plot.harvest_crop(false)
+					
+		"quest_progress":
+			var qid = str(data.get("quest_id", ""))
+			var cur = int(data.get("current", 0))
+			var q_mgr = get_tree().get_first_node_in_group("quest_manager")
+			if q_mgr and q_mgr.has_method("set_progress_from_net"):
+				q_mgr.set_progress_from_net(qid, cur)
 
 func send_player_hit(target_id: String, damage: int, from_pos: Vector2) -> void:
 	if not is_multiplayer_active or target_id.is_empty():

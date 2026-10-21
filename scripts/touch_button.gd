@@ -61,6 +61,16 @@ func _set_pressed(val: bool) -> void:
 	if is_pressed:
 		Input.action_press(action_name)
 		pressed.emit()
+		if action_name == "attack":
+			var players = get_tree().get_nodes_in_group("player")
+			for p in players:
+				if is_instance_valid(p) and p.has_method("start_attack") and not p.is_chat_active():
+					p.start_attack()
+		elif action_name == "interact":
+			for obj in get_tree().get_nodes_in_group("interactables"):
+				if is_instance_valid(obj) and obj.has_method("trigger_interaction"):
+					if "is_player_inside" in obj and obj.is_player_inside:
+						obj.trigger_interaction()
 	else:
 		Input.action_release(action_name)
 		released.emit()
