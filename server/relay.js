@@ -1,9 +1,20 @@
 const { WebSocketServer } = require('ws');
 
-const port = process.env.PORT || 8080;
-const wss = new WebSocketServer({ port: port });
+// El servidor interno WebSocket relay SIEMPRE escucha en 127.0.0.1:8080.
+// NOTA IMPORTANTE: Coolify define la variable de entorno PORT=3000 para Nginx.
+// Por lo tanto, NUNCA debemos usar process.env.PORT aquí, sino fijar el puerto 8080
+// para que Nginx pueda hacer proxy_pass http://127.0.0.1:8080 sin conflictos.
+const RELAY_PORT = 8080;
+const wss = new WebSocketServer({ host: '127.0.0.1', port: RELAY_PORT });
 
-console.log(`[MyFamily Relay] WebSocket Server running on port ${port}`);
+console.log(`[MyFamily Relay] WebSocket Server running on 127.0.0.1:${RELAY_PORT}`);
+
+process.on('uncaughtException', (err) => {
+    console.error('[MyFamily Relay] Uncaught Exception:', err);
+});
+process.on('unhandledRejection', (reason) => {
+    console.error('[MyFamily Relay] Unhandled Rejection:', reason);
+});
 
 // Mapa de salas activas: roomCode -> Set<ws>
 const rooms = new Map();
@@ -51,7 +62,7 @@ wss.on('connection', (ws, req) => {
 
         const type = msg.type;
 
-        // 1. CREAR SALA (HOST)
+        // 1. CREAR / REGISTRAR SALA (HOST)
         if (type === 'create_room') {
             const proposedCode = (msg.code || '').trim().toUpperCase();
             const code = proposedCode || generateRoomCode();
@@ -77,7 +88,7 @@ wss.on('connection', (ws, req) => {
             return;
         }
 
-        // 2. UNIRSE A SALA (GUEST)
+        // 2. UNIRSE A SALA (GUEST / AMIGO)
         if (type === 'join_room') {
             const code = (msg.code || '').trim().toUpperCase();
             if (!code || !rooms.has(code)) {
@@ -96,6 +107,7 @@ wss.on('connection', (ws, req) => {
 
             console.log(`[MyFamily Relay] Client ${ws.clientId} joined room [${code}]. Total in room: ${roomSet.size}`);
 
+            // Responder al cliente que se unió
             ws.send(JSON.stringify({
                 type: 'room_joined',
                 code: code,
@@ -103,7 +115,7 @@ wss.on('connection', (ws, req) => {
                 totalPlayers: roomSet.size
             }));
 
-            // Notificar a los demás en la sala
+            // Notificar a todos los demás en la sala
             roomSet.forEach((client) => {
                 if (client !== ws && client.readyState === 1) {
                     client.send(JSON.stringify({

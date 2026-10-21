@@ -36,7 +36,7 @@ func generate_code() -> String:
 	return FRIENDLY_CODES[randi() % FRIENDLY_CODES.size()]
 
 func get_relay_url() -> String:
-	var target_url = "wss://3pgipgqc7cmxhtxs92fqlcj2.179.236.70.251.sslip.io/ws"
+	var target_url = "wss://godot.appzplay.online/ws"
 	if OS.has_feature("web"):
 		var host = JavaScriptBridge.eval("window.location.host")
 		var proto = "wss://" if JavaScriptBridge.eval("window.location.protocol") == "https:" else "ws://"
