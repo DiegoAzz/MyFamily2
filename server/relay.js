@@ -8,9 +8,9 @@ console.log(`[MyFamily Relay] WebSocket Server running on port ${port}`);
 // Mapa de salas activas: roomCode -> Set<ws>
 const rooms = new Map();
 
-// Diccionario de palabras amigables para códigos fáciles de compartir (especialmente para niños y familias)
+// Diccionario de palabras amigables para códigos fáciles de compartir
 const WORDS = [
-    "CASA", "VALE", "LUNA", "SOLO", "RANA", "PATO", "GATO", "FLOR",
+    "VALE", "CASA", "LUNA", "SOLO", "RANA", "PATO", "GATO", "FLOR",
     "ARBO", "BOSQ", "ISLA", "MAYO", "AZUL", "ROJO", "VIDA", "AMOR",
     "PAZ", "ARTE", "RIOS", "LAGO", "CIEL", "FARO", "NUBE", "ESTA"
 ];
@@ -53,22 +53,26 @@ wss.on('connection', (ws, req) => {
 
         // 1. CREAR SALA (HOST)
         if (type === 'create_room') {
-            const code = generateRoomCode();
+            const proposedCode = (msg.code || '').trim().toUpperCase();
+            const code = proposedCode || generateRoomCode();
             ws.roomCode = code;
             ws.clientId = msg.clientId || String(Math.floor(Math.random() * 90000 + 10000));
             ws.isHost = true;
 
-            const roomSet = new Set();
+            let roomSet = rooms.get(code);
+            if (!roomSet) {
+                roomSet = new Set();
+                rooms.set(code, roomSet);
+            }
             roomSet.add(ws);
-            rooms.set(code, roomSet);
 
-            console.log(`[MyFamily Relay] Room created: [${code}] by client ${ws.clientId}`);
+            console.log(`[MyFamily Relay] Room active: [${code}] by client ${ws.clientId}. Total in room: ${roomSet.size}`);
 
             ws.send(JSON.stringify({
                 type: 'room_created',
                 code: code,
                 clientId: ws.clientId,
-                totalPlayers: 1
+                totalPlayers: roomSet.size
             }));
             return;
         }
@@ -92,7 +96,6 @@ wss.on('connection', (ws, req) => {
 
             console.log(`[MyFamily Relay] Client ${ws.clientId} joined room [${code}]. Total in room: ${roomSet.size}`);
 
-            // Responder al cliente que se unió
             ws.send(JSON.stringify({
                 type: 'room_joined',
                 code: code,
@@ -100,7 +103,7 @@ wss.on('connection', (ws, req) => {
                 totalPlayers: roomSet.size
             }));
 
-            // Notificar a todos los demás clientes en la sala
+            // Notificar a los demás en la sala
             roomSet.forEach((client) => {
                 if (client !== ws && client.readyState === 1) {
                     client.send(JSON.stringify({
@@ -113,8 +116,7 @@ wss.on('connection', (ws, req) => {
             return;
         }
 
-        // 3. SINCRONIZACIÓN DE ESTADO (movimiento, animación, dirección)
-        // Se envía ÚNICAMENTE a los demás jugadores de la misma sala
+        // 3. SINCRONIZACIÓN DE ESTADO (movimiento, posición, animación)
         if (type === 'state') {
             if (ws.roomCode && rooms.has(ws.roomCode)) {
                 const roomSet = rooms.get(ws.roomCode);
@@ -127,7 +129,7 @@ wss.on('connection', (ws, req) => {
             return;
         }
 
-        // Otros eventos de sala
+        // 4. OTROS EVENTOS
         if (ws.roomCode && rooms.has(ws.roomCode)) {
             const roomSet = rooms.get(ws.roomCode);
             roomSet.forEach((client) => {
@@ -166,13 +168,17 @@ wss.on('connection', (ws, req) => {
     });
 });
 
-// Heartbeat cada 25 segundos para mantener conexiones activas
+// Heartbeat seguro cada 25 segundos
 const interval = setInterval(() => {
-    wss.clients.forEach((ws) => {
-        if (ws.isAlive === false) return ws.terminate();
-        ws.isAlive = false;
-        ws.ping();
-    });
+    try {
+        wss.clients.forEach((ws) => {
+            if (ws.isAlive === false) return ws.terminate();
+            ws.isAlive = false;
+            ws.ping();
+        });
+    } catch (e) {
+        console.error('[MyFamily Relay] Heartbeat error:', e.message);
+    }
 }, 25000);
 
 wss.on('close', () => {

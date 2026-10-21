@@ -60,7 +60,7 @@ theme_override_constants/margin_bottom = 4
 layout_mode = 2
 theme_override_colors/font_color = Color(0.35, 0.18, 0.08, 1)
 theme_override_font_sizes/font_size = 11
-text = "🏠 Sala: VALE | 👥 En línea"
+text = "Sala: VALE | En línea"
 vertical_alignment = 1
 
 [node name="MenuBtn" type="Button" parent="Margin/HBoxContainer"]
@@ -70,4 +70,4 @@ theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 10
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_none")
-text = "🚪 Menú"
+text = "Menú"

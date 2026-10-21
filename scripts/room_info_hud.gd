@@ -13,9 +13,9 @@ func update_hud() -> void:
 		net_mgr = get_tree().get_first_node_in_group("network_manager")
 		
 	if net_mgr and "is_multiplayer_active" in net_mgr and net_mgr.is_multiplayer_active:
-		room_label.text = "🏠 Sala: " + str(net_mgr.current_room_code) + " | 👥 En línea"
+		room_label.text = "Sala: " + str(net_mgr.current_room_code) + " | En línea"
 	else:
-		room_label.text = "🌱 Modo Solitario"
+		room_label.text = "Modo Solitario"
 
 func _on_menu_pressed() -> void:
 	var net_mgr = get_node_or_null("/root/NetworkManager")

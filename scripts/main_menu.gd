@@ -11,16 +11,18 @@ extends Control
 
 # Elementos de Crear Sala
 @onready var create_status_label: Label = $CreatePanel/VBoxContainer/StatusLabel
-@onready var room_code_label: Label = $CreatePanel/VBoxContainer/CodeContainer/RoomCodeLabel
+@onready var room_code_label: Label = $CreatePanel/VBoxContainer/CodeContainer/CodePanel/RoomCodeLabel
 @onready var copy_code_btn: Button = $CreatePanel/VBoxContainer/CodeContainer/CopyCodeBtn
 @onready var players_label: Label = $CreatePanel/VBoxContainer/PlayersLabel
 @onready var start_game_btn: Button = $CreatePanel/VBoxContainer/StartGameBtn
+@onready var retry_create_btn: Button = $CreatePanel/VBoxContainer/RetryBtn
 @onready var back_from_create_btn: Button = $CreatePanel/VBoxContainer/BackBtn
 
 # Elementos de Unirse a Sala
 @onready var code_input: LineEdit = $JoinPanel/VBoxContainer/CodeInput
 @onready var confirm_join_btn: Button = $JoinPanel/VBoxContainer/ConfirmJoinBtn
 @onready var join_status_label: Label = $JoinPanel/VBoxContainer/StatusLabel
+@onready var retry_join_btn: Button = $JoinPanel/VBoxContainer/RetryBtn
 @onready var back_from_join_btn: Button = $JoinPanel/VBoxContainer/BackBtn
 
 var net_mgr: Node = null
@@ -45,9 +47,11 @@ func _ready() -> void:
 	
 	copy_code_btn.pressed.connect(_on_copy_code_pressed)
 	start_game_btn.pressed.connect(_on_enter_world)
+	retry_create_btn.pressed.connect(_on_retry_create_pressed)
 	back_from_create_btn.pressed.connect(_on_back_pressed)
 	
 	confirm_join_btn.pressed.connect(_on_confirm_join_pressed)
+	retry_join_btn.pressed.connect(_on_confirm_join_pressed)
 	back_from_join_btn.pressed.connect(_on_back_pressed)
 	code_input.text_submitted.connect(func(_t): _on_confirm_join_pressed())
 	code_input.text_changed.connect(_on_code_input_changed)
@@ -61,10 +65,16 @@ func show_create_panel() -> void:
 	main_panel.visible = false
 	create_panel.visible = true
 	join_panel.visible = false
-	room_code_label.text = "..."
-	create_status_label.text = "Conectando al servidor y generando código..."
-	players_label.text = "👥 Esperando código de sala..."
-	start_game_btn.disabled = true
+	retry_create_btn.visible = false
+	start_game_btn.disabled = false
+	
+	if net_mgr and not net_mgr.current_room_code.is_empty():
+		room_code_label.text = net_mgr.current_room_code
+	else:
+		room_code_label.text = "VALE"
+		
+	create_status_label.text = "Conectando al servidor en línea..."
+	players_label.text = "Jugadores en sala: Tú (Host)\nEsperando a tu amigo... (o pulsa abajo para entrar)"
 
 func show_join_panel() -> void:
 	main_panel.visible = false
@@ -73,6 +83,7 @@ func show_join_panel() -> void:
 	code_input.text = ""
 	join_status_label.text = "Introduce el código de 4 letras que te dio tu amigo"
 	confirm_join_btn.disabled = false
+	retry_join_btn.visible = false
 
 func _on_solo_pressed() -> void:
 	if net_mgr:
@@ -80,9 +91,9 @@ func _on_solo_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/world.tscn")
 
 func _on_host_pressed() -> void:
-	show_create_panel()
 	if net_mgr:
 		net_mgr.create_room()
+	show_create_panel()
 
 func _on_join_menu_pressed() -> void:
 	show_join_panel()
@@ -92,14 +103,21 @@ func _on_back_pressed() -> void:
 		net_mgr.disconnect_network()
 	show_main_panel()
 
+func _on_retry_create_pressed() -> void:
+	retry_create_btn.visible = false
+	create_status_label.text = "Reintentando conexión con el servidor..."
+	if net_mgr:
+		net_mgr.retry_connection()
+
 func _on_room_created(code: String) -> void:
 	room_code_label.text = code
-	create_status_label.text = "¡Sala creada con éxito!"
-	players_label.text = "👥 Jugadores en sala: Tú (Host)\nEsperando a tu amigo... (o pulsa abajo para entrar)"
+	create_status_label.text = "¡Sala lista en línea!"
+	players_label.text = "Jugadores en sala: Tú (Host)\nEsperando a tu amigo... (o entra ya a la granja)"
 	start_game_btn.disabled = false
+	retry_create_btn.visible = false
 
 func _on_player_joined_room(client_id: String) -> void:
-	players_label.text = "🎉 ¡Tu amigo (Jugador #" + client_id.substr(0, 3) + ") ha entrado a la sala!\n¡Ya pueden jugar juntos!"
+	players_label.text = "¡Tu amigo (Jugador #" + client_id.substr(0, 3) + ") ha entrado a la sala!\n¡Ya pueden jugar juntos!"
 	start_game_btn.disabled = false
 
 func _on_copy_code_pressed() -> void:
@@ -109,12 +127,12 @@ func _on_copy_code_pressed() -> void:
 	DisplayServer.clipboard_set(code)
 	if OS.has_feature("web"):
 		JavaScriptBridge.eval("navigator.clipboard.writeText('" + code + "');")
-	copy_code_btn.text = "✅ ¡Copiado!"
+	copy_code_btn.text = "¡Copiado!"
 	var tween = create_tween()
 	tween.tween_interval(2.0)
 	tween.tween_callback(func():
 		if is_instance_valid(copy_code_btn):
-			copy_code_btn.text = "📋 Copiar Código"
+			copy_code_btn.text = "Copiar Código"
 	)
 
 func _on_code_input_changed(new_text: String) -> void:
@@ -126,27 +144,32 @@ func _on_code_input_changed(new_text: String) -> void:
 func _on_confirm_join_pressed() -> void:
 	var code = code_input.text.to_upper().strip_edges()
 	if code.length() < 3:
-		join_status_label.text = "⚠️ El código debe tener al menos 3 o 4 letras (Ej: VALE)"
+		join_status_label.text = "El código debe tener al menos 3 o 4 letras (Ej: VALE)"
 		return
 	join_status_label.text = "Conectando y buscando la sala " + code + "..."
 	confirm_join_btn.disabled = true
+	retry_join_btn.visible = false
 	if net_mgr:
 		net_mgr.join_room(code)
 
 func _on_room_joined(code: String) -> void:
-	join_status_label.text = "✅ ¡Entraste a la sala " + code + "! Cargando la granja..."
+	join_status_label.text = "¡Entraste a la sala " + code + "! Cargando la granja..."
 	var timer = get_tree().create_timer(0.4)
 	timer.timeout.connect(_on_enter_world)
 
 func _on_room_error(msg: String) -> void:
 	confirm_join_btn.disabled = false
-	join_status_label.text = "❌ " + msg
-	create_status_label.text = "❌ " + msg
+	join_status_label.text = msg
+	create_status_label.text = msg
+	if create_panel.visible:
+		retry_create_btn.visible = true
+	if join_panel.visible:
+		retry_join_btn.visible = true
 
 func _on_net_status_changed(msg: String) -> void:
 	if join_panel.visible:
 		join_status_label.text = msg
-	elif create_panel.visible and room_code_label.text == "...":
+	elif create_panel.visible:
 		create_status_label.text = msg
 
 func _on_enter_world() -> void:

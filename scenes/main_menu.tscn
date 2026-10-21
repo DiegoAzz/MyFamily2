@@ -128,13 +128,13 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_card")
 [node name="Margin" type="MarginContainer" parent="Card"]
 layout_mode = 2
 theme_override_constants/margin_left = 18
-theme_override_constants/margin_top = 12
+theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 18
-theme_override_constants/margin_bottom = 12
+theme_override_constants/margin_bottom = 10
 
 [node name="ContentVBox" type="VBoxContainer" parent="Card/Margin"]
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 6
 
 [node name="HeaderBox" type="VBoxContainer" parent="Card/Margin/ContentVBox"]
 layout_mode = 2
@@ -146,7 +146,7 @@ theme_override_colors/font_color = Color(0.35, 0.18, 0.08, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.25)
 theme_override_constants/shadow_offset_y = 2
 theme_override_font_sizes/font_size = 22
-text = "🏡 MyFamily"
+text = "MyFamily"
 horizontal_alignment = 1
 
 [node name="SubtitleLabel" type="Label" parent="Card/Margin/ContentVBox/HeaderBox"]
@@ -188,7 +188,7 @@ layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 14
 theme_override_styles/normal = SubResource("StyleBoxFlat_green_btn")
-text = "🌱  Jugar en Solitario"
+text = "Jugar en Solitario"
 
 [node name="HostBtn" type="Button" parent="MainPanel/VBoxContainer"]
 custom_minimum_size = Vector2(0, 42)
@@ -196,7 +196,7 @@ layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 14
 theme_override_styles/normal = SubResource("StyleBoxFlat_amber_btn")
-text = "👑  Crear Sala (Invitar a un Amigo)"
+text = "Crear Sala Online"
 
 [node name="JoinMenuBtn" type="Button" parent="MainPanel/VBoxContainer"]
 custom_minimum_size = Vector2(0, 42)
@@ -204,13 +204,13 @@ layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 14
 theme_override_styles/normal = SubResource("StyleBoxFlat_blue_btn")
-text = "🤝  Unirse con Código de Amigo"
+text = "Unirse con Código"
 
 [node name="FooterLabel" type="Label" parent="MainPanel/VBoxContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.48, 0.32, 0.2, 1)
 theme_override_font_sizes/font_size = 10
-text = "✨ ¡Juega solo o comparte un código para explorar juntos!"
+text = "Juega solo o comparte un código para explorar juntos."
 horizontal_alignment = 1
 
 [node name="CreatePanel" type="Control" parent="."]
@@ -235,69 +235,82 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 7
 
 [node name="HeaderLabel" type="Label" parent="CreatePanel/VBoxContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.35, 0.18, 0.08, 1)
 theme_override_font_sizes/font_size = 12
-text = "👑 Sala Creada - Envía este código a tu amigo:"
+text = "Sala Creada - Envía este código a tu amigo:"
 horizontal_alignment = 1
 
 [node name="CodeContainer" type="HBoxContainer" parent="CreatePanel/VBoxContainer"]
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 12
 alignment = 1
 
-[node name="Panel" type="PanelContainer" parent="CreatePanel/VBoxContainer/CodeContainer"]
-custom_minimum_size = Vector2(160, 44)
+[node name="CodePanel" type="PanelContainer" parent="CreatePanel/VBoxContainer/CodeContainer"]
+custom_minimum_size = Vector2(170, 48)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_code_box")
 
-[node name="RoomCodeLabel" type="Label" parent="CreatePanel/VBoxContainer/CodeContainer"]
+[node name="RoomCodeLabel" type="Label" parent="CreatePanel/VBoxContainer/CodeContainer/CodePanel"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.8, 0.3, 0.05, 1)
-theme_override_font_sizes/font_size = 26
+size_flags_horizontal = 3
+size_flags_vertical = 1
+theme_override_colors/font_color = Color(0.85, 0.35, 0.08, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.2)
+theme_override_font_sizes/font_size = 28
 text = "VALE"
 horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="CopyCodeBtn" type="Button" parent="CreatePanel/VBoxContainer/CodeContainer"]
-custom_minimum_size = Vector2(140, 40)
+custom_minimum_size = Vector2(130, 48)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 12
 theme_override_styles/normal = SubResource("StyleBoxFlat_amber_btn")
-text = "📋 Copiar Código"
+text = "Copiar Código"
 
 [node name="StatusLabel" type="Label" parent="CreatePanel/VBoxContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.4, 0.25, 0.12, 1)
 theme_override_font_sizes/font_size = 10
-text = "¡Sala lista para jugar!"
+text = "Conectando al servidor en línea..."
 horizontal_alignment = 1
 
 [node name="PlayersLabel" type="Label" parent="CreatePanel/VBoxContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.2, 0.45, 0.2, 1)
 theme_override_font_sizes/font_size = 10
-text = "👥 Esperando a tu amigo..."
+text = "Esperando a tu amigo..."
 horizontal_alignment = 1
 
 [node name="StartGameBtn" type="Button" parent="CreatePanel/VBoxContainer"]
-custom_minimum_size = Vector2(0, 40)
+custom_minimum_size = Vector2(0, 38)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 14
 theme_override_styles/normal = SubResource("StyleBoxFlat_green_btn")
-text = "🚀 ¡Entrar a la Granja!"
+text = "¡Entrar a la Granja!"
 
-[node name="BackBtn" type="Button" parent="CreatePanel/VBoxContainer"]
+[node name="RetryBtn" type="Button" parent="CreatePanel/VBoxContainer"]
+visible = false
 custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 11
+theme_override_styles/normal = SubResource("StyleBoxFlat_amber_btn")
+text = "Reintentar Conexión"
+
+[node name="BackBtn" type="Button" parent="CreatePanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 11
 theme_override_styles/normal = SubResource("StyleBoxFlat_gray_btn")
-text = "⬅️ Volver"
+text = "Volver al Menú"
 
 [node name="JoinPanel" type="Control" parent="."]
 visible = false
@@ -321,13 +334,13 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 9
 
 [node name="HeaderLabel" type="Label" parent="JoinPanel/VBoxContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.35, 0.18, 0.08, 1)
 theme_override_font_sizes/font_size = 13
-text = "🤝 Unirse a la Granja de un Amigo"
+text = "Unirse a la Granja de un Amigo"
 horizontal_alignment = 1
 
 [node name="InstructionLabel" type="Label" parent="JoinPanel/VBoxContainer"]
@@ -349,12 +362,12 @@ alignment = 1
 max_length = 6
 
 [node name="ConfirmJoinBtn" type="Button" parent="JoinPanel/VBoxContainer"]
-custom_minimum_size = Vector2(0, 40)
+custom_minimum_size = Vector2(0, 38)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 14
 theme_override_styles/normal = SubResource("StyleBoxFlat_blue_btn")
-text = "🚀 ¡Entrar a la Sala!"
+text = "¡Entrar a la Sala!"
 
 [node name="StatusLabel" type="Label" parent="JoinPanel/VBoxContainer"]
 layout_mode = 2
@@ -363,10 +376,19 @@ theme_override_font_sizes/font_size = 10
 text = "Introduce el código que te dio tu amigo"
 horizontal_alignment = 1
 
-[node name="BackBtn" type="Button" parent="JoinPanel/VBoxContainer"]
+[node name="RetryBtn" type="Button" parent="JoinPanel/VBoxContainer"]
+visible = false
 custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 11
+theme_override_styles/normal = SubResource("StyleBoxFlat_amber_btn")
+text = "Reintentar Conexión"
+
+[node name="BackBtn" type="Button" parent="JoinPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 11
 theme_override_styles/normal = SubResource("StyleBoxFlat_gray_btn")
-text = "⬅️ Volver"
+text = "Volver al Menú"
