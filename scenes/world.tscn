@@ -126,8 +126,8 @@ region_enabled = true
 region_rect = Rect2(0, 0, 180, 16)
 
 [node name="Farmland" type="Sprite2D" parent="TerrainLayers"]
-position = Vector2(-155, 0)
-scale = Vector2(1.5, 1.5)
+position = Vector2(-150, 80)
+scale = Vector2(2.4, 1.8)
 texture = ExtResource("5_farmland")
 
 [node name="Bridge" type="Sprite2D" parent="TerrainLayers"]
@@ -185,7 +185,7 @@ shape = SubResource("RectangleShape2D_house_roof")
 position = Vector2(0, 22)
 script = ExtResource("29_house_door")
 target_position = Vector2(0, -565)
-transition_message = "🏠 Entrando a la Casa"
+transition_message = "Entrando a la Casa..."
 is_exit = false
 
 [node name="DoorShape" type="CollisionShape2D" parent="Entities/House/HouseDoorEntrance"]
@@ -276,7 +276,7 @@ texture = ExtResource("38_rug")
 position = Vector2(0, 44)
 script = ExtResource("29_house_door")
 target_position = Vector2(0, -42)
-transition_message = "🌾 Saliendo a la Granja"
+transition_message = "Saliendo a la Granja..."
 is_exit = true
 
 [node name="DoorShape" type="CollisionShape2D" parent="Entities/HouseInterior/HouseDoorExit"]
@@ -371,7 +371,7 @@ region_enabled = true
 region_rect = Rect2(32, 48, 16, 16)
 
 [node name="LampCrossroad" type="Sprite2D" parent="Entities"]
-position = Vector2(5, 5)
+position = Vector2(16, -5)
 texture = ExtResource("11_decor")
 region_enabled = true
 region_rect = Rect2(16, 32, 16, 16)
@@ -383,7 +383,7 @@ region_enabled = true
 region_rect = Rect2(16, 32, 16, 16)
 
 [node name="SignpostRoad" type="Sprite2D" parent="Entities"]
-position = Vector2(-15, 30)
+position = Vector2(-15, 36)
 texture = ExtResource("11_decor")
 region_enabled = true
 region_rect = Rect2(48, 32, 16, 16)
@@ -392,50 +392,38 @@ region_rect = Rect2(48, 32, 16, 16)
 script = ExtResource("25_interact")
 prompt_message = "[ACT] Leer Cartel"
 speaker_name = "Cartel de Caminos"
-dialogue_lines = ["<- Granja y Corral de Bessie", "-> Puente hacia el Bosque Profundo", "^ Casa de la Familia"]
+dialogue_lines = ["<- Corral de Animales", "v Huerto Familiar y Cosechas", "-> Puente hacia el Bosque", "^ Casa de la Familia"]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/SignpostRoad/Interactable"]
 shape = SubResource("CircleShape2D_interact_small")
 
-[node name="HayBale1" type="Sprite2D" parent="Entities"]
-position = Vector2(-120, -10)
-texture = ExtResource("11_decor")
-region_enabled = true
-region_rect = Rect2(48, 48, 16, 16)
-
-[node name="HayBale2" type="Sprite2D" parent="Entities"]
-position = Vector2(-120, 5)
-texture = ExtResource("11_decor")
-region_enabled = true
-region_rect = Rect2(48, 48, 16, 16)
-
 [node name="CropPlot1" parent="Entities" instance=ExtResource("39_crop_plot")]
-position = Vector2(-170, -10)
+position = Vector2(-180, 65)
 plot_id = "plot_carrot_1"
 crop_type = 0
 
 [node name="CropPlot2" parent="Entities" instance=ExtResource("39_crop_plot")]
-position = Vector2(-150, -10)
+position = Vector2(-150, 65)
 plot_id = "plot_carrot_2"
 crop_type = 0
 
 [node name="CropPlot3" parent="Entities" instance=ExtResource("39_crop_plot")]
-position = Vector2(-130, -10)
+position = Vector2(-120, 65)
 plot_id = "plot_pump_1"
 crop_type = 1
 
 [node name="CropPlot4" parent="Entities" instance=ExtResource("39_crop_plot")]
-position = Vector2(-170, 15)
+position = Vector2(-180, 95)
 plot_id = "plot_pump_2"
 crop_type = 1
 
 [node name="CropPlot5" parent="Entities" instance=ExtResource("39_crop_plot")]
-position = Vector2(-150, 15)
+position = Vector2(-150, 95)
 plot_id = "plot_straw_1"
 crop_type = 2
 
 [node name="CropPlot6" parent="Entities" instance=ExtResource("39_crop_plot")]
-position = Vector2(-130, 15)
+position = Vector2(-120, 95)
 plot_id = "plot_straw_2"
 crop_type = 2
 
@@ -585,7 +573,7 @@ position = Vector2(420, 110)
 tree_id = "tree_f8"
 
 [node name="Corral" type="Node2D" parent="Entities"]
-position = Vector2(-155, 5)
+position = Vector2(-155, -45)
 
 [node name="FenceTop" type="StaticBody2D" parent="Entities/Corral"]
 position = Vector2(0, -45)
@@ -630,7 +618,7 @@ vframes = 2
 script = ExtResource("25_interact")
 prompt_message = "[ACT] Acariciar"
 speaker_name = "Bessie la Vaca"
-dialogue_lines = ["¡Bessie muge alegremente y te da un cálido empujoncito! ❤️", "Produce leche fresca y deliciosa para toda la familia."]
+dialogue_lines = ["¡Bessie muge alegremente y te da un calido empujoncito!", "Produce leche fresca y deliciosa para toda la familia."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/Corral/Cow/Interactable"]
 shape = SubResource("CircleShape2D_interact_small")
@@ -692,7 +680,7 @@ position = Vector2(360, 80)
 diamond_id = "diam_forest_2"
 
 [node name="Diamond6" parent="Entities" instance=ExtResource("27_diamond")]
-position = Vector2(-110, 60)
+position = Vector2(-70, 75)
 diamond_id = "diam_corral_1"
 
 [node name="Player" parent="Entities" instance=ExtResource("16_player")]
@@ -705,8 +693,8 @@ texture = ExtResource("42_quest_board_tex")
 [node name="Interactable" type="Area2D" parent="Entities/QuestBoard"]
 script = ExtResource("25_interact")
 prompt_message = "[ACT] Ver Misiones del Abuelo"
-speaker_name = "Tablón de Misiones del Valle"
-dialogue_lines = ["¡Bienvenido al Tablón de Misiones de Valle Esperanza!", "El Abuelo Mateo dejó 4 grandes metas para devolverle la vida al valle:", "1. Cosechar cultivos en el huerto.", "2. Talar madera para reparar las cabañas.", "3. Encontrar los diamantes mágicos.", "4. Derrotar a las criaturas del bosque.", "Toca el botón [📜 Misiones] en la parte superior para ver tu progreso en cualquier momento."]
+speaker_name = "Tablon de Misiones"
+dialogue_lines = ["¡Bienvenido al Tablon de Misiones de Valle Esperanza!", "El Abuelo Mateo dejo 4 grandes metas para devolverle la vida al valle:", "1. Cosechar cultivos en el huerto.", "2. Talar madera para reparar las cabanas.", "3. Encontrar los diamantes magicos.", "4. Derrotar a las criaturas del bosque.", "Toca el boton [Misiones] en la parte superior para ver tu progreso en cualquier momento."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/QuestBoard/Interactable"]
 shape = SubResource("CircleShape2D_interact_small")

@@ -69,7 +69,7 @@ func _set_pressed(val: bool) -> void:
 		elif action_name == "interact":
 			for obj in get_tree().get_nodes_in_group("interactables"):
 				if is_instance_valid(obj) and obj.has_method("trigger_interaction"):
-					if "is_player_inside" in obj and obj.is_player_inside:
+					if ("is_player_in_range" in obj and obj.is_player_in_range) or ("is_player_inside" in obj and obj.is_player_inside):
 						obj.trigger_interaction()
 	else:
 		Input.action_release(action_name)

@@ -21,7 +21,7 @@ func _on_body_entered(body: Node2D) -> void:
 			if body.has_method("_update_hud"):
 				body._update_hud()
 			if body.has_method("spawn_floating_text"):
-				body.spawn_floating_text("💤 ¡Descansaste en cama! Vidas al máximo ❤️❤️❤️", Color(0.4, 1.0, 0.6))
+				body.spawn_floating_text("¡Descansaste en la cama! Vidas al maximo (3/3)", Color(0.4, 1.0, 0.6))
 		else:
 			if body.has_method("spawn_floating_text"):
-				body.spawn_floating_text("💤 La cama está muy cómoda y tibia", Color(0.9, 0.9, 0.5))
+				body.spawn_floating_text("La cama esta muy comoda y tibia", Color(0.9, 0.9, 0.5))

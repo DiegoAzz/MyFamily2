@@ -48,7 +48,7 @@ func _input(event: InputEvent) -> void:
 	if touch_index == -1:
 		return
 		
-	var global_center = global_position + (size / 2.0)
+	var global_center = get_global_transform_with_canvas().origin + (size / 2.0)
 	
 	if event is InputEventScreenDrag and event.index == touch_index:
 		_update_stick(event.position - global_center)

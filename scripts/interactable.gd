@@ -12,6 +12,7 @@ var is_player_in_range: bool = false
 var prompt_label: Label = null
 
 func _ready() -> void:
+	add_to_group("interactables")
 	collision_layer = 0
 	collision_mask = 1 # Capa del jugador
 	
@@ -42,7 +43,13 @@ func _process(_delta: float) -> void:
 		return
 		
 	# Chequear input de interacción (tecla E, Enter o botón táctil ACT)
-	if Input.is_action_just_pressed("interact") or Input.is_key_pressed(KEY_E) or Input.is_action_just_pressed("ui_select"):
+	var interact_pressed = false
+	if InputMap.has_action("interact") and Input.is_action_just_pressed("interact"):
+		interact_pressed = true
+	elif Input.is_key_pressed(KEY_E) or Input.is_action_just_pressed("ui_select"):
+		interact_pressed = true
+		
+	if interact_pressed:
 		trigger_interaction()
 
 func _on_body_entered(body: Node2D) -> void:

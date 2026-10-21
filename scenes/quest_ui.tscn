@@ -57,7 +57,7 @@ focus_mode = 0
 theme_override_colors/font_color = Color(1, 0.95, 0.82, 1)
 theme_override_font_sizes/font_size = 8
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
-text = "📜 Misiones"
+text = "Misiones"
 
 [node name="Panel" type="PanelContainer" parent="Margin"]
 visible = false
@@ -86,7 +86,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 0.9, 0.4, 1)
 theme_override_font_sizes/font_size = 10
-text = "📜 Legado de Valle Esperanza"
+text = "Misiones de Valle Esperanza"
 
 [node name="CloseBtn" type="Button" parent="Margin/Panel/Margin/VBox/Header"]
 custom_minimum_size = Vector2(16, 16)

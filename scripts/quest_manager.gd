@@ -7,7 +7,7 @@ signal all_quests_completed
 
 var quests: Dictionary = {
 	"crops": {
-		"title": "🌾 El Huerto Familiar",
+		"title": "El Huerto Familiar",
 		"desc": "Siembra y cosecha 4 cultivos en la tierra arada",
 		"current": 0,
 		"target": 4,
@@ -16,8 +16,8 @@ var quests: Dictionary = {
 		"completed": false
 	},
 	"wood": {
-		"title": "🪓 Madera para las Cabañas",
-		"desc": "Tala 3 árboles para reparar las cabañas del valle",
+		"title": "Madera para las Cabanas",
+		"desc": "Tala 3 arboles para reparar las cabanas del valle",
 		"current": 0,
 		"target": 3,
 		"reward_gold": 200,
@@ -25,8 +25,8 @@ var quests: Dictionary = {
 		"completed": false
 	},
 	"diamonds": {
-		"title": "💎 Los Tesoros del Valle",
-		"desc": "Encuentra y recoge 4 diamantes mágicos",
+		"title": "Los Tesoros del Valle",
+		"desc": "Encuentra y recoge 4 diamantes magicos",
 		"current": 0,
 		"target": 4,
 		"reward_gold": 300,
@@ -34,7 +34,7 @@ var quests: Dictionary = {
 		"completed": false
 	},
 	"monsters": {
-		"title": "⚔️ Guardianes del Río",
+		"title": "Guardianes del Bosque",
 		"desc": "Derrota 2 monstruos (Slimes o Esqueletos)",
 		"current": 0,
 		"target": 2,
@@ -97,7 +97,7 @@ func _complete_quest(quest_id: String) -> void:
 			if "score" in p:
 				p.score += q["reward_score"]
 			if p.has_method("spawn_floating_text"):
-				p.spawn_floating_text("🏆 ¡Misión cumplida: " + q["title"] + "! (+" + str(q["reward_gold"]) + " G)", Color(1.0, 0.9, 0.2))
+				p.spawn_floating_text("¡Mision cumplida: " + q["title"] + "! (+" + str(q["reward_gold"]) + " G)", Color(1.0, 0.9, 0.2))
 			if p.has_method("_update_hud"):
 				p._update_hud()
 				
@@ -111,4 +111,4 @@ func _complete_quest(quest_id: String) -> void:
 		all_quests_completed.emit()
 		for p in players:
 			if is_instance_valid(p) and p.has_method("spawn_floating_text"):
-				p.spawn_floating_text("👑 ¡VALLE ESPERANZA RESTAURADO! ¡El Legado del Abuelo triunfó!", Color(1.0, 0.95, 0.3))
+				p.spawn_floating_text("¡VALLE RESTAURADO! ¡El Legado del Abuelo triunfo!", Color(1.0, 0.95, 0.3))

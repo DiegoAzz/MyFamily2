@@ -41,11 +41,16 @@ func _process(delta: float) -> void:
 		if growth_timer <= 0.0:
 			current_state = State.MATURE
 			_update_visuals()
-			_spawn_floating_text("✨ ¡Cultivo listo para cosechar!", Color(1.0, 0.9, 0.4))
+			_spawn_floating_text("¡Cultivo listo para cosechar!", Color(1.0, 0.9, 0.4))
 			
 	# Interacción con teclado en PC cuando el jugador está encima
 	if is_player_inside:
-		if Input.is_action_just_pressed("interact") or Input.is_key_pressed(KEY_E):
+		var interact_pressed = false
+		if InputMap.has_action("interact") and Input.is_action_just_pressed("interact"):
+			interact_pressed = true
+		elif Input.is_key_pressed(KEY_E):
+			interact_pressed = true
+		if interact_pressed:
 			trigger_interaction()
 
 func _on_body_entered(body: Node2D) -> void:
@@ -64,7 +69,7 @@ func trigger_interaction() -> void:
 			plant_crop()
 		State.GROWING:
 			var remaining = int(ceil(growth_timer))
-			_spawn_floating_text("🌱 Creciendo... (" + str(remaining) + "s)", Color(0.6, 0.9, 0.5))
+			_spawn_floating_text("Creciendo... (" + str(remaining) + "s)", Color(0.6, 0.9, 0.5))
 		State.MATURE:
 			harvest_crop()
 
@@ -79,7 +84,7 @@ func plant_crop(notify_net: bool = true) -> void:
 			audio.play_chop()
 			
 	var c_name = _get_crop_name()
-	_spawn_floating_text("🌱 Sembraste " + c_name + "!", Color(0.5, 1.0, 0.5))
+	_spawn_floating_text("Sembraste " + c_name + "!", Color(0.5, 1.0, 0.5))
 	
 	if notify_net:
 		var net_mgr = get_node_or_null("/root/NetworkManager")
@@ -115,7 +120,7 @@ func harvest_crop(notify_net: bool = true) -> void:
 			score_gain = 70
 			
 	var c_name = _get_crop_name()
-	_spawn_floating_text("✨ ¡Cosechaste " + c_name + "! (+" + str(gold_gain) + " G)", Color(1.0, 0.88, 0.2))
+	_spawn_floating_text("¡Cosechaste " + c_name + "! (+" + str(gold_gain) + " G)", Color(1.0, 0.88, 0.2))
 	
 	# Aplicar recompensas al jugador
 	var players = get_tree().get_nodes_in_group("player")
@@ -176,7 +181,7 @@ func _show_prompt() -> void:
 		State.EMPTY:
 			prompt_label.text = "[ACT] Sembrar " + _get_crop_name()
 		State.GROWING:
-			prompt_label.text = "🌱 Creciendo..."
+			prompt_label.text = "Creciendo..."
 		State.MATURE:
 			prompt_label.text = "[ACT] Cosechar " + _get_crop_name()
 	prompt_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER

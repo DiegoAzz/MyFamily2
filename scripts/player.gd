@@ -22,6 +22,7 @@ var current_health: int = 3
 var diamonds: int = 0
 var score: int = 0
 var is_invulnerable: bool = false
+var is_dead: bool = false
 var respawn_point: Vector2 = Vector2(0, 15)
 
 const SKIN_COLORS = [
@@ -110,7 +111,7 @@ func is_chat_active() -> bool:
 	return false
 
 func get_input_vector() -> Vector2:
-	if is_dead:
+	if is_dead or not is_inside_tree():
 		return Vector2.ZERO
 	# Si hay un diálogo abierto o el chat está activo, congelar movimiento
 	var dialogue_box = get_tree().get_first_node_in_group("dialogue_box")
@@ -119,7 +120,11 @@ func get_input_vector() -> Vector2:
 	if is_chat_active():
 		return Vector2.ZERO
 
-	# 1. Teclado prioritario
+	# 1. Entrada por acciones estándar o teclado
+	var ui_vector = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
+	if ui_vector != Vector2.ZERO:
+		return ui_vector
+
 	var dir = Vector2.ZERO
 	if Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT):
 		dir.x -= 1.0
@@ -185,6 +190,7 @@ func update_animation(is_moving: bool) -> void:
 			play_animation("walk_side" if is_moving else "idle_side")
 
 func check_attack_input() -> void:
+	var dialogue_box = get_tree().get_first_node_in_group("dialogue_box")
 	if dialogue_box and "is_active" in dialogue_box and dialogue_box.is_active:
 		return
 	if is_chat_active():
@@ -192,7 +198,13 @@ func check_attack_input() -> void:
 
 	# Atacar SOLAMENTE cuando se pulsa la tecla Espacio, J, o el botón dedicado ATK
 	# NUNCA atacar por tocar cualquier parte de la pantalla o el joystick
-	if Input.is_action_just_pressed("attack"):
+	var atk_pressed = false
+	if InputMap.has_action("attack") and Input.is_action_just_pressed("attack"):
+		atk_pressed = true
+	elif Input.is_key_pressed(KEY_SPACE) or Input.is_key_pressed(KEY_J):
+		atk_pressed = true
+		
+	if atk_pressed:
 		start_attack()
 
 func start_attack() -> void:
@@ -295,6 +307,7 @@ func take_damage(amount: int, from_pos: Vector2) -> void:
 
 func die_and_respawn() -> void:
 	current_state = State.DEAD
+	is_dead = true
 	velocity = Vector2.ZERO
 	
 	# Mensaje flotante de caída
@@ -318,6 +331,7 @@ func die_and_respawn() -> void:
 		global_position = respawn_point
 		current_health = max_health
 		current_state = State.IDLE
+		is_dead = false
 		is_invulnerable = false
 		_update_hud()
 	)
