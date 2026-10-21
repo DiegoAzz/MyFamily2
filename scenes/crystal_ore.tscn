@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/crystal_ore.gd" id="1_script"]
-[ext_resource type="Texture2D" uid="uid://c5vxqghxebf5i" path="res://sprites/Items/diamond.png" id="2_diamond"]
+[ext_resource type="Texture2D" path="res://sprites/Items/diamond.png" id="2_diamond"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_crystal"]
 radius = 8.0

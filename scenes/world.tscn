@@ -436,7 +436,7 @@ script = ExtResource("45_level_portal")
 target_position = Vector2(0, 740)
 level_name = "NIVEL 2: LAS MINAS DE CRISTAL"
 level_subtitle = "Cavernas Subterraneas y Vetas de Gemas"
-portal_color = Color(0.3, 0.95, 1)
+portal_color = Color(0.3, 0.95, 1, 1)
 sound_type = "door"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/OverworldMineEntrance/MinePortal"]
