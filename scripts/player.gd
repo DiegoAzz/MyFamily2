@@ -189,23 +189,36 @@ func update_animation(is_moving: bool) -> void:
 			sprite.flip_h = true
 			play_animation("walk_side" if is_moving else "idle_side")
 
+func is_enemy_nearby(distance: float = 75.0) -> bool:
+	if not is_inside_tree():
+		return false
+	for enemy in get_tree().get_nodes_in_group("enemies"):
+		if is_instance_valid(enemy):
+			var alive = true
+			if "is_dead" in enemy and enemy.is_dead:
+				alive = false
+			elif "current_health" in enemy and enemy.current_health <= 0:
+				alive = false
+			if alive and global_position.distance_to(enemy.global_position) <= distance:
+				return true
+	return false
+
 func is_near_interactable_or_npc() -> bool:
 	if not is_inside_tree():
 		return false
-	# 1. Si hay un diálogo abierto, NUNCA atacar
+	# 1. Si hay un diálogo abierto, bloquear ataque para leer tranquilos
 	var dialogue_box = get_tree().get_first_node_in_group("dialogue_box")
 	if dialogue_box and "is_active" in dialogue_box and dialogue_box.is_active:
 		return true
 		
-	# 2. Si está en rango de algún objeto interactuable (cartel, vaca, cama, buzón, cofre, huerto, etc.)
-	for obj in get_tree().get_nodes_in_group("interactables"):
-		if is_instance_valid(obj):
-			if ("is_player_in_range" in obj and obj.is_player_in_range) or ("is_player_inside" in obj and obj.is_player_inside):
-				return true
-				
-	# 3. Si está cerca de algún NPC (Clara, Bruno, Elena, etc.) a menos de 45 píxeles
+	# 2. PRIORIDAD TOTAL AL COMBATE Y AUTODEFENSA:
+	# Si hay cualquier enemigo cerca (<= 75px), ¡SIEMPRE se puede atacar!
+	if is_enemy_nearby():
+		return false
+		
+	# 3. Solo bloquear ataque si está tocando a un NPC (<= 18px) y NO hay enemigos cerca
 	for npc in get_tree().get_nodes_in_group("npcs"):
-		if is_instance_valid(npc) and global_position.distance_to(npc.global_position) < 45.0:
+		if is_instance_valid(npc) and global_position.distance_to(npc.global_position) <= 18.0:
 			return true
 			
 	return false

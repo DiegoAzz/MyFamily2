@@ -5,7 +5,7 @@ class_name HouseDoor
 @export var transition_message: String = ""
 @export var is_exit: bool = false
 
-static var last_teleport_time: float = 0.0
+static var last_teleport_time: float = -999.0
 
 func _ready() -> void:
 	body_entered.connect(_on_body_entered)

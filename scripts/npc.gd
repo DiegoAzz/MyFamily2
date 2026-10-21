@@ -10,6 +10,8 @@ class_name VillageNPC
 
 func _ready() -> void:
 	add_to_group("npcs")
+	if has_node("NameTag"):
+		$NameTag.text = npc_name
 	if anim_player.has_animation("idle"):
 		anim_player.play("idle")
 		

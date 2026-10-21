@@ -184,7 +184,7 @@ shape = SubResource("RectangleShape2D_house_roof")
 [node name="HouseDoorEntrance" type="Area2D" parent="Entities/House"]
 position = Vector2(0, 22)
 script = ExtResource("29_house_door")
-target_position = Vector2(0, -565)
+target_position = Vector2(0, -580)
 transition_message = "Entrando a la Casa..."
 is_exit = false
 
@@ -193,8 +193,10 @@ shape = SubResource("RectangleShape2D_door_trigger")
 
 [node name="HouseInterior" type="Node2D" parent="Entities"]
 position = Vector2(0, -600)
+y_sort_enabled = true
 
 [node name="ShadowBackdrop" type="Sprite2D" parent="Entities/HouseInterior"]
+z_index = -2
 texture_repeat = 2
 position = Vector2(0, -10)
 texture = ExtResource("31_shadow_bg")
@@ -202,6 +204,7 @@ region_enabled = true
 region_rect = Rect2(-300, -250, 600, 500)
 
 [node name="Floor" type="Sprite2D" parent="Entities/HouseInterior"]
+z_index = -1
 texture_repeat = 2
 position = Vector2(0, -6)
 texture = ExtResource("32_floor_wood")
@@ -209,6 +212,7 @@ region_enabled = true
 region_rect = Rect2(0, 0, 160, 96)
 
 [node name="NorthWall" type="Sprite2D" parent="Entities/HouseInterior"]
+z_index = -1
 texture_repeat = 2
 position = Vector2(0, -58)
 texture = ExtResource("33_wall_cozy")
@@ -269,6 +273,7 @@ position = Vector2(-16, 6)
 texture = ExtResource("35_table")
 
 [node name="Rug" type="Sprite2D" parent="Entities/HouseInterior"]
+z_index = -1
 position = Vector2(26, 8)
 texture = ExtResource("38_rug")
 
@@ -719,8 +724,8 @@ region_rect = Rect2(0, 0, 48, 24)
 
 [node name="FishermanNPC" parent="Entities" instance=ExtResource("20_npc")]
 position = Vector2(256, -30)
-npc_name = "Tío Bruno (Pescador)"
-dialogue_lines = ["¡Ah, sobrinos! Qué alegría verlos de vuelta en el valle.", "El río está lleno de peces brillantes y los campos vuelven a florecer.", "Si necesitan descansar o recuperar fuerzas, ¡recuerden dormir en la cama de la cabaña!"]
+npc_name = "Tio Bruno"
+dialogue_lines = ["¡Ah, sobrinos! Que alegria verlos de vuelta en el valle.", "El rio esta lleno de peces brillantes y los campos vuelven a florecer.", "Si necesitan descansar o recuperar fuerzas, ¡recuerden dormir en la cama de la cabana!"]
 
 [node name="ForestCabin" type="StaticBody2D" parent="Entities"]
 position = Vector2(400, 70)
@@ -736,8 +741,8 @@ shape = SubResource("RectangleShape2D_house_roof")
 
 [node name="RangerNPC" parent="Entities" instance=ExtResource("20_npc")]
 position = Vector2(370, 85)
-npc_name = "Elena (Guardabosques)"
-dialogue_lines = ["¡Cuidado al cruzar las profundidades del bosque!", "Los slimes verdes y esqueletos custodian los diamantes antiguos del valle.", "¡Usa tu espada con el botón [ATK] o la tecla Espacio para despejar los caminos!"]
+npc_name = "Elena"
+dialogue_lines = ["¡Cuidado al cruzar las profundidades del bosque!", "Los slimes verdes y esqueletos custodian los diamantes antiguos del valle.", "¡Usa tu espada con el boton [ATK] o la tecla Espacio para defenderte!"]
 
 [node name="QuestManager" type="Node" parent="." groups=["quest_manager"]]
 script = ExtResource("41_quest_mgr")

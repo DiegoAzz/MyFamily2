@@ -30,7 +30,7 @@ _data = {
 }
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_interact"]
-radius = 24.0
+radius = 14.0
 
 [node name="NPC_Clara" type="CharacterBody2D"]
 motion_mode = 1
