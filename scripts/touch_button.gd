@@ -28,19 +28,31 @@ func _process(_delta: float) -> void:
 		active_touch = -1
 		if is_pressed:
 			_set_pressed(false)
+			
+	# Si es el botón de ataque, atenuar visualmente si el jugador está cerca de un NPC o interactable
+	if action_name == "attack":
+		var player = get_tree().get_first_node_in_group("player")
+		if player and is_instance_valid(player) and player.has_method("is_near_interactable_or_npc"):
+			if player.is_near_interactable_or_npc() or player.is_chat_active():
+				modulate.a = 0.35
+			else:
+				modulate.a = 1.0
 
 func _gui_input(event: InputEvent) -> void:
+	var center = size / 2.0
 	if event is InputEventScreenTouch:
 		if event.pressed and active_touch == -1:
-			active_touch = event.index
-			_set_pressed(true)
-			get_viewport().set_input_as_handled()
+			if (event.position - center).length() <= radius + 6.0:
+				active_touch = event.index
+				_set_pressed(true)
+				get_viewport().set_input_as_handled()
 			
 	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed and active_touch == -1:
-			active_touch = 998
-			_set_pressed(true)
-			get_viewport().set_input_as_handled()
+			if (event.position - center).length() <= radius + 6.0:
+				active_touch = 998
+				_set_pressed(true)
+				get_viewport().set_input_as_handled()
 
 func _input(event: InputEvent) -> void:
 	if active_touch == -1:
@@ -59,20 +71,23 @@ func _input(event: InputEvent) -> void:
 func _set_pressed(val: bool) -> void:
 	is_pressed = val
 	if is_pressed:
-		Input.action_press(action_name)
 		pressed.emit()
 		if action_name == "attack":
 			var players = get_tree().get_nodes_in_group("player")
 			for p in players:
-				if is_instance_valid(p) and p.has_method("start_attack") and not p.is_chat_active():
-					p.start_attack()
+				if is_instance_valid(p) and p.has_method("start_attack"):
+					if not p.is_chat_active() and not p.is_near_interactable_or_npc():
+						Input.action_press(action_name)
+						p.start_attack()
 		elif action_name == "interact":
+			Input.action_press(action_name)
 			for obj in get_tree().get_nodes_in_group("interactables"):
 				if is_instance_valid(obj) and obj.has_method("trigger_interaction"):
 					if ("is_player_in_range" in obj and obj.is_player_in_range) or ("is_player_inside" in obj and obj.is_player_inside):
 						obj.trigger_interaction()
 	else:
-		Input.action_release(action_name)
+		if Input.is_action_pressed(action_name):
+			Input.action_release(action_name)
 		released.emit()
 	queue_redraw()
 

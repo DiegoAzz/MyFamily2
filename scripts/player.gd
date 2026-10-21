@@ -189,11 +189,30 @@ func update_animation(is_moving: bool) -> void:
 			sprite.flip_h = true
 			play_animation("walk_side" if is_moving else "idle_side")
 
-func check_attack_input() -> void:
+func is_near_interactable_or_npc() -> bool:
+	if not is_inside_tree():
+		return false
+	# 1. Si hay un diálogo abierto, NUNCA atacar
 	var dialogue_box = get_tree().get_first_node_in_group("dialogue_box")
 	if dialogue_box and "is_active" in dialogue_box and dialogue_box.is_active:
-		return
-	if is_chat_active():
+		return true
+		
+	# 2. Si está en rango de algún objeto interactuable (cartel, vaca, cama, buzón, cofre, huerto, etc.)
+	for obj in get_tree().get_nodes_in_group("interactables"):
+		if is_instance_valid(obj):
+			if ("is_player_in_range" in obj and obj.is_player_in_range) or ("is_player_inside" in obj and obj.is_player_inside):
+				return true
+				
+	# 3. Si está cerca de algún NPC (Clara, Bruno, Elena, etc.) a menos de 45 píxeles
+	for npc in get_tree().get_nodes_in_group("npcs"):
+		if is_instance_valid(npc) and global_position.distance_to(npc.global_position) < 45.0:
+			return true
+			
+	return false
+
+func check_attack_input() -> void:
+	# Si está cerca de un NPC o interactable, o en chat/diálogo, NUNCA atacar
+	if is_near_interactable_or_npc() or is_chat_active():
 		return
 
 	# Atacar SOLAMENTE cuando se pulsa la tecla Espacio, J, o el botón dedicado ATK
@@ -210,7 +229,7 @@ func check_attack_input() -> void:
 func start_attack() -> void:
 	if is_dead or current_state == State.ATTACK:
 		return
-	if is_chat_active():
+	if is_chat_active() or is_near_interactable_or_npc():
 		return
 	current_state = State.ATTACK
 	velocity = Vector2.ZERO

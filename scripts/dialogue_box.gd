@@ -21,8 +21,16 @@ var active_tween: Tween = null
 func _ready() -> void:
 	visible = false
 	panel.custom_minimum_size = Vector2(500, 110)
+	panel.gui_input.connect(_on_panel_gui_input)
 	if close_btn:
 		close_btn.pressed.connect(_on_close_pressed)
+
+func _on_panel_gui_input(event: InputEvent) -> void:
+	if not is_active:
+		return
+	if (event is InputEventScreenTouch and event.pressed) or (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT):
+		advance_dialogue()
+		get_viewport().set_input_as_handled()
 
 func _on_close_pressed() -> void:
 	close_dialogue()
@@ -46,7 +54,17 @@ func start_dialogue(speaker: String, lines: Array, portrait: Texture2D = null) -
 		player.velocity = Vector2.ZERO
 		player.current_state = 0 # IDLE
 		
+	_set_touch_controls_visible(false)
 	show_current_line()
+
+func _set_touch_controls_visible(active: bool) -> void:
+	var touch_ctrls = get_tree().get_first_node_in_group("touch_controls")
+	if touch_ctrls:
+		touch_ctrls.visible = active
+		if not active and touch_ctrls.has_node("HUD/VirtualJoystick"):
+			var joy = touch_ctrls.get_node("HUD/VirtualJoystick")
+			if joy and joy.has_method("_reset_stick"):
+				joy._reset_stick()
 
 func show_current_line() -> void:
 	if current_line_index >= current_dialogue_lines.size():
@@ -95,12 +113,17 @@ func close_dialogue() -> void:
 	is_typing = false
 	is_active = false
 	visible = false
+	_set_touch_controls_visible(true)
 	dialogue_finished.emit()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not is_active:
 		return
 		
-	if event.is_action_pressed("interact") or event.is_action_pressed("attack") or event.is_action_pressed("ui_accept"):
+	# NUNCA usar la acción de ataque para avanzar diálogos
+	if event.is_action_pressed("interact") or event.is_action_pressed("ui_accept"):
+		advance_dialogue()
+		get_viewport().set_input_as_handled()
+	elif (event is InputEventScreenTouch and event.pressed) or (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT):
 		advance_dialogue()
 		get_viewport().set_input_as_handled()
