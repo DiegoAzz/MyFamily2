@@ -83,6 +83,11 @@ func _on_send_pressed() -> void:
 		add_chat_entry(my_name, text, Color(0.4, 0.9, 0.5))
 
 func _on_chat_message_received(sender: String, text: String) -> void:
+	if Engine.has_singleton("AudioManager") or has_node("/root/AudioManager"):
+		var audio = get_node_or_null("/root/AudioManager")
+		if audio and audio.has_method("play_chat"):
+			audio.play_chat()
+			
 	var color = Color(0.4, 0.9, 0.5)
 	if net_mgr and sender == net_mgr.player_name:
 		color = Color(0.3, 0.8, 1.0)

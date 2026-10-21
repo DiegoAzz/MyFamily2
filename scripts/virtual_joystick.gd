@@ -1,8 +1,8 @@
 extends Control
 class_name MobileJoystick
 
-@export var max_distance: float = 45.0
-@export var deadzone: float = 0.15
+@export var max_distance: float = 42.0
+@export var deadzone: float = 0.18
 
 var output: Vector2 = Vector2.ZERO
 var touch_index: int = -1
@@ -10,33 +10,61 @@ var stick_pos: Vector2 = Vector2.ZERO
 var is_active: bool = false
 
 func _ready() -> void:
-	custom_minimum_size = Vector2(130, 130)
+	custom_minimum_size = Vector2(120, 120)
+	_reset_stick()
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_WINDOW_FOCUS_OUT or what == NOTIFICATION_PAUSED or what == NOTIFICATION_VISIBILITY_CHANGED or what == NOTIFICATION_APPLICATION_FOCUS_OUT:
+		_reset_stick()
+
+func _process(_delta: float) -> void:
+	# Reseteo de seguridad si se soltó el mouse fuera del canvas
+	if touch_index == 999 and not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+		_reset_stick()
 
 func _gui_input(event: InputEvent) -> void:
 	var center = size / 2.0
 	
 	if event is InputEventScreenTouch:
 		if event.pressed and touch_index == -1:
-			touch_index = event.index
-			is_active = true
-			_update_stick(event.position - center)
-		elif not event.pressed and event.index == touch_index:
-			_reset_stick()
-			
-	elif event is InputEventScreenDrag and event.index == touch_index:
-		_update_stick(event.position - center)
-		
-	# Soporte para mouse en desktop / pruebas
+			var offset = event.position - center
+			# Solo activar si el toque inicial ocurre dentro del área del joystick
+			if offset.length() <= max_distance + 20.0:
+				touch_index = event.index
+				is_active = true
+				_update_stick(offset)
+				get_viewport().set_input_as_handled()
+				
 	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed and touch_index == -1:
-			touch_index = 999
-			is_active = true
-			_update_stick(event.position - center)
-		elif not event.pressed and touch_index == 999:
-			_reset_stick()
-			
+			var offset = event.position - center
+			if offset.length() <= max_distance + 20.0:
+				touch_index = 999
+				is_active = true
+				_update_stick(offset)
+				get_viewport().set_input_as_handled()
+
+func _input(event: InputEvent) -> void:
+	if touch_index == -1:
+		return
+		
+	var global_center = global_position + (size / 2.0)
+	
+	if event is InputEventScreenDrag and event.index == touch_index:
+		_update_stick(event.position - global_center)
+		get_viewport().set_input_as_handled()
+		
+	elif event is InputEventScreenTouch and event.index == touch_index and not event.pressed:
+		_reset_stick()
+		get_viewport().set_input_as_handled()
+		
 	elif event is InputEventMouseMotion and touch_index == 999:
-		_update_stick(event.position - center)
+		_update_stick(event.position - global_center)
+		get_viewport().set_input_as_handled()
+		
+	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed and touch_index == 999:
+		_reset_stick()
+		get_viewport().set_input_as_handled()
 
 func _update_stick(offset: Vector2) -> void:
 	if offset.length() > max_distance:

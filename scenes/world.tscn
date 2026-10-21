@@ -26,6 +26,7 @@
 [ext_resource type="Script" path="res://scripts/interactable.gd" id="25_interact"]
 [ext_resource type="PackedScene" path="res://scenes/chat_box.tscn" id="26_chat"]
 [ext_resource type="PackedScene" path="res://scenes/diamond.tscn" id="27_diamond"]
+[ext_resource type="PackedScene" path="res://scenes/tree_choppable.tscn" id="28_choppable_tree"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_interact_small"]
 radius = 20.0
@@ -210,65 +211,255 @@ texture = ExtResource("11_decor")
 region_enabled = true
 region_rect = Rect2(16, 64, 16, 16)
 
-[node name="Tree1" type="StaticBody2D" parent="Entities"]
+[node name="Bench" type="Sprite2D" parent="Entities"]
+position = Vector2(32, -68)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(0, 48, 32, 16)
+
+[node name="CrateBarrel" type="Sprite2D" parent="Entities"]
+position = Vector2(-36, -65)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(32, 48, 16, 16)
+
+[node name="LampCrossroad" type="Sprite2D" parent="Entities"]
+position = Vector2(5, 5)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(16, 32, 16, 16)
+
+[node name="LampBridge" type="Sprite2D" parent="Entities"]
+position = Vector2(210, 5)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(16, 32, 16, 16)
+
+[node name="SignpostRoad" type="Sprite2D" parent="Entities"]
+position = Vector2(-15, 30)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(48, 32, 16, 16)
+
+[node name="Interactable" type="Area2D" parent="Entities/SignpostRoad"]
+script = ExtResource("25_interact")
+prompt_message = "[ACT] Leer Cartel"
+speaker_name = "Cartel de Caminos"
+dialogue_lines = ["<- Granja y Corral de Bessie", "-> Puente hacia el Bosque Profundo", "^ Casa de la Familia"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/SignpostRoad/Interactable"]
+shape = SubResource("CircleShape2D_interact_small")
+
+[node name="HayBale1" type="Sprite2D" parent="Entities"]
+position = Vector2(-120, -10)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(48, 48, 16, 16)
+
+[node name="HayBale2" type="Sprite2D" parent="Entities"]
+position = Vector2(-120, 5)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(48, 48, 16, 16)
+
+[node name="Pumpkin1" type="Sprite2D" parent="Entities"]
+position = Vector2(-170, -15)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(0, 80, 16, 16)
+
+[node name="Pumpkin2" type="Sprite2D" parent="Entities"]
+position = Vector2(-155, -15)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(16, 80, 16, 16)
+
+[node name="Pumpkin3" type="Sprite2D" parent="Entities"]
+position = Vector2(-140, -15)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(0, 80, 16, 16)
+
+[node name="Carrot1" type="Sprite2D" parent="Entities"]
+position = Vector2(-170, 0)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(32, 80, 16, 16)
+
+[node name="Carrot2" type="Sprite2D" parent="Entities"]
+position = Vector2(-155, 0)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(32, 80, 16, 16)
+
+[node name="Carrot3" type="Sprite2D" parent="Entities"]
+position = Vector2(-140, 0)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(32, 80, 16, 16)
+
+[node name="Wheat1" type="Sprite2D" parent="Entities"]
+position = Vector2(-170, 15)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(48, 80, 16, 16)
+
+[node name="Wheat2" type="Sprite2D" parent="Entities"]
+position = Vector2(-155, 15)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(48, 80, 16, 16)
+
+[node name="Wheat3" type="Sprite2D" parent="Entities"]
+position = Vector2(-140, 15)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(48, 80, 16, 16)
+
+[node name="RiverRock1" type="Sprite2D" parent="Entities"]
+position = Vector2(220, -50)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(80, 16, 16, 16)
+
+[node name="RiverRock2" type="Sprite2D" parent="Entities"]
+position = Vector2(220, 80)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(64, 16, 16, 16)
+
+[node name="RiverRock3" type="Sprite2D" parent="Entities"]
+position = Vector2(265, -80)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(64, 16, 16, 16)
+
+[node name="RiverRock4" type="Sprite2D" parent="Entities"]
+position = Vector2(265, 90)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(80, 16, 16, 16)
+
+[node name="Fern1" type="Sprite2D" parent="Entities"]
+position = Vector2(80, 40)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(16, 16, 16, 16)
+
+[node name="Fern2" type="Sprite2D" parent="Entities"]
+position = Vector2(-60, 45)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(16, 16, 16, 16)
+
+[node name="Wildflowers1" type="Sprite2D" parent="Entities"]
+position = Vector2(120, 5)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(64, 0, 16, 16)
+
+[node name="Wildflowers2" type="Sprite2D" parent="Entities"]
+position = Vector2(-90, 35)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(48, 0, 16, 16)
+
+[node name="Tree1" parent="Entities" instance=ExtResource("28_choppable_tree")]
 position = Vector2(-90, -80)
+tree_id = "tree_1"
 
-[node name="Sprite2D" type="Sprite2D" parent="Entities/Tree1"]
-texture = ExtResource("7_tree")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/Tree1"]
-position = Vector2(0, 26)
-shape = SubResource("CircleShape2D_tree")
-
-[node name="Tree2" type="StaticBody2D" parent="Entities"]
+[node name="Tree2" parent="Entities" instance=ExtResource("28_choppable_tree")]
 position = Vector2(90, -80)
+tree_id = "tree_2"
 
-[node name="Sprite2D" type="Sprite2D" parent="Entities/Tree2"]
-texture = ExtResource("7_tree")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/Tree2"]
-position = Vector2(0, 26)
-shape = SubResource("CircleShape2D_tree")
-
-[node name="Tree3" type="StaticBody2D" parent="Entities"]
+[node name="Tree3" parent="Entities" instance=ExtResource("28_choppable_tree")]
 position = Vector2(130, -30)
+tree_id = "tree_3"
+is_small = true
 
-[node name="Sprite2D" type="Sprite2D" parent="Entities/Tree3"]
-texture = ExtResource("8_tree_small")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/Tree3"]
-position = Vector2(0, 12)
-shape = SubResource("CircleShape2D_tree_small")
-
-[node name="Tree4" type="StaticBody2D" parent="Entities"]
+[node name="Tree4" parent="Entities" instance=ExtResource("28_choppable_tree")]
 position = Vector2(140, 70)
+tree_id = "tree_4"
 
-[node name="Sprite2D" type="Sprite2D" parent="Entities/Tree4"]
-texture = ExtResource("7_tree")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/Tree4"]
-position = Vector2(0, 26)
-shape = SubResource("CircleShape2D_tree")
-
-[node name="Tree5" type="StaticBody2D" parent="Entities"]
+[node name="Tree5" parent="Entities" instance=ExtResource("28_choppable_tree")]
 position = Vector2(330, -50)
+tree_id = "tree_5"
 
-[node name="Sprite2D" type="Sprite2D" parent="Entities/Tree5"]
-texture = ExtResource("7_tree")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/Tree5"]
-position = Vector2(0, 26)
-shape = SubResource("CircleShape2D_tree")
-
-[node name="Tree6" type="StaticBody2D" parent="Entities"]
+[node name="Tree6" parent="Entities" instance=ExtResource("28_choppable_tree")]
 position = Vector2(340, 60)
+tree_id = "tree_6"
+is_small = true
 
-[node name="Sprite2D" type="Sprite2D" parent="Entities/Tree6"]
-texture = ExtResource("8_tree_small")
+[node name="Tree7" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(-140, -90)
+tree_id = "tree_7"
+is_small = true
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/Tree6"]
-position = Vector2(0, 12)
-shape = SubResource("CircleShape2D_tree_small")
+[node name="Tree8" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(-40, -115)
+tree_id = "tree_8"
+
+[node name="Tree9" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(40, -115)
+tree_id = "tree_9"
+is_small = true
+
+[node name="Tree10" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(170, -75)
+tree_id = "tree_10"
+
+[node name="Tree11" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(165, 115)
+tree_id = "tree_11"
+is_small = true
+
+[node name="Tree12" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(-90, 115)
+tree_id = "tree_12"
+
+[node name="Tree13" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(20, 105)
+tree_id = "tree_13"
+is_small = true
+
+[node name="Tree14" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(-35, 130)
+tree_id = "tree_14"
+
+[node name="Tree_Forest1" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(290, -80)
+tree_id = "tree_f1"
+
+[node name="Tree_Forest2" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(370, -90)
+tree_id = "tree_f2"
+
+[node name="Tree_Forest3" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(420, -50)
+tree_id = "tree_f3"
+is_small = true
+
+[node name="Tree_Forest4" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(300, 75)
+tree_id = "tree_f4"
+is_small = true
+
+[node name="Tree_Forest5" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(390, 95)
+tree_id = "tree_f5"
+
+[node name="Tree_Forest6" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(430, 40)
+tree_id = "tree_f6"
+
+[node name="Tree_Forest7" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(360, 120)
+tree_id = "tree_f7"
+is_small = true
+
+[node name="Tree_Forest8" parent="Entities" instance=ExtResource("28_choppable_tree")]
+position = Vector2(420, 110)
+tree_id = "tree_f8"
 
 [node name="Corral" type="Node2D" parent="Entities"]
 position = Vector2(-155, 5)

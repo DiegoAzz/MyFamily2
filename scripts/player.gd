@@ -62,6 +62,9 @@ func _ready() -> void:
 		if data.has("pos_x") and data.has("pos_y"):
 			var saved_p = Vector2(data["pos_x"], data["pos_y"])
 			if saved_p != Vector2.ZERO:
+				# Prevenir que el jugador reaparezca dentro de la colisión de la casa
+				if saved_p.y < 5.0 and abs(saved_p.x) < 50.0:
+					saved_p.y = 15.0
 				global_position = saved_p
 
 	# Aplicar nombre de jugador en la etiqueta bonita
@@ -106,27 +109,28 @@ func get_input_vector() -> Vector2:
 	if dialogue_box and "is_active" in dialogue_box and dialogue_box.is_active:
 		return Vector2.ZERO
 
-	var dir = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
-	if dir == Vector2.ZERO:
-		if Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT):
-			dir.x -= 1.0
-		if Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT):
-			dir.x += 1.0
-		if Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP):
-			dir.y -= 1.0
-		if Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN):
-			dir.y += 1.0
-		dir = dir.normalized()
+	# 1. Teclado prioritario
+	var dir = Vector2.ZERO
+	if Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT):
+		dir.x -= 1.0
+	if Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT):
+		dir.x += 1.0
+	if Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP):
+		dir.y -= 1.0
+	if Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN):
+		dir.y += 1.0
+		
+	if dir != Vector2.ZERO:
+		return dir.normalized()
 
-	# Integración con el joystick táctil en pantalla para móviles:
-	if dir == Vector2.ZERO:
-		var touch_ctrls = get_tree().get_first_node_in_group("touch_controls")
-		if touch_ctrls and touch_ctrls.has_node("HUD/VirtualJoystick"):
-			var joy = touch_ctrls.get_node("HUD/VirtualJoystick")
-			if joy and "output" in joy and joy.output != Vector2.ZERO:
-				dir = joy.output
+	# 2. Joystick táctil en pantalla para móviles:
+	var touch_ctrls = get_tree().get_first_node_in_group("touch_controls")
+	if touch_ctrls and touch_ctrls.has_node("HUD/VirtualJoystick"):
+		var joy = touch_ctrls.get_node("HUD/VirtualJoystick")
+		if joy and "output" in joy and joy.output != Vector2.ZERO:
+			return joy.output
 
-	return dir
+	return Vector2.ZERO
 
 func handle_movement(delta: float) -> void:
 	var input_vector = get_input_vector()
@@ -185,6 +189,11 @@ func start_attack() -> void:
 	current_state = State.ATTACK
 	velocity = Vector2.ZERO
 	
+	if Engine.has_singleton("AudioManager") or has_node("/root/AudioManager"):
+		var audio = get_node_or_null("/root/AudioManager")
+		if audio and audio.has_method("play_attack"):
+			audio.play_attack()
+	
 	match current_dir:
 		Direction.DOWN:
 			sprite.flip_h = false
@@ -226,6 +235,13 @@ func start_attack() -> void:
 					if "client_id" in remote_p and not remote_p.client_id.is_empty():
 						net_mgr.send_player_hit(remote_p.client_id, 1, global_position)
 
+	# 3. Talar árboles frente al jugador
+	for tree in get_tree().get_nodes_in_group("trees"):
+		if is_instance_valid(tree) and tree.has_method("take_hit") and not tree.is_chopped:
+			var trunk_pos = tree.global_position + Vector2(0, 16 if ("is_small" in tree and tree.is_small) else 24)
+			if trunk_pos.distance_to(attack_pos) <= 30.0 or trunk_pos.distance_to(global_position) <= 24.0:
+				tree.take_hit(1, global_position)
+
 func take_damage(amount: int, from_pos: Vector2) -> void:
 	if is_invulnerable or current_health <= 0:
 		return
@@ -233,6 +249,11 @@ func take_damage(amount: int, from_pos: Vector2) -> void:
 	is_invulnerable = true
 	current_health = max(0, current_health - amount)
 	_update_hud()
+	
+	if Engine.has_singleton("AudioManager") or has_node("/root/AudioManager"):
+		var audio = get_node_or_null("/root/AudioManager")
+		if audio and audio.has_method("play_hit"):
+			audio.play_hit()
 	
 	# Empujón / Knockback
 	var knock_dir = (global_position - from_pos).normalized()

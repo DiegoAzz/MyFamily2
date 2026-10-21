@@ -15,23 +15,46 @@ var active_touch: int = -1
 
 func _ready() -> void:
 	custom_minimum_size = Vector2(radius * 2 + 10, radius * 2 + 10)
+	_set_pressed(false)
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_WINDOW_FOCUS_OUT or what == NOTIFICATION_PAUSED or what == NOTIFICATION_VISIBILITY_CHANGED or what == NOTIFICATION_APPLICATION_FOCUS_OUT:
+		if is_pressed:
+			_set_pressed(false)
+		active_touch = -1
+
+func _process(_delta: float) -> void:
+	if active_touch == 998 and not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+		active_touch = -1
+		if is_pressed:
+			_set_pressed(false)
 
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch:
 		if event.pressed and active_touch == -1:
 			active_touch = event.index
 			_set_pressed(true)
-		elif not event.pressed and event.index == active_touch:
-			active_touch = -1
-			_set_pressed(false)
+			get_viewport().set_input_as_handled()
 			
 	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed and active_touch == -1:
 			active_touch = 998
 			_set_pressed(true)
-		elif not event.pressed and active_touch == 998:
-			active_touch = -1
-			_set_pressed(false)
+			get_viewport().set_input_as_handled()
+
+func _input(event: InputEvent) -> void:
+	if active_touch == -1:
+		return
+		
+	if event is InputEventScreenTouch and event.index == active_touch and not event.pressed:
+		active_touch = -1
+		_set_pressed(false)
+		get_viewport().set_input_as_handled()
+		
+	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed and active_touch == 998:
+		active_touch = -1
+		_set_pressed(false)
+		get_viewport().set_input_as_handled()
 
 func _set_pressed(val: bool) -> void:
 	is_pressed = val

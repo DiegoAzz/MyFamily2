@@ -48,6 +48,11 @@ func update_remote_state(new_pos: Vector2, anim_name: String, flip_horizontal: b
 func take_hit(damage: int, from_pos: Vector2) -> void:
 	current_health = max(0, current_health - damage)
 	
+	if Engine.has_singleton("AudioManager") or has_node("/root/AudioManager"):
+		var audio = get_node_or_null("/root/AudioManager")
+		if audio and audio.has_method("play_hit"):
+			audio.play_hit()
+	
 	# Empujón visual
 	var knock_dir = (global_position - from_pos).normalized()
 	if knock_dir == Vector2.ZERO:

@@ -41,6 +41,11 @@ func collect(collector: Node2D = null) -> void:
 	if collector and collector.has_method("add_diamond"):
 		collector.add_diamond(1, point_value)
 		
+	if Engine.has_singleton("AudioManager") or has_node("/root/AudioManager"):
+		var audio = get_node_or_null("/root/AudioManager")
+		if audio and audio.has_method("play_diamond"):
+			audio.play_diamond()
+		
 	# Efecto visual de recolección (crece y se desvanece)
 	var tween = create_tween().set_parallel(true)
 	tween.tween_property(sprite, "scale", Vector2(1.8, 1.8), 0.3)

@@ -240,6 +240,13 @@ func _handle_message(data: Dictionary) -> void:
 						p.take_damage(dmg, from_pos)
 			elif target_id in remote_players and is_instance_valid(remote_players[target_id]):
 				remote_players[target_id].take_hit(dmg, from_pos)
+				
+		"tree_chopped":
+			var tid = str(data.get("tree_id", ""))
+			if not tid.is_empty():
+				for tree in get_tree().get_nodes_in_group("trees"):
+					if "tree_id" in tree and tree.tree_id == tid and not tree.is_chopped:
+						tree.chop_down()
 
 func send_player_hit(target_id: String, damage: int, from_pos: Vector2) -> void:
 	if not is_multiplayer_active or target_id.is_empty():
