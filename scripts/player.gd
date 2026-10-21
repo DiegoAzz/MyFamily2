@@ -62,8 +62,8 @@ func _ready() -> void:
 		if data.has("pos_x") and data.has("pos_y"):
 			var saved_p = Vector2(data["pos_x"], data["pos_y"])
 			if saved_p != Vector2.ZERO:
-				# Prevenir que el jugador reaparezca dentro de la colisión de la casa
-				if saved_p.y < 5.0 and abs(saved_p.x) < 50.0:
+				# Prevenir que el jugador reaparezca dentro de las paredes de la fachada exterior de la casa
+				if saved_p.y >= -95.0 and saved_p.y <= -45.0 and abs(saved_p.x) < 50.0:
 					saved_p.y = 15.0
 				global_position = saved_p
 
@@ -238,8 +238,8 @@ func start_attack() -> void:
 	# 3. Talar árboles frente al jugador
 	for tree in get_tree().get_nodes_in_group("trees"):
 		if is_instance_valid(tree) and tree.has_method("take_hit") and not tree.is_chopped:
-			var trunk_pos = tree.global_position + Vector2(0, 16 if ("is_small" in tree and tree.is_small) else 24)
-			if trunk_pos.distance_to(attack_pos) <= 30.0 or trunk_pos.distance_to(global_position) <= 24.0:
+			var trunk_pos = tree.global_position + Vector2(0, 4 if ("is_small" in tree and tree.is_small) else 18)
+			if trunk_pos.distance_to(attack_pos) <= 32.0 or trunk_pos.distance_to(global_position) <= 26.0:
 				tree.take_hit(1, global_position)
 
 func take_damage(amount: int, from_pos: Vector2) -> void:
@@ -329,6 +329,24 @@ func _on_animation_finished(anim_name: StringName) -> void:
 	if "attack" in anim_name:
 		current_state = State.IDLE
 		update_animation(false)
+
+func spawn_floating_text(text: String, color: Color = Color.WHITE) -> void:
+	var label = Label.new()
+	label.text = text
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.add_theme_font_size_override("font_size", 9)
+	label.add_theme_color_override("font_color", color)
+	label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.9))
+	label.add_theme_constant_override("shadow_offset_y", 1)
+	label.scale = Vector2(0.6, 0.6)
+	label.pivot_offset = Vector2(40, 7)
+	label.global_position = global_position + Vector2(-30, -28)
+	get_parent().add_child(label)
+	
+	var label_tween = label.create_tween().set_parallel(true)
+	label_tween.tween_property(label, "position:y", label.position.y - 18.0, 1.2)
+	label_tween.tween_property(label, "modulate:a", 0.0, 1.2)
+	label_tween.chain().tween_callback(label.queue_free)
 
 func play_animation(anim_name: String) -> void:
 	if anim_player.has_animation(anim_name) and anim_player.current_animation != anim_name:

@@ -25,6 +25,7 @@ enum PendingAction { NONE, CREATE, JOIN }
 var pending_action: PendingAction = PendingAction.NONE
 var pending_join_code: String = ""
 var connection_timeout_timer: float = 0.0
+var auto_reconnect_timer: float = 0.0
 const MAX_CONNECTION_WAIT: float = 6.0
 
 var remote_players: Dictionary = {}
@@ -102,6 +103,18 @@ func retry_connection() -> void:
 		pending_action = PendingAction.JOIN
 	connect_to_relay()
 
+func ensure_multiplayer_connection() -> void:
+	if not is_multiplayer_active or current_room_code.is_empty():
+		return
+	var state = socket.get_ready_state()
+	if state == WebSocketPeer.STATE_CLOSED:
+		if is_host:
+			pending_action = PendingAction.CREATE
+		else:
+			pending_action = PendingAction.JOIN
+			pending_join_code = current_room_code
+		connect_to_relay()
+
 func start_solo_mode() -> void:
 	is_multiplayer_active = false
 	is_host = false
@@ -148,6 +161,7 @@ func _process(delta: float) -> void:
 			
 	elif state == WebSocketPeer.STATE_OPEN:
 		connection_timeout_timer = 0.0
+		auto_reconnect_timer = 0.0
 		if not is_connected_to_server:
 			is_connected_to_server = true
 			connection_status_changed.emit("¡Conectado al servidor en línea!")
@@ -173,6 +187,13 @@ func _process(delta: float) -> void:
 			connection_status_changed.emit(msg)
 			room_error.emit(msg)
 			pending_action = PendingAction.NONE
+			
+		# Reconexión automática si el multijugador está activo
+		if is_multiplayer_active and not current_room_code.is_empty():
+			auto_reconnect_timer += delta
+			if auto_reconnect_timer >= 3.0:
+				auto_reconnect_timer = 0.0
+				ensure_multiplayer_connection()
 
 func _handle_message(data: Dictionary) -> void:
 	var type = str(data.get("type", ""))

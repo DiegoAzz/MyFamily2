@@ -5,6 +5,13 @@ extends CanvasLayer
 
 func _ready() -> void:
 	menu_btn.pressed.connect(_on_menu_pressed)
+	var net_mgr = get_node_or_null("/root/NetworkManager")
+	if net_mgr and "is_multiplayer_active" in net_mgr and net_mgr.is_multiplayer_active:
+		if net_mgr.has_method("ensure_multiplayer_connection"):
+			net_mgr.ensure_multiplayer_connection()
+	update_hud()
+
+func _process(_delta: float) -> void:
 	update_hud()
 
 func update_hud() -> void:
@@ -13,7 +20,10 @@ func update_hud() -> void:
 		net_mgr = get_tree().get_first_node_in_group("network_manager")
 		
 	if net_mgr and "is_multiplayer_active" in net_mgr and net_mgr.is_multiplayer_active:
-		room_label.text = "Sala: " + str(net_mgr.current_room_code) + " | En línea"
+		if net_mgr.socket and net_mgr.socket.get_ready_state() == WebSocketPeer.STATE_OPEN:
+			room_label.text = "Sala: " + str(net_mgr.current_room_code) + " | En línea"
+		else:
+			room_label.text = "Sala: " + str(net_mgr.current_room_code) + " | Conectando..."
 	else:
 		room_label.text = "Modo Solitario"
 

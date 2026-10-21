@@ -12,6 +12,7 @@ var sfx_diamond: AudioStreamWAV = preload("res://audio/sfx_diamond.wav")
 var sfx_attack: AudioStreamWAV = preload("res://audio/sfx_attack.wav")
 var sfx_hit: AudioStreamWAV = preload("res://audio/sfx_hit.wav")
 var sfx_chat: AudioStreamWAV = preload("res://audio/sfx_chat.wav")
+var sfx_door: AudioStreamWAV = preload("res://audio/sfx_door.wav")
 
 var is_user_interacted: bool = false
 
@@ -73,3 +74,6 @@ func play_hit() -> void:
 
 func play_chat() -> void:
 	play_sfx(sfx_chat, -4.0, 1.0)
+
+func play_door() -> void:
+	play_sfx(sfx_door, -3.0, 1.0)

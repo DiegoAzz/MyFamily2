@@ -28,18 +28,19 @@ func _ready() -> void:
 	if is_small:
 		sprite.texture = oak_small_texture
 		sprite.region_enabled = true
-		sprite.region_rect = Rect2(0, 0, 48, 48)
-		collision.position = Vector2(0, 12)
+		# Frame 1 de Oak_Tree_Small.png (32x48) es el árbol completo y perfectamente centrado
+		sprite.region_rect = Rect2(32, 0, 32, 48)
+		collision.position = Vector2(0, 4)
 		if collision.shape is CircleShape2D:
 			(collision.shape as CircleShape2D).radius = 6.0
-		stump_sprite.position = Vector2(0, 12)
+		stump_sprite.position = Vector2(0, 4)
 	else:
 		sprite.texture = oak_big_texture
 		sprite.region_enabled = false
-		collision.position = Vector2(0, 24)
+		collision.position = Vector2(0, 18)
 		if collision.shape is CircleShape2D:
 			(collision.shape as CircleShape2D).radius = 8.0
-		stump_sprite.position = Vector2(0, 24)
+		stump_sprite.position = Vector2(0, 18)
 		
 	stump_sprite.visible = false
 
@@ -150,11 +151,11 @@ func regrow() -> void:
 	
 	# Restaurar colisión
 	if is_small:
-		collision.position = Vector2(0, 12)
+		collision.position = Vector2(0, 4)
 		if collision.shape is CircleShape2D:
 			(collision.shape as CircleShape2D).radius = 6.0
 	else:
-		collision.position = Vector2(0, 24)
+		collision.position = Vector2(0, 18)
 		if collision.shape is CircleShape2D:
 			(collision.shape as CircleShape2D).radius = 8.0
 

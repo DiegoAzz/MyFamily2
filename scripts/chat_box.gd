@@ -26,7 +26,8 @@ func _ready() -> void:
 		net_mgr = get_tree().get_first_node_in_group("network_manager")
 		
 	if net_mgr and net_mgr.has_signal("chat_message_received"):
-		net_mgr.chat_message_received.connect(_on_chat_message_received)
+		if not net_mgr.chat_message_received.is_connected(_on_chat_message_received):
+			net_mgr.chat_message_received.connect(_on_chat_message_received)
 		
 	toggle_btn.pressed.connect(toggle_chat)
 	if close_btn:

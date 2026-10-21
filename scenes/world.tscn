@@ -27,12 +27,38 @@
 [ext_resource type="PackedScene" path="res://scenes/chat_box.tscn" id="26_chat"]
 [ext_resource type="PackedScene" path="res://scenes/diamond.tscn" id="27_diamond"]
 [ext_resource type="PackedScene" path="res://scenes/tree_choppable.tscn" id="28_choppable_tree"]
+[ext_resource type="Script" path="res://scripts/house_door.gd" id="29_house_door"]
+[ext_resource type="Script" path="res://scripts/house_bed.gd" id="30_house_bed"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_interact_small"]
 radius = 20.0
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_house"]
-size = Vector2(76, 40)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_house_wall_left"]
+size = Vector2(28, 36)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_house_wall_right"]
+size = Vector2(28, 36)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_house_roof"]
+size = Vector2(76, 36)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_door_trigger"]
+size = Vector2(18, 14)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_interior_wall_h"]
+size = Vector2(160, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_interior_wall_v"]
+size = Vector2(20, 120)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_interior_wall_bottom"]
+size = Vector2(64, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bed_shape"]
+size = Vector2(28, 28)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_interior_door"]
+size = Vector2(24, 16)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_tree"]
 radius = 8.0
@@ -131,9 +157,112 @@ position = Vector2(0, -90)
 [node name="Sprite2D" type="Sprite2D" parent="Entities/House"]
 texture = ExtResource("6_house")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/House"]
+[node name="ColWallLeft" type="CollisionShape2D" parent="Entities/House"]
+position = Vector2(-24, 24)
+shape = SubResource("RectangleShape2D_house_wall_left")
+
+[node name="ColWallRight" type="CollisionShape2D" parent="Entities/House"]
+position = Vector2(24, 24)
+shape = SubResource("RectangleShape2D_house_wall_right")
+
+[node name="ColRoof" type="CollisionShape2D" parent="Entities/House"]
+position = Vector2(0, -12)
+shape = SubResource("RectangleShape2D_house_roof")
+
+[node name="HouseDoorEntrance" type="Area2D" parent="Entities/House"]
 position = Vector2(0, 22)
-shape = SubResource("RectangleShape2D_house")
+script = ExtResource("29_house_door")
+target_position = Vector2(0, -565)
+transition_message = "🏠 Entrando a la Casa"
+is_exit = false
+
+[node name="DoorShape" type="CollisionShape2D" parent="Entities/House/HouseDoorEntrance"]
+shape = SubResource("RectangleShape2D_door_trigger")
+
+[node name="HouseInterior" type="Node2D" parent="Entities"]
+position = Vector2(0, -600)
+
+[node name="Floor" type="Sprite2D" parent="Entities/HouseInterior"]
+texture_repeat = 2
+position = Vector2(0, -5)
+texture = ExtResource("4_bridge")
+region_enabled = true
+region_rect = Rect2(0, 0, 144, 100)
+
+[node name="InteriorWalls" type="StaticBody2D" parent="Entities/HouseInterior"]
+
+[node name="WallTop" type="CollisionShape2D" parent="Entities/HouseInterior/InteriorWalls"]
+position = Vector2(0, -60)
+shape = SubResource("RectangleShape2D_interior_wall_h")
+
+[node name="WallLeft" type="CollisionShape2D" parent="Entities/HouseInterior/InteriorWalls"]
+position = Vector2(-75, -5)
+shape = SubResource("RectangleShape2D_interior_wall_v")
+
+[node name="WallRight" type="CollisionShape2D" parent="Entities/HouseInterior/InteriorWalls"]
+position = Vector2(75, -5)
+shape = SubResource("RectangleShape2D_interior_wall_v")
+
+[node name="WallBottomLeft" type="CollisionShape2D" parent="Entities/HouseInterior/InteriorWalls"]
+position = Vector2(-44, 50)
+shape = SubResource("RectangleShape2D_interior_wall_bottom")
+
+[node name="WallBottomRight" type="CollisionShape2D" parent="Entities/HouseInterior/InteriorWalls"]
+position = Vector2(44, 50)
+shape = SubResource("RectangleShape2D_interior_wall_bottom")
+
+[node name="WallBorderVisual" type="Line2D" parent="Entities/HouseInterior"]
+points = PackedVector2Array(-72, 45, -72, -55, 72, -55, 72, 45)
+width = 4.0
+default_color = Color(0.25, 0.18, 0.12, 1)
+
+[node name="Bed" type="Area2D" parent="Entities/HouseInterior"]
+position = Vector2(-48, -32)
+script = ExtResource("30_house_bed")
+
+[node name="BedSprite" type="Sprite2D" parent="Entities/HouseInterior/Bed"]
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(48, 48, 16, 16)
+scale = Vector2(1.5, 1.8)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/HouseInterior/Bed"]
+shape = SubResource("RectangleShape2D_bed_shape")
+
+[node name="Table" type="Sprite2D" parent="Entities/HouseInterior"]
+position = Vector2(0, -32)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(48, 64, 16, 16)
+scale = Vector2(1.2, 1.2)
+
+[node name="Lamp" type="Sprite2D" parent="Entities/HouseInterior"]
+position = Vector2(0, -42)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(16, 32, 16, 16)
+
+[node name="Chest" type="Sprite2D" parent="Entities/HouseInterior"]
+position = Vector2(48, -35)
+texture = ExtResource("9_chest")
+
+[node name="Rug" type="Sprite2D" parent="Entities/HouseInterior"]
+position = Vector2(0, 30)
+texture = ExtResource("11_decor")
+region_enabled = true
+region_rect = Rect2(0, 48, 16, 16)
+scale = Vector2(1.8, 1.2)
+modulate = Color(1.2, 0.8, 0.7, 1)
+
+[node name="HouseDoorExit" type="Area2D" parent="Entities/HouseInterior"]
+position = Vector2(0, 48)
+script = ExtResource("29_house_door")
+target_position = Vector2(0, -42)
+transition_message = "🌾 Saliendo a la Granja"
+is_exit = true
+
+[node name="DoorShape" type="CollisionShape2D" parent="Entities/HouseInterior/HouseDoorExit"]
+shape = SubResource("RectangleShape2D_interior_door")
 
 [node name="Mailbox" type="Sprite2D" parent="Entities"]
 position = Vector2(-18, -45)

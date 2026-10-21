@@ -105,15 +105,21 @@ wss.on('connection', (ws, req) => {
         // 2. UNIRSE A SALA (GUEST / AMIGO)
         if (type === 'join_room') {
             const code = (msg.code || '').trim().toUpperCase();
-            if (!code || !rooms.has(code)) {
+            if (!code) {
                 ws.send(JSON.stringify({
                     type: 'error',
-                    message: `La sala "${code}" no existe. Pídele el código a tu amigo o crea una.`
+                    message: `Por favor introduce un código de sala válido.`
                 }));
                 return;
             }
 
-            const roomSet = rooms.get(code);
+            let roomSet = rooms.get(code);
+            if (!roomSet) {
+                roomSet = new Set();
+                rooms.set(code, roomSet);
+                console.log(`[MyFamily Relay] Sala [${code}] inicializada al unirse.`);
+            }
+
             ws.roomCode = code;
             ws.clientId = msg.clientId || String(Math.floor(Math.random() * 90000 + 10000));
             ws.isHost = false;

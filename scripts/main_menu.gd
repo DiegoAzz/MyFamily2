@@ -57,7 +57,7 @@ func _ready() -> void:
 		net_mgr.player_joined_room.connect(_on_player_joined_room)
 		net_mgr.connection_status_changed.connect(_on_net_status_changed)
 		
-	resume_btn.pressed.connect(_on_enter_world)
+	resume_btn.pressed.connect(_on_resume_pressed)
 	solo_btn.pressed.connect(_on_solo_pressed)
 	host_btn.pressed.connect(_on_host_pressed)
 	join_menu_btn.pressed.connect(_on_join_menu_pressed)
@@ -252,6 +252,12 @@ func _on_net_status_changed(msg: String) -> void:
 		join_status_label.text = msg
 	elif create_panel.visible:
 		create_status_label.text = msg
+
+func _on_resume_pressed() -> void:
+	if net_mgr and "is_multiplayer_active" in net_mgr and net_mgr.is_multiplayer_active:
+		if net_mgr.has_method("ensure_multiplayer_connection"):
+			net_mgr.ensure_multiplayer_connection()
+	_on_enter_world()
 
 func _on_enter_world() -> void:
 	get_tree().change_scene_to_file("res://scenes/world.tscn")
