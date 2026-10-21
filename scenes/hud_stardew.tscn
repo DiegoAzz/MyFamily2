@@ -1,6 +1,8 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/hud_stardew.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://sprites/Items/heart_full.png" id="2_heart_full"]
+[ext_resource type="Texture2D" path="res://sprites/Items/diamond.png" id="3_diamond"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_plaque"]
 bg_color = Color(0.94, 0.88, 0.72, 0.95)
@@ -52,10 +54,10 @@ script = ExtResource("1_script")
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -145.0
-offset_top = 12.0
-offset_right = -15.0
-offset_bottom = 85.0
+offset_left = -165.0
+offset_top = 8.0
+offset_right = -10.0
+offset_bottom = 136.0
 grow_horizontal = 0
 theme_override_styles/panel = SubResource("StyleBoxFlat_plaque")
 
@@ -68,7 +70,7 @@ theme_override_constants/margin_bottom = 4
 
 [node name="VBoxContainer" type="VBoxContainer" parent="TopRightPlaque/MarginContainer"]
 layout_mode = 2
-theme_override_constants/separation = 1
+theme_override_constants/separation = 2
 
 [node name="DateLabel" type="Label" parent="TopRightPlaque/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -80,18 +82,68 @@ horizontal_alignment = 1
 [node name="TimeLabel" type="Label" parent="TopRightPlaque/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.2, 0.1, 0.05, 1)
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 13
 text = "6:10 am"
 horizontal_alignment = 1
 
 [node name="HSeparator" type="HSeparator" parent="TopRightPlaque/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="GoldLabel" type="Label" parent="TopRightPlaque/MarginContainer/VBoxContainer"]
+[node name="HeartsContainer" type="HBoxContainer" parent="TopRightPlaque/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="Heart1" type="TextureRect" parent="TopRightPlaque/MarginContainer/VBoxContainer/HeartsContainer"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+texture = ExtResource("2_heart_full")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Heart2" type="TextureRect" parent="TopRightPlaque/MarginContainer/VBoxContainer/HeartsContainer"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+texture = ExtResource("2_heart_full")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Heart3" type="TextureRect" parent="TopRightPlaque/MarginContainer/VBoxContainer/HeartsContainer"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+texture = ExtResource("2_heart_full")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="StatsHBox" type="HBoxContainer" parent="TopRightPlaque/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="DiamondIcon" type="TextureRect" parent="TopRightPlaque/MarginContainer/VBoxContainer/StatsHBox"]
+custom_minimum_size = Vector2(14, 14)
+layout_mode = 2
+texture = ExtResource("3_diamond")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="DiamondLabel" type="Label" parent="TopRightPlaque/MarginContainer/VBoxContainer/StatsHBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.05, 0.5, 0.75, 1)
+theme_override_font_sizes/font_size = 11
+text = "0"
+
+[node name="GoldLabel" type="Label" parent="TopRightPlaque/MarginContainer/VBoxContainer/StatsHBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.65, 0.45, 0.05, 1)
-theme_override_font_sizes/font_size = 12
-text = "🪙 500 G"
+theme_override_font_sizes/font_size = 11
+text = "500 G"
+
+[node name="ScoreLabel" type="Label" parent="TopRightPlaque/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.5, 0.2, 1)
+theme_override_font_sizes/font_size = 10
+text = "Puntos: 0"
 horizontal_alignment = 1
 
 [node name="BottomHotbar" type="PanelContainer" parent="."]

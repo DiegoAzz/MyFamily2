@@ -6,6 +6,8 @@ signal room_joined(code: String)
 signal room_error(message: String)
 signal player_joined_room(client_id: String)
 signal player_left_room(client_id: String)
+signal chat_message_received(sender: String, text: String)
+signal diamond_collected_network(diamond_id: String)
 
 var socket: WebSocketPeer = WebSocketPeer.new()
 var is_connected_to_server: bool = false
@@ -14,6 +16,10 @@ var current_room_code: String = ""
 var is_multiplayer_active: bool = false
 var is_host: bool = false
 var last_joined_code: String = ""
+
+# Datos personalizados del jugador
+var player_name: String = "Lucas"
+var player_skin_id: int = 0
 
 enum PendingAction { NONE, CREATE, JOIN }
 var pending_action: PendingAction = PendingAction.NONE
@@ -206,6 +212,34 @@ func _handle_message(data: Dictionary) -> void:
 			
 		"state":
 			_handle_player_state(data)
+			
+		"chat":
+			var sender = str(data.get("sender", "Amigo"))
+			var text = str(data.get("text", ""))
+			if not text.is_empty():
+				chat_message_received.emit(sender, text)
+				
+		"collect_diamond":
+			var did = str(data.get("id", ""))
+			if not did.is_empty():
+				diamond_collected_network.emit(did)
+				for d in get_tree().get_nodes_in_group("diamonds"):
+					if "diamond_id" in d and d.diamond_id == did and not d.is_collected:
+						d.collect(null)
+
+func send_chat_message(text: String) -> void:
+	var clean_text = text.strip_edges()
+	if clean_text.is_empty():
+		return
+	if is_connected_to_server and socket.get_ready_state() == WebSocketPeer.STATE_OPEN and is_multiplayer_active:
+		var packet = {
+			"type": "chat",
+			"sender": player_name,
+			"text": clean_text
+		}
+		socket.send_text(JSON.stringify(packet))
+	# Emitir también localmente para que el remitente vea su propio mensaje
+	chat_message_received.emit(player_name, clean_text)
 
 func broadcast_my_state(pos: Vector2, anim_name: String, flip_h: bool) -> void:
 	if not is_multiplayer_active:
@@ -214,6 +248,8 @@ func broadcast_my_state(pos: Vector2, anim_name: String, flip_h: bool) -> void:
 		var msg = JSON.stringify({
 			"type": "state",
 			"id": my_client_id,
+			"name": player_name,
+			"skin": player_skin_id,
 			"x": round(pos.x),
 			"y": round(pos.y),
 			"anim": anim_name,
@@ -228,6 +264,9 @@ func _handle_player_state(data: Dictionary) -> void:
 	if sender_id.is_empty() or sender_id == my_client_id:
 		return
 		
+	var sender_name = str(data.get("name", "Hermano #" + sender_id.substr(0, 3)))
+	var sender_skin = int(data.get("skin", 0))
+		
 	if sender_id not in remote_players or not is_instance_valid(remote_players[sender_id]):
 		var world_entities = get_tree().get_first_node_in_group("world_entities")
 		if not world_entities:
@@ -237,18 +276,21 @@ func _handle_player_state(data: Dictionary) -> void:
 			
 		var remote = remote_player_scene.instantiate()
 		remote.name = "Remote_" + sender_id
-		if "player_name" in remote:
-			remote.player_name = "Hermano #" + sender_id.substr(0, 3)
 		world_entities.add_child(remote)
 		remote.global_position = Vector2(data.get("x", 0), data.get("y", 0))
+		if remote.has_method("update_name_and_skin"):
+			remote.update_name_and_skin(sender_name, sender_skin)
 		remote_players[sender_id] = remote
 		
 	var p = remote_players[sender_id]
-	if is_instance_valid(p) and p.has_method("update_remote_state"):
-		var pos = Vector2(data.get("x", 0), data.get("y", 0))
-		var anim = data.get("anim", "idle_down")
-		var flip = data.get("flip", false)
-		p.update_remote_state(pos, anim, flip)
+	if is_instance_valid(p):
+		if p.has_method("update_name_and_skin") and (p.player_name != sender_name or p.skin_id != sender_skin):
+			p.update_name_and_skin(sender_name, sender_skin)
+		if p.has_method("update_remote_state"):
+			var pos = Vector2(data.get("x", 0), data.get("y", 0))
+			var anim = data.get("anim", "idle_down")
+			var flip = data.get("flip", false)
+			p.update_remote_state(pos, anim, flip)
 
 func _remove_remote_player(client_id: String) -> void:
 	if client_id in remote_players:
@@ -276,6 +318,8 @@ func save_game_state(pos: Vector2 = Vector2.ZERO) -> void:
 		"is_host": is_host,
 		"is_multiplayer": is_multiplayer_active,
 		"last_joined_code": last_joined_code,
+		"player_name": player_name,
+		"player_skin_id": player_skin_id,
 		"pos_x": pos.x if pos != Vector2.ZERO else 0.0,
 		"pos_y": pos.y if pos != Vector2.ZERO else 15.0
 	}
@@ -297,5 +341,7 @@ func load_game_state() -> Dictionary:
 			is_host = bool(data.get("is_host", false))
 			is_multiplayer_active = bool(data.get("is_multiplayer", false))
 			last_joined_code = str(data.get("last_joined_code", ""))
+			player_name = str(data.get("player_name", "Lucas"))
+			player_skin_id = int(data.get("player_skin_id", 0))
 			return data
 	return {}

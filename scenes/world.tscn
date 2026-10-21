@@ -24,6 +24,8 @@
 [ext_resource type="PackedScene" path="res://scenes/hud_stardew.tscn" id="22_hud"]
 [ext_resource type="PackedScene" path="res://scenes/room_info_hud.tscn" id="23_room_hud"]
 [ext_resource type="Script" path="res://scripts/interactable.gd" id="25_interact"]
+[ext_resource type="PackedScene" path="res://scenes/chat_box.tscn" id="26_chat"]
+[ext_resource type="PackedScene" path="res://scenes/diamond.tscn" id="27_diamond"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_interact_small"]
 radius = 20.0
@@ -346,13 +348,45 @@ position = Vector2(60, 65)
 [node name="Slime2" parent="Entities" instance=ExtResource("17_slime")]
 position = Vector2(-30, 90)
 
+[node name="Slime3" parent="Entities" instance=ExtResource("17_slime")]
+position = Vector2(100, 80)
+
 [node name="SkeletonBoss" parent="Entities" instance=ExtResource("18_skeleton")]
 position = Vector2(320, 20)
+
+[node name="Skeleton2" parent="Entities" instance=ExtResource("18_skeleton")]
+position = Vector2(370, -20)
+
+[node name="Diamond1" parent="Entities" instance=ExtResource("27_diamond")]
+position = Vector2(-70, -20)
+diamond_id = "diam_farm_1"
+
+[node name="Diamond2" parent="Entities" instance=ExtResource("27_diamond")]
+position = Vector2(80, -40)
+diamond_id = "diam_farm_2"
+
+[node name="Diamond3" parent="Entities" instance=ExtResource("27_diamond")]
+position = Vector2(200, 20)
+diamond_id = "diam_bridge_1"
+
+[node name="Diamond4" parent="Entities" instance=ExtResource("27_diamond")]
+position = Vector2(350, -40)
+diamond_id = "diam_forest_1"
+
+[node name="Diamond5" parent="Entities" instance=ExtResource("27_diamond")]
+position = Vector2(360, 80)
+diamond_id = "diam_forest_2"
+
+[node name="Diamond6" parent="Entities" instance=ExtResource("27_diamond")]
+position = Vector2(-110, 60)
+diamond_id = "diam_corral_1"
 
 [node name="Player" parent="Entities" instance=ExtResource("16_player")]
 position = Vector2(0, 15)
 
 [node name="RoomInfoHUD" parent="." instance=ExtResource("23_room_hud")]
+
+[node name="ChatBox" parent="." instance=ExtResource("26_chat")]
 
 [node name="StardewHUD" parent="." instance=ExtResource("22_hud")]
 

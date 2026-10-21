@@ -3,18 +3,25 @@ class_name StardewHUD
 
 @onready var date_label: Label = $TopRightPlaque/MarginContainer/VBoxContainer/DateLabel
 @onready var time_label: Label = $TopRightPlaque/MarginContainer/VBoxContainer/TimeLabel
-@onready var gold_label: Label = $TopRightPlaque/MarginContainer/VBoxContainer/GoldLabel
+@onready var gold_label: Label = $TopRightPlaque/MarginContainer/VBoxContainer/StatsHBox/GoldLabel
+@onready var diamond_label: Label = $TopRightPlaque/MarginContainer/VBoxContainer/StatsHBox/DiamondLabel
+@onready var score_label: Label = $TopRightPlaque/MarginContainer/VBoxContainer/ScoreLabel
+@onready var hearts_container: HBoxContainer = $TopRightPlaque/MarginContainer/VBoxContainer/HeartsContainer
 @onready var hotbar_slots: HBoxContainer = $BottomHotbar/MarginContainer/HotbarSlots
+
+var heart_full_texture: Texture2D = preload("res://sprites/Items/heart_full.png")
+var heart_empty_texture: Texture2D = preload("res://sprites/Items/heart_empty.png")
 
 var hour: int = 6
 var minute: int = 10
 var is_pm: bool = false
 var time_accumulator: float = 0.0
-var time_speed: float = 2.0 # Cada 2 segundos avanza 10 minutos de juego
+var time_speed: float = 2.0
 var gold_amount: int = 500
+var diamond_amount: int = 0
+var score_amount: int = 0
 var active_slot_index: int = 0
 
-# Herramientas del hotbar (etiquetas claras y legibles sin caracteres rotos)
 var tools: Array = [
 	{"name": "Espada de la Familia", "icon": "ESP", "color": Color(0.95, 0.4, 0.4)},
 	{"name": "Regadera de Cobre", "icon": "REG", "color": Color(0.4, 0.7, 0.95)},
@@ -28,10 +35,11 @@ var tools: Array = [
 func _ready() -> void:
 	_update_clock_display()
 	_update_gold_display()
+	update_diamonds(0, 0)
+	update_health(3, 3)
 	_setup_hotbar()
 
 func _process(delta: float) -> void:
-	# Simular el avance del tiempo estilo Stardew Valley
 	time_accumulator += delta
 	if time_accumulator >= time_speed:
 		time_accumulator = 0.0
@@ -54,8 +62,27 @@ func _update_clock_display() -> void:
 func _update_gold_display() -> void:
 	gold_label.text = "%d G" % gold_amount
 
+func update_diamonds(count: int, score: int) -> void:
+	diamond_amount = count
+	score_amount = score
+	if diamond_label:
+		diamond_label.text = str(diamond_amount)
+	if score_label:
+		score_label.text = "Puntos: %d" % score_amount
+
+func update_health(current: int, maximum: int = 3) -> void:
+	if not hearts_container:
+		return
+	var heart_nodes = hearts_container.get_children()
+	for i in range(heart_nodes.size()):
+		var heart_rect = heart_nodes[i] as TextureRect
+		if heart_rect:
+			if i < current:
+				heart_rect.texture = heart_full_texture
+			else:
+				heart_rect.texture = heart_empty_texture
+
 func _setup_hotbar() -> void:
-	# Limpiar slots existentes si hay
 	for child in hotbar_slots.get_children():
 		child.queue_free()
 		
@@ -66,7 +93,6 @@ func _setup_hotbar() -> void:
 		slot.tooltip_text = tools[i]["name"]
 		slot.focus_mode = Control.FOCUS_NONE
 		
-		# Estilo de botón tipo ranura de madera
 		_apply_slot_style(slot, i == active_slot_index)
 		
 		var slot_idx = i
@@ -99,7 +125,6 @@ func _apply_slot_style(slot: Button, is_selected: bool) -> void:
 	slot.add_theme_color_override("font_color", Color(0.3, 0.15, 0.05))
 
 func _unhandled_input(event: InputEvent) -> void:
-	# Permitir seleccionar slots con los números del 1 al 7
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode >= KEY_1 and event.keycode <= KEY_7:
 			var idx = event.keycode - KEY_1

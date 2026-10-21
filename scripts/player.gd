@@ -8,7 +8,7 @@ class_name Player
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var anim_player: AnimationPlayer = $AnimationPlayer
 
-enum State { IDLE, WALK, ATTACK }
+enum State { IDLE, WALK, ATTACK, DEAD }
 var current_state: State = State.IDLE
 
 enum Direction { DOWN, UP, LEFT, RIGHT }
@@ -16,7 +16,26 @@ var current_dir: Direction = Direction.DOWN
 
 var network_sync_timer: float = 0.0
 
+# Sistema de vidas, combate y puntuación
+var max_health: int = 3
+var current_health: int = 3
+var diamonds: int = 0
+var score: int = 0
+var is_invulnerable: bool = false
+var respawn_point: Vector2 = Vector2(0, 15)
+
+const SKIN_COLORS = [
+	Color(1.0, 1.0, 1.0, 1.0),       # 0: Granjero Clásico
+	Color(1.35, 0.8, 0.8, 1.0),      # 1: Mateo (Rojo)
+	Color(0.8, 1.3, 0.85, 1.0),      # 2: Clara (Verde)
+	Color(0.8, 0.95, 1.4, 1.0),      # 3: Leo (Azul)
+	Color(1.25, 0.85, 1.35, 1.0),    # 4: Luna (Púrpura)
+	Color(1.35, 1.25, 0.75, 1.0)     # 5: Sol (Dorado)
+]
+
 func _ready() -> void:
+	add_to_group("player")
+	
 	# Configurar acciones de ataque e interacción sin interferir con toques en pantalla
 	if not InputMap.has_action("attack"):
 		InputMap.add_action("attack")
@@ -36,7 +55,7 @@ func _ready() -> void:
 		ev_enter.physical_keycode = KEY_ENTER
 		InputMap.action_add_event("interact", ev_enter)
 
-	# Restaurar posición persistente si existe
+	# Restaurar posición y datos del jugador si existen
 	var net_mgr = get_node_or_null("/root/NetworkManager")
 	if net_mgr and net_mgr.has_method("load_game_state"):
 		var data = net_mgr.load_game_state()
@@ -45,7 +64,18 @@ func _ready() -> void:
 			if saved_p != Vector2.ZERO:
 				global_position = saved_p
 
+	# Aplicar nombre de jugador en la etiqueta bonita
+	if has_node("NameTagBadge/Margin/NameLabel"):
+		var p_name = net_mgr.player_name if net_mgr and not net_mgr.player_name.is_empty() else "Tú"
+		$NameTagBadge/Margin/NameLabel.text = p_name
+
+	# Aplicar tinte del personaje según el selector de skins
+	var s_id = net_mgr.player_skin_id if net_mgr else 0
+	if s_id >= 0 and s_id < SKIN_COLORS.size():
+		sprite.modulate = SKIN_COLORS[s_id]
+
 	update_animation(false)
+	_update_hud()
 
 func _physics_process(delta: float) -> void:
 	match current_state:
@@ -168,6 +198,98 @@ func start_attack() -> void:
 		Direction.LEFT:
 			sprite.flip_h = true
 			play_animation("attack_side")
+
+	# Detectar enemigos frente al jugador y aplicar daño
+	var hit_offset = Vector2.ZERO
+	match current_dir:
+		Direction.DOWN: hit_offset = Vector2(0, 16)
+		Direction.UP: hit_offset = Vector2(0, -16)
+		Direction.RIGHT: hit_offset = Vector2(16, 0)
+		Direction.LEFT: hit_offset = Vector2(-16, 0)
+	var attack_pos = global_position + hit_offset
+	
+	for enemy in get_tree().get_nodes_in_group("enemies"):
+		if is_instance_valid(enemy) and enemy.has_method("take_hit"):
+			if enemy.global_position.distance_to(attack_pos) <= 26.0 or enemy.global_position.distance_to(global_position) <= 20.0:
+				enemy.take_hit(1, global_position)
+
+func take_damage(amount: int, from_pos: Vector2) -> void:
+	if is_invulnerable or current_health <= 0:
+		return
+		
+	is_invulnerable = true
+	current_health = max(0, current_health - amount)
+	_update_hud()
+	
+	# Empujón / Knockback
+	var knock_dir = (global_position - from_pos).normalized()
+	if knock_dir == Vector2.ZERO:
+		knock_dir = Vector2.DOWN
+	velocity = knock_dir * 140.0
+	move_and_slide()
+	
+	# Parpadeo de daño rojo
+	var tween = create_tween()
+	var net_mgr = get_node_or_null("/root/NetworkManager")
+	var s_id = net_mgr.player_skin_id if net_mgr else 0
+	var orig_color = SKIN_COLORS[s_id] if (s_id >= 0 and s_id < SKIN_COLORS.size()) else Color(1, 1, 1)
+	
+	tween.tween_property(sprite, "modulate", Color(2.5, 0.4, 0.4), 0.1)
+	tween.tween_property(sprite, "modulate", Color(1.0, 1.0, 1.0, 0.5), 0.15)
+	tween.tween_property(sprite, "modulate", Color(2.5, 0.4, 0.4), 0.15)
+	tween.tween_property(sprite, "modulate", orig_color, 0.15)
+	
+	if current_health <= 0:
+		die_and_respawn()
+	else:
+		# Período de gracia de 0.8s
+		get_tree().create_timer(0.8).timeout.connect(func(): is_invulnerable = false)
+
+func die_and_respawn() -> void:
+	current_state = State.DEAD
+	velocity = Vector2.ZERO
+	
+	# Mensaje flotante de caída
+	var label = Label.new()
+	label.text = "¡Has caído! Reapareciendo en la granja..."
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.add_theme_font_size_override("font_size", 10)
+	label.add_theme_color_override("font_color", Color(1.0, 0.3, 0.3))
+	label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.9))
+	label.add_theme_constant_override("shadow_offset_y", 1)
+	label.global_position = global_position + Vector2(-90, -30)
+	get_parent().add_child(label)
+	
+	var label_tween = label.create_tween().set_parallel(true)
+	label_tween.tween_property(label, "position:y", label.position.y - 20.0, 1.5)
+	label_tween.tween_property(label, "modulate:a", 0.0, 1.5)
+	label_tween.chain().tween_callback(label.queue_free)
+	
+	var timer = get_tree().create_timer(1.2)
+	timer.timeout.connect(func():
+		global_position = respawn_point
+		current_health = max_health
+		current_state = State.IDLE
+		is_invulnerable = false
+		_update_hud()
+	)
+
+func add_diamond(count: int, points: int) -> void:
+	diamonds += count
+	score += points
+	_update_hud()
+
+func _update_hud() -> void:
+	var hud = get_tree().get_first_node_in_group("hud")
+	if not hud:
+		var root = get_tree().current_scene
+		if root and root.has_node("StardewHUD"):
+			hud = root.get_node("StardewHUD")
+	if hud:
+		if hud.has_method("update_health"):
+			hud.update_health(current_health, max_health)
+		if hud.has_method("update_diamonds"):
+			hud.update_diamonds(diamonds, score)
 
 func _on_animation_finished(anim_name: StringName) -> void:
 	if "attack" in anim_name:

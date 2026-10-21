@@ -1,0 +1,131 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/chat_box.gd" id="1_script"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_toggle"]
+bg_color = Color(0.24, 0.16, 0.1, 0.85)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.65, 0.45, 0.22, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_chat_panel"]
+bg_color = Color(0.12, 0.08, 0.05, 0.92)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.65, 0.45, 0.22, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+shadow_color = Color(0, 0, 0, 0.4)
+shadow_size = 4
+shadow_offset = Vector2(0, 2)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_input"]
+bg_color = Color(0.06, 0.04, 0.02, 0.9)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.5, 0.35, 0.18, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_send_btn"]
+bg_color = Color(0.25, 0.58, 0.28, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.12, 0.35, 0.15, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="Theme" id="Theme_chat"]
+
+[node name="ChatBox" type="CanvasLayer"]
+layer = 6
+script = ExtResource("1_script")
+
+[node name="ChatContainer" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 8.0
+offset_top = 42.0
+offset_right = 226.0
+offset_bottom = 175.0
+mouse_filter = 2
+
+[node name="ToggleBtn" type="Button" parent="ChatContainer"]
+custom_minimum_size = Vector2(72, 22)
+layout_mode = 0
+offset_right = 72.0
+offset_bottom = 22.0
+theme_override_colors/font_color = Color(1, 0.95, 0.82, 1)
+theme_override_font_sizes/font_size = 10
+theme_override_styles/normal = SubResource("StyleBoxFlat_toggle")
+text = "💬 Chat"
+
+[node name="ChatPanel" type="PanelContainer" parent="ChatContainer"]
+visible = false
+layout_mode = 0
+offset_top = 26.0
+offset_right = 216.0
+offset_bottom = 132.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_chat_panel")
+
+[node name="Margin" type="MarginContainer" parent="ChatContainer/ChatPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 5
+
+[node name="VBox" type="VBoxContainer" parent="ChatContainer/ChatPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="MessagesScroll" type="ScrollContainer" parent="ChatContainer/ChatPanel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 68)
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="MessagesVBox" type="VBoxContainer" parent="ChatContainer/ChatPanel/Margin/VBox/MessagesScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
+
+[node name="InputHBox" type="HBoxContainer" parent="ChatContainer/ChatPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="MessageInput" type="LineEdit" parent="ChatContainer/ChatPanel/Margin/VBox/InputHBox"]
+custom_minimum_size = Vector2(0, 22)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 9
+theme_override_styles/normal = SubResource("StyleBoxFlat_input")
+placeholder_text = "Escribe aquí..."
+max_length = 50
+
+[node name="SendBtn" type="Button" parent="ChatContainer/ChatPanel/Margin/VBox/InputHBox"]
+custom_minimum_size = Vector2(32, 22)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 9
+theme_override_styles/normal = SubResource("StyleBoxFlat_send_btn")
+text = "Enviar"

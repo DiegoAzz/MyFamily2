@@ -10,6 +10,22 @@ extends Control
 @onready var host_btn: Button = $MainPanel/VBoxContainer/HostBtn
 @onready var join_menu_btn: Button = $MainPanel/VBoxContainer/JoinMenuBtn
 
+# Selector de nombre y personaje
+@onready var player_name_input: LineEdit = $MainPanel/VBoxContainer/ProfileBox/NameBox/PlayerNameInput
+@onready var prev_skin_btn: Button = $MainPanel/VBoxContainer/ProfileBox/SkinBox/SkinSelectorHBox/PrevSkinBtn
+@onready var next_skin_btn: Button = $MainPanel/VBoxContainer/ProfileBox/SkinBox/SkinSelectorHBox/NextSkinBtn
+@onready var skin_name_label: Label = $MainPanel/VBoxContainer/ProfileBox/SkinBox/SkinSelectorHBox/SkinNamePanel/SkinNameLabel
+
+const SKIN_NAMES = [
+	"Lucas (Clásico)",
+	"Mateo (Rojo)",
+	"Clara (Verde)",
+	"Leo (Azul)",
+	"Luna (Púrpura)",
+	"Sol (Dorado)"
+]
+var current_skin_id: int = 0
+
 # Elementos de Crear Sala
 @onready var create_status_label: Label = $CreatePanel/VBoxContainer/StatusLabel
 @onready var room_code_label: Label = $CreatePanel/VBoxContainer/CodeContainer/CodePanel/RoomCodeLabel
@@ -58,7 +74,45 @@ func _ready() -> void:
 	code_input.text_submitted.connect(func(_t): _on_confirm_join_pressed())
 	code_input.text_changed.connect(_on_code_input_changed)
 
+	# Configuración de nombre y selector de personaje
+	if net_mgr:
+		if not net_mgr.player_name.is_empty():
+			player_name_input.text = net_mgr.player_name
+		current_skin_id = net_mgr.player_skin_id
+	
+	_update_skin_display()
+	
+	player_name_input.text_changed.connect(_on_player_name_changed)
+	prev_skin_btn.pressed.connect(_on_prev_skin_pressed)
+	next_skin_btn.pressed.connect(_on_next_skin_pressed)
+
 	show_main_panel()
+
+func _update_skin_display() -> void:
+	if current_skin_id < 0 or current_skin_id >= SKIN_NAMES.size():
+		current_skin_id = 0
+	skin_name_label.text = SKIN_NAMES[current_skin_id]
+	if net_mgr:
+		net_mgr.player_skin_id = current_skin_id
+		net_mgr.save_game_state()
+
+func _on_prev_skin_pressed() -> void:
+	current_skin_id -= 1
+	if current_skin_id < 0:
+		current_skin_id = SKIN_NAMES.size() - 1
+	_update_skin_display()
+
+func _on_next_skin_pressed() -> void:
+	current_skin_id = (current_skin_id + 1) % SKIN_NAMES.size()
+	_update_skin_display()
+
+func _on_player_name_changed(new_name: String) -> void:
+	var clean_name = new_name.strip_edges()
+	if clean_name.is_empty():
+		clean_name = "Lucas"
+	if net_mgr:
+		net_mgr.player_name = clean_name
+		net_mgr.save_game_state()
 
 func show_main_panel() -> void:
 	main_panel.visible = true

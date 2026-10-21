@@ -117,10 +117,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -220.0
-offset_top = -155.0
-offset_right = 220.0
-offset_bottom = 155.0
+offset_left = -225.0
+offset_top = -185.0
+offset_right = 225.0
+offset_bottom = 185.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_card")
@@ -166,10 +166,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -190.0
-offset_top = -75.0
-offset_right = 190.0
-offset_bottom = 140.0
+offset_left = -195.0
+offset_top = -105.0
+offset_right = 195.0
+offset_bottom = 175.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -180,45 +180,115 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/separation = 6
+
+[node name="ProfileBox" type="HBoxContainer" parent="MainPanel/VBoxContainer"]
+layout_mode = 2
 theme_override_constants/separation = 8
+
+[node name="NameBox" type="VBoxContainer" parent="MainPanel/VBoxContainer/ProfileBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
+
+[node name="NameTitle" type="Label" parent="MainPanel/VBoxContainer/ProfileBox/NameBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.35, 0.18, 0.08, 1)
+theme_override_font_sizes/font_size = 11
+text = "Tu Nombre:"
+
+[node name="PlayerNameInput" type="LineEdit" parent="MainPanel/VBoxContainer/ProfileBox/NameBox"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.15, 0.05, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBoxFlat_input")
+text = "Lucas"
+placeholder_text = "Tu nombre"
+max_length = 14
+
+[node name="SkinBox" type="VBoxContainer" parent="MainPanel/VBoxContainer/ProfileBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
+
+[node name="SkinTitle" type="Label" parent="MainPanel/VBoxContainer/ProfileBox/SkinBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.35, 0.18, 0.08, 1)
+theme_override_font_sizes/font_size = 11
+text = "Personaje:"
+
+[node name="SkinSelectorHBox" type="HBoxContainer" parent="MainPanel/VBoxContainer/ProfileBox/SkinBox"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+theme_override_constants/separation = 3
+
+[node name="PrevSkinBtn" type="Button" parent="MainPanel/VBoxContainer/ProfileBox/SkinBox/SkinSelectorHBox"]
+custom_minimum_size = Vector2(26, 30)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBoxFlat_amber_btn")
+text = "<"
+
+[node name="SkinNamePanel" type="PanelContainer" parent="MainPanel/VBoxContainer/ProfileBox/SkinBox/SkinSelectorHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_code_box")
+
+[node name="SkinNameLabel" type="Label" parent="MainPanel/VBoxContainer/ProfileBox/SkinBox/SkinSelectorHBox/SkinNamePanel"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.35, 0.18, 0.08, 1)
+theme_override_font_sizes/font_size = 10
+text = "Lucas"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="NextSkinBtn" type="Button" parent="MainPanel/VBoxContainer/ProfileBox/SkinBox/SkinSelectorHBox"]
+custom_minimum_size = Vector2(26, 30)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBoxFlat_amber_btn")
+text = ">"
 
 [node name="ResumeBtn" type="Button" parent="MainPanel/VBoxContainer"]
 visible = false
-custom_minimum_size = Vector2(0, 40)
+custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 13
 theme_override_styles/normal = SubResource("StyleBoxFlat_green_btn")
 text = "Continuar en la Granja"
 
 [node name="SoloBtn" type="Button" parent="MainPanel/VBoxContainer"]
-custom_minimum_size = Vector2(0, 38)
+custom_minimum_size = Vector2(0, 34)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 12
 theme_override_styles/normal = SubResource("StyleBoxFlat_green_btn")
 text = "Jugar en Solitario"
 
 [node name="HostBtn" type="Button" parent="MainPanel/VBoxContainer"]
-custom_minimum_size = Vector2(0, 38)
+custom_minimum_size = Vector2(0, 34)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 12
 theme_override_styles/normal = SubResource("StyleBoxFlat_amber_btn")
 text = "Crear Sala Online"
 
 [node name="JoinMenuBtn" type="Button" parent="MainPanel/VBoxContainer"]
-custom_minimum_size = Vector2(0, 38)
+custom_minimum_size = Vector2(0, 34)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 12
 theme_override_styles/normal = SubResource("StyleBoxFlat_blue_btn")
 text = "Unirse con Código"
 
 [node name="FooterLabel" type="Label" parent="MainPanel/VBoxContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.48, 0.32, 0.2, 1)
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 9
 text = "Juega solo o comparte un código para explorar juntos."
 horizontal_alignment = 1
 
