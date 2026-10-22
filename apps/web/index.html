@@ -2,7 +2,10 @@
 <html lang="es" class="h-full bg-slate-950">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
     <title>Wildborn Online — Supervivencia 3D Multijugador</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <style>
@@ -10,11 +13,16 @@
         margin: 0;
         padding: 0;
         box-sizing: border-box;
+        -webkit-user-select: none;
+        -moz-user-select: none;
         user-select: none;
+        -webkit-touch-callout: none;
+        -webkit-tap-highlight-color: transparent;
       }
       html, body, #root {
         width: 100%;
         height: 100%;
+        height: 100dvh;
         overflow: hidden;
         background-color: #020617;
       }

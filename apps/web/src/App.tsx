@@ -6,6 +6,7 @@ import { NetworkClient } from "./game/NetworkClient.js";
 import { HUD } from "./components/HUD.js";
 import { ChatBox } from "./components/ChatBox.js";
 import { MainMenu } from "./components/MainMenu.js";
+import { TouchControls } from "./components/TouchControls.js";
 import { ChatMessagePayload } from "@wildborn/shared";
 import { Vector3 } from "@babylonjs/core";
 
@@ -38,6 +39,21 @@ export const App: React.FC = () => {
   });
   const [notification, setNotification] = useState<string | null>(null);
   const [chatMessages, setChatMessages] = useState<ChatMessagePayload[]>([]);
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+
+  useEffect(() => {
+    const checkTouch = () => {
+      const hasTouch =
+        typeof window !== "undefined" &&
+        ("ontouchstart" in window ||
+          navigator.maxTouchPoints > 0 ||
+          window.innerWidth < 1024);
+      setIsTouchDevice(hasTouch);
+    };
+    checkTouch();
+    window.addEventListener("resize", checkTouch);
+    return () => window.removeEventListener("resize", checkTouch);
+  }, []);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -231,6 +247,32 @@ export const App: React.FC = () => {
             messages={chatMessages}
             onSendMessage={handleSendMessage}
           />
+          {isTouchDevice && (
+            <TouchControls
+              onMove={(forward, strafe) => {
+                if (controllerRef.current) {
+                  controllerRef.current.touchForward = forward;
+                  controllerRef.current.touchStrafe = strafe;
+                }
+              }}
+              onJump={() => {
+                if (controllerRef.current) {
+                  controllerRef.current.touchJump = true;
+                }
+              }}
+              onSprintToggle={(sprint) => {
+                if (controllerRef.current) {
+                  controllerRef.current.touchSprint = sprint;
+                }
+              }}
+              onInteract={() => {
+                controllerRef.current?.onInteract?.();
+              }}
+              onBuild={() => {
+                handleBuildCampfire();
+              }}
+            />
+          )}
         </>
       )}
     </div>

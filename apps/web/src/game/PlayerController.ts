@@ -18,6 +18,12 @@ export class PlayerController {
   public isPointerLocked: boolean = false;
   private mouseSensitivity: number = 0.0025;
 
+  // Inputs táctiles para móviles
+  public touchForward: number = 0;
+  public touchStrafe: number = 0;
+  public touchSprint: boolean = false;
+  public touchJump: boolean = false;
+
   // Físicas locales
   public position: Vector3 = new Vector3(0, 2, 0);
   public velocity: Vector3 = new Vector3(0, 0, 0);
@@ -87,30 +93,94 @@ export class PlayerController {
 
     window.addEventListener("mousemove", (e) => {
       if (this.isPointerLocked) {
-        // Rotación horizontal (Yaw)
-        this.yaw += e.movementX * this.mouseSensitivity;
-        // Rotación vertical (Pitch)
-        this.camera.beta = Scalar.Clamp(
-          this.camera.beta + e.movementY * this.mouseSensitivity,
-          0.15,
-          Math.PI / 2 - 0.05
-        );
+        this.rotateCamera(e.movementX, e.movementY);
       }
     });
+
+    // Rotación de Cámara por Toque en Pantalla Móvil (Touch Look)
+    let lookTouchId: number | null = null;
+    let lastTouchX = 0;
+    let lastTouchY = 0;
+
+    canvas.addEventListener(
+      "touchstart",
+      (e) => {
+        for (let i = 0; i < e.changedTouches.length; i++) {
+          const touch = e.changedTouches[i];
+          // Si el toque es en el área central o derecha de la pantalla y no tenemos dedo de cámara activo
+          if (touch.clientX > window.innerWidth * 0.35 && lookTouchId === null) {
+            lookTouchId = touch.identifier;
+            lastTouchX = touch.clientX;
+            lastTouchY = touch.clientY;
+            break;
+          }
+        }
+      },
+      { passive: true }
+    );
+
+    canvas.addEventListener(
+      "touchmove",
+      (e) => {
+        if (lookTouchId === null) return;
+        for (let i = 0; i < e.changedTouches.length; i++) {
+          const touch = e.changedTouches[i];
+          if (touch.identifier === lookTouchId) {
+            const dx = touch.clientX - lastTouchX;
+            const dy = touch.clientY - lastTouchY;
+            lastTouchX = touch.clientX;
+            lastTouchY = touch.clientY;
+            this.rotateCamera(dx, dy);
+            break;
+          }
+        }
+      },
+      { passive: true }
+    );
+
+    const endLookTouch = (e: TouchEvent) => {
+      if (lookTouchId === null) return;
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        if (e.changedTouches[i].identifier === lookTouchId) {
+          lookTouchId = null;
+          break;
+        }
+      }
+    };
+
+    canvas.addEventListener("touchend", endLookTouch, { passive: true });
+    canvas.addEventListener("touchcancel", endLookTouch, { passive: true });
+  }
+
+  public rotateCamera(deltaX: number, deltaY: number) {
+    // Rotación horizontal (Yaw)
+    this.yaw += deltaX * this.mouseSensitivity;
+    // Rotación vertical (Pitch)
+    this.camera.beta = Scalar.Clamp(
+      this.camera.beta + deltaY * this.mouseSensitivity,
+      0.15,
+      Math.PI / 2 - 0.05
+    );
   }
 
   public update(dt: number) {
-    // 1. Leer inputs
-    let forward = 0;
-    let strafe = 0;
+    // 1. Leer inputs (Teclado + Toque móvil)
+    let forward = this.touchForward;
+    let strafe = this.touchStrafe;
 
     if (this.keys["KeyW"] || this.keys["ArrowUp"]) forward += 1;
     if (this.keys["KeyS"] || this.keys["ArrowDown"]) forward -= 1;
     if (this.keys["KeyD"] || this.keys["ArrowRight"]) strafe += 1;
     if (this.keys["KeyA"] || this.keys["ArrowLeft"]) strafe -= 1;
 
-    const sprint = Boolean(this.keys["ShiftLeft"] || this.keys["ShiftRight"]);
-    const jump = Boolean(this.keys["Space"]);
+    forward = Math.max(-1, Math.min(1, forward));
+    strafe = Math.max(-1, Math.min(1, strafe));
+
+    const sprint = Boolean(this.keys["ShiftLeft"] || this.keys["ShiftRight"] || this.touchSprint);
+    const jump = Boolean(this.keys["Space"] || this.touchJump);
+    if (this.touchJump) {
+      this.touchJump = false; // Reset de impulso de salto táctil
+    }
 
     // 2. Simulación local predictiva (Client Prediction)
     const speed = sprint ? GAME_CONSTANTS.PLAYER_SPRINT_SPEED : GAME_CONSTANTS.PLAYER_WALK_SPEED;
