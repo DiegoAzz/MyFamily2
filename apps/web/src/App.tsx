@@ -112,6 +112,21 @@ export const App: React.FC = () => {
       const island = islandSceneRef.current;
       const net = networkRef.current;
 
+      // Registrar listener de spawn antes de conectar
+      let pendingSpawn: { x: number; y: number; z: number; yaw: number } | null = null;
+      net.onLocalPlayerSpawn = (x, y, z, yaw) => {
+        if (controllerRef.current) {
+          controllerRef.current.position.set(x, y, z);
+          controllerRef.current.yaw = yaw;
+          controllerRef.current.avatarYaw = yaw;
+          controllerRef.current.avatar.setPositionAndYaw(controllerRef.current.position, controllerRef.current.avatarYaw);
+          controllerRef.current.camera.target.set(x, y + 1.25, z);
+          controllerRef.current.camera.alpha = -yaw - Math.PI / 2;
+        } else {
+          pendingSpawn = { x, y, z, yaw };
+        }
+      };
+
       // 1. Conectar con el servidor autoritativo
       await net.connectToIsland(playerName, roomCode || undefined);
 
@@ -119,13 +134,26 @@ export const App: React.FC = () => {
       const localAvatar = new Avatar3D(island.scene, playerName, true);
       const controller = new PlayerController(island, localAvatar, canvasRef.current);
       controllerRef.current = controller;
+      (window as any).__controller = controller;
+      (window as any).__island = island;
 
       // Ubicar en posición inicial calculada por el servidor
-      const serverPlayer = net.room?.state.players.get(net.room.sessionId);
-      if (serverPlayer) {
-        controller.position.set(serverPlayer.x, serverPlayer.y, serverPlayer.z);
-        controller.yaw = serverPlayer.yaw;
+      const spawnPoint = pendingSpawn as { x: number; y: number; z: number; yaw: number } | null;
+      if (spawnPoint) {
+        controller.position.set(spawnPoint.x, spawnPoint.y, spawnPoint.z);
+        controller.yaw = spawnPoint.yaw;
+        controller.avatarYaw = spawnPoint.yaw;
+      } else {
+        const serverPlayer: any = net.room?.state?.players?.get(net.room?.sessionId || "");
+        if (serverPlayer) {
+          controller.position.set(serverPlayer.x, serverPlayer.y, serverPlayer.z);
+          controller.yaw = serverPlayer.yaw;
+          controller.avatarYaw = serverPlayer.yaw;
+        }
       }
+      controller.avatar.setPositionAndYaw(controller.position, controller.avatarYaw);
+      controller.camera.target.set(controller.position.x, controller.position.y + 1.25, controller.position.z);
+      controller.camera.alpha = -controller.yaw - Math.PI / 2;
 
       // Conectar envío de inputs
       controller.onSendInput = (input) => {

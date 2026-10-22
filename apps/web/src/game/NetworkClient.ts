@@ -23,6 +23,7 @@ export class NetworkClient {
   // Callbacks para la UI React
   public onConnected?: (roomId: string, islandName: string) => void;
   public onDisconnected?: (reason: string) => void;
+  public onLocalPlayerSpawn?: (x: number, y: number, z: number, yaw: number) => void;
   public onStatsUpdate?: (health: number, hunger: number, thirst: number) => void;
   public onChatReceived?: (chat: ChatMessagePayload) => void;
   public onHarvestSuccess?: (info: { resourceType: string; amount: number; message: string }) => void;
@@ -91,6 +92,7 @@ export class NetworkClient {
         console.log(`[NetworkClient] Jugador remoto apareció: ${player.name} (${sessionId})`);
         const remoteAvatar = new Avatar3D(this.islandScene.scene, player.name, false);
         remoteAvatar.setPositionAndYaw(new Vector3(player.x, player.y, player.z), player.yaw);
+        this.islandScene.shadowGenerator.addShadowCaster(remoteAvatar.rootMesh, true);
 
         this.remotePlayers.set(sessionId, {
           avatar: remoteAvatar,
@@ -109,7 +111,8 @@ export class NetworkClient {
           }
         });
       } else {
-        // Jugador local: sincronizar stats de supervivencia
+        // Jugador local: notificar coordenadas autoritativas de spawn y sincronizar stats
+        this.onLocalPlayerSpawn?.(player.x, player.y, player.z, player.yaw);
         player.onChange(() => {
           this.onStatsUpdate?.(player.health, player.hunger, player.thirst);
         });

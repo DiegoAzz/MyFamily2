@@ -27,7 +27,8 @@ export class PlayerController {
   // Físicas locales
   public position: Vector3 = new Vector3(0, 2, 0);
   public velocity: Vector3 = new Vector3(0, 0, 0);
-  public yaw: number = 0;
+  public yaw: number = 0; // Ángulo orbital de la cámara
+  public avatarYaw: number = 0; // Orientación del personaje
   public pitch: number = 0.35; // Ángulo vertical de la cámara
   public isGrounded: boolean = true;
   private currentAnimation: string = "idle";
@@ -42,23 +43,30 @@ export class PlayerController {
     this.islandScene = islandScene;
     this.avatar = avatar;
 
-    // 1. Cámara en Tercera Persona Orbital
+    // 1. Cámara en Tercera Persona Orbital (Adaptada dinámicamente a desktop y mobile)
+    const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
     this.camera = new ArcRotateCamera(
       "thirdPersonCamera",
       -Math.PI / 2, // Alpha
       Math.PI / 3,  // Beta
-      4.8,          // Distancia (Radius)
-      new Vector3(0, 1.4, 0), // Target
+      isMobile ? 6.8 : 5.6, // Distancia óptima
+      new Vector3(0, 1.25, 0), // Target al torso del personaje
       islandScene.scene
     );
-    this.camera.lowerRadiusLimit = 2.0;
-    this.camera.upperRadiusLimit = 8.5;
+    this.camera.lowerRadiusLimit = 2.5;
+    this.camera.upperRadiusLimit = 9.5;
     this.camera.lowerBetaLimit = 0.1;
     this.camera.upperBetaLimit = Math.PI / 2 - 0.05; // No atravesar el suelo
     this.camera.checkCollisions = true;
 
-    // Activar como cámara principal
+    // Activar como cámara principal y conectar con el pipeline de post-procesamiento
     this.islandScene.scene.activeCamera = this.camera;
+    if (this.islandScene.pipeline) {
+      this.islandScene.pipeline.cameras.push(this.camera);
+    }
+
+    // El avatar del jugador proyecta sombras dinámicas
+    this.islandScene.shadowGenerator.addShadowCaster(this.avatar.rootMesh, true);
 
     // Configuración de controles
     this.setupInputs(canvas);
@@ -189,19 +197,14 @@ export class PlayerController {
     let moveZ = 0;
 
     if (forward !== 0 || strafe !== 0) {
-      const sinY = Math.sin(this.yaw);
-      const cosY = Math.cos(this.yaw);
+      const moveAngle = Math.atan2(strafe, forward);
+      const moveYaw = this.yaw + moveAngle;
 
-      const fX = sinY * forward;
-      const fZ = cosY * forward;
-      const sX = cosY * strafe;
-      const sZ = -sinY * strafe;
+      moveX = Math.sin(moveYaw) * speed;
+      moveZ = Math.cos(moveYaw) * speed;
 
-      const len = Math.hypot(fX + sX, fZ + sZ);
-      if (len > 0.001) {
-        moveX = ((fX + sX) / len) * speed;
-        moveZ = ((fZ + sZ) / len) * speed;
-      }
+      // El avatar encara suavemente la dirección de avance
+      this.avatarYaw = moveYaw;
     }
 
     this.velocity.x = moveX;
@@ -247,11 +250,11 @@ export class PlayerController {
     }
 
     // 3. Actualizar Avatar 3D
-    this.avatar.setPositionAndYaw(this.position, this.yaw);
+    this.avatar.setPositionAndYaw(this.position, this.avatarYaw);
     this.avatar.updateAnimation(this.currentAnimation, dt);
 
     // 4. Actualizar Cámara Tercera Persona para que siga suavemente al avatar
-    this.camera.target.set(this.position.x, this.position.y + 1.35, this.position.z);
+    this.camera.target.set(this.position.x, this.position.y + 1.25, this.position.z);
     this.camera.alpha = -this.yaw - Math.PI / 2;
 
     // 5. Enviar intención de input al servidor autoritativo
@@ -262,7 +265,7 @@ export class PlayerController {
       strafe,
       sprint,
       jump,
-      yaw: this.yaw,
+      yaw: this.avatarYaw,
       timestamp: Date.now(),
     });
   }
