@@ -35,10 +35,14 @@ func _ready() -> void:
 		close_btn.pressed.connect(close_chat)
 	send_btn.pressed.connect(_on_send_pressed)
 	message_input.text_submitted.connect(func(_t): _on_send_pressed())
+	message_input.gui_input.connect(_on_message_input_gui_input)
 	
 	# Inicialmente cerrado
 	chat_panel.visible = false
 	_update_toggle_btn()
+	
+	if _is_mobile():
+		message_input.placeholder_text = "Toca para escribir..."
 	
 	add_chat_entry("Sistema", "¡Bienvenidos a la Granja! Toca 'Chat' para hablar.", Color(0.9, 0.8, 0.4))
 
@@ -53,7 +57,8 @@ func open_chat() -> void:
 	chat_panel.visible = true
 	unread_count = 0
 	_update_toggle_btn()
-	message_input.grab_focus()
+	if not _is_mobile():
+		message_input.grab_focus()
 	_set_gameplay_controls_active(false)
 
 func close_chat() -> void:
@@ -84,6 +89,8 @@ func _update_toggle_btn() -> void:
 func _on_send_pressed() -> void:
 	var text = message_input.text.strip_edges()
 	if text.is_empty():
+		if _is_mobile():
+			_prompt_chat_input()
 		return
 		
 	message_input.text = ""
@@ -96,6 +103,43 @@ func _on_send_pressed() -> void:
 		if net_mgr and "player_name" in net_mgr and not net_mgr.player_name.is_empty():
 			my_name = net_mgr.player_name
 		add_chat_entry(my_name, text, Color(0.4, 0.9, 0.5))
+
+func _on_message_input_gui_input(event: InputEvent) -> void:
+	if event is InputEventScreenTouch and event.pressed:
+		get_viewport().set_input_as_handled()
+		_prompt_chat_input()
+	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		if _is_mobile():
+			get_viewport().set_input_as_handled()
+			_prompt_chat_input()
+
+func _prompt_chat_input() -> void:
+	var msg = _prompt_text_input("Escribe tu mensaje para el chat:", message_input.text)
+	if msg != "":
+		message_input.text = msg
+		_on_send_pressed()
+
+func _is_mobile() -> bool:
+	if OS.has_feature("mobile") or OS.has_feature("android") or OS.has_feature("ios"):
+		return true
+	if OS.has_feature("web"):
+		var is_touch = JavaScriptBridge.eval("('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent)")
+		if is_touch != null and bool(is_touch):
+			return true
+	return false
+
+func _prompt_text_input(prompt_title: String, default_text: String = "") -> String:
+	if OS.has_feature("web"):
+		var safe_title = prompt_title.replace("'", "\\'").replace('"', '\\"')
+		var safe_def = default_text.replace("'", "\\'").replace('"', '\\"')
+		var js_expr = "(function() { var r = window.prompt('" + safe_title + "', '" + safe_def + "'); return r !== null ? r : ''; })()"
+		var res = JavaScriptBridge.eval(js_expr)
+		if res != null and str(res) != "null":
+			return str(res)
+		return ""
+	elif DisplayServer.has_feature(DisplayServer.FEATURE_VIRTUAL_KEYBOARD):
+		DisplayServer.virtual_keyboard_show(default_text)
+	return default_text
 
 func _on_chat_message_received(sender: String, text: String) -> void:
 	if Engine.has_singleton("AudioManager") or has_node("/root/AudioManager"):

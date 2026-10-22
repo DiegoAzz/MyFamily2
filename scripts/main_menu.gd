@@ -38,6 +38,8 @@ var current_skin_id: int = 0
 
 # Elementos de Unirse a Sala
 @onready var code_input: LineEdit = $JoinPanel/VBoxContainer/CodeInput
+@onready var write_code_btn: Button = $JoinPanel/VBoxContainer/CodeActionsHBox/WriteCodeBtn
+@onready var paste_code_btn: Button = $JoinPanel/VBoxContainer/CodeActionsHBox/PasteCodeBtn
 @onready var confirm_join_btn: Button = $JoinPanel/VBoxContainer/ConfirmJoinBtn
 @onready var join_status_label: Label = $JoinPanel/VBoxContainer/StatusLabel
 @onready var retry_join_btn: Button = $JoinPanel/VBoxContainer/RetryBtn
@@ -71,8 +73,11 @@ func _ready() -> void:
 	confirm_join_btn.pressed.connect(_on_confirm_join_pressed)
 	retry_join_btn.pressed.connect(_on_confirm_join_pressed)
 	back_from_join_btn.pressed.connect(_on_back_pressed)
+	write_code_btn.pressed.connect(_prompt_room_code)
+	paste_code_btn.pressed.connect(_paste_room_code)
 	code_input.text_submitted.connect(func(_t): _on_confirm_join_pressed())
 	code_input.text_changed.connect(_on_code_input_changed)
+	code_input.gui_input.connect(_on_code_input_gui_input)
 
 	# Configuración de nombre y selector de personaje
 	if net_mgr:
@@ -83,6 +88,7 @@ func _ready() -> void:
 	_update_skin_display()
 	
 	player_name_input.text_changed.connect(_on_player_name_changed)
+	player_name_input.gui_input.connect(_on_name_input_gui_input)
 	prev_skin_btn.pressed.connect(_on_prev_skin_pressed)
 	next_skin_btn.pressed.connect(_on_next_skin_pressed)
 
@@ -261,3 +267,68 @@ func _on_resume_pressed() -> void:
 
 func _on_enter_world() -> void:
 	get_tree().change_scene_to_file("res://scenes/world.tscn")
+
+# --- Métodos de Soporte Táctil y Entrada de Texto para Móviles ---
+func _is_mobile() -> bool:
+	if OS.has_feature("mobile") or OS.has_feature("android") or OS.has_feature("ios"):
+		return true
+	if OS.has_feature("web"):
+		var is_touch = JavaScriptBridge.eval("('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent)")
+		if is_touch != null and bool(is_touch):
+			return true
+	return false
+
+func _prompt_text_input(prompt_title: String, default_text: String = "") -> String:
+	if OS.has_feature("web"):
+		var safe_title = prompt_title.replace("'", "\\'").replace('"', '\\"')
+		var safe_def = default_text.replace("'", "\\'").replace('"', '\\"')
+		var js_expr = "(function() { var r = window.prompt('" + safe_title + "', '" + safe_def + "'); return r !== null ? r : ''; })()"
+		var res = JavaScriptBridge.eval(js_expr)
+		if res != null and str(res) != "null":
+			return str(res)
+		return ""
+	elif DisplayServer.has_feature(DisplayServer.FEATURE_VIRTUAL_KEYBOARD):
+		DisplayServer.virtual_keyboard_show(default_text)
+	return default_text
+
+func _prompt_room_code() -> void:
+	var code = _prompt_text_input("Introduce el Codigo de Sala (4 letras):", code_input.text)
+	if code != "":
+		code_input.text = code.strip_edges().to_upper()
+		_on_code_input_changed(code_input.text)
+
+func _paste_room_code() -> void:
+	if OS.has_feature("web"):
+		var js_paste = "(function() { var r = window.prompt('Pega o escribe aqui el codigo de sala:', ''); return r !== null ? r : ''; })()"
+		var res = JavaScriptBridge.eval(js_paste)
+		if res != null and str(res) != "null" and str(res).strip_edges() != "":
+			code_input.text = str(res).strip_edges().to_upper()
+			_on_code_input_changed(code_input.text)
+	else:
+		if DisplayServer.clipboard_has():
+			code_input.text = DisplayServer.clipboard_get().strip_edges().to_upper()
+			_on_code_input_changed(code_input.text)
+
+func _on_code_input_gui_input(event: InputEvent) -> void:
+	if event is InputEventScreenTouch and event.pressed:
+		get_viewport().set_input_as_handled()
+		_prompt_room_code()
+	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		if _is_mobile():
+			get_viewport().set_input_as_handled()
+			_prompt_room_code()
+
+func _prompt_player_name() -> void:
+	var new_name = _prompt_text_input("Introduce tu Nombre de Jugador:", player_name_input.text)
+	if new_name != "":
+		player_name_input.text = new_name.strip_edges()
+		_on_player_name_changed(player_name_input.text)
+
+func _on_name_input_gui_input(event: InputEvent) -> void:
+	if event is InputEventScreenTouch and event.pressed:
+		get_viewport().set_input_as_handled()
+		_prompt_player_name()
+	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		if _is_mobile():
+			get_viewport().set_input_as_handled()
+			_prompt_player_name()

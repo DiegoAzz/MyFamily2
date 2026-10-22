@@ -419,6 +419,27 @@ placeholder_text = "CÓDIGO"
 alignment = 1
 max_length = 6
 
+[node name="CodeActionsHBox" type="HBoxContainer" parent="JoinPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="WriteCodeBtn" type="Button" parent="JoinPanel/VBoxContainer/CodeActionsHBox"]
+custom_minimum_size = Vector2(85, 24)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 9
+theme_override_styles/normal = SubResource("StyleBoxFlat_dark_btn")
+text = "Escribir"
+
+[node name="PasteCodeBtn" type="Button" parent="JoinPanel/VBoxContainer/CodeActionsHBox"]
+custom_minimum_size = Vector2(70, 24)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 9
+theme_override_styles/normal = SubResource("StyleBoxFlat_dark_btn")
+text = "Pegar"
+
 [node name="ConfirmJoinBtn" type="Button" parent="JoinPanel/VBoxContainer"]
 custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
