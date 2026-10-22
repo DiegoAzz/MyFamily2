@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-950">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Wildborn Online — Supervivencia 3D Multijugador</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        user-select: none;
+      }
+      html, body, #root {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background-color: #020617;
+      }
+      #renderCanvas {
+        width: 100%;
+        height: 100%;
+        touch-action: none;
+        outline: none;
+        display: block;
+      }
+    </style>
+  </head>
+  <body class="h-full select-none overflow-hidden">
+    <div id="root" class="w-full h-full relative"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

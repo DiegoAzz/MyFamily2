@@ -1,13 +1,45 @@
-# Godot 4+ ignores
-.godot/
-*.translation
+# Dependencies
+node_modules/
+.pnpm-store/
 
-# Mono/C# specific (si se usa en el futuro)
-.mono/
-data_*/
-mono_crash.*.json
+# Builds and Distribution
+dist/
+build/
+*.tsbuildinfo
 
-# OS and temporary files
+# Environment variables
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor & OS
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
 .DS_Store
 Thumbs.db
 *.tmp
+
+# Coverage and testing
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+
+# Godot 2D Archive (Preserved on git branch and tag archive/godot-2d-myfamily)
+archive/

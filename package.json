@@ -1,0 +1,22 @@
+{
+  "name": "wildborn-online",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Wildborn Online — Videojuego indie 3D multijugador de supervivencia para navegador",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "dev:server": "npm run dev --workspace=@wildborn/game-server",
+    "dev:web": "npm run dev --workspace=@wildborn/web",
+    "dev:api": "npm run dev --workspace=@wildborn/api",
+    "dev": "npm run dev --workspaces --if-present",
+    "clean": "npm run clean --workspaces --if-present"
+  },
+  "devDependencies": {
+    "playwright": "^1.64.1",
+    "typescript": "^5.4.5"
+  }
+}

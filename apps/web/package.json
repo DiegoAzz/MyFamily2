@@ -1,0 +1,33 @@
+{
+  "name": "@wildborn/web",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Cliente web 3D (React + Babylon.js + Colyseus) para Wildborn Online",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@babylonjs/core": "^7.8.0",
+    "@babylonjs/loaders": "^7.8.0",
+    "@babylonjs/materials": "^7.8.0",
+    "@wildborn/game-content": "*",
+    "@wildborn/shared": "*",
+    "colyseus.js": "^0.15.17",
+    "lucide-react": "^0.378.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.3",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.11"
+  }
+}
