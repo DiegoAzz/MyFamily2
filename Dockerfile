@@ -36,8 +36,9 @@ COPY --from=builder /app/packages/game-content/dist ./packages/game-content/dist
 # Instalar dependencias de producción para el servidor
 RUN npm install --omit=dev
 
-# Copiar cliente web compilado a Nginx
+# Copiar cliente web compilado a Nginx y al servidor Node
 COPY --from=builder /app/apps/web/dist /usr/share/nginx/html
+COPY --from=builder /app/apps/web/dist /app/apps/web/dist
 
 # Configuración Nginx y script de arranque
 COPY nginx.conf /etc/nginx/conf.d/default.conf
